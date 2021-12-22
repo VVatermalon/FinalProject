@@ -5,54 +5,47 @@ import by.skarulskaya.MusicBandProject.exception.ConnectionPoolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayDeque;
-import java.util.Properties;
+import java.util.MissingResourceException;
 import java.util.Queue;
+import java.util.ResourceBundle;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public enum CustomConnectionPool {
     INSTANCE;
 
-    private static final String DATABASE_PROPERTIES_PATH = "dataSrc/database.properties";
-    private static final String DRIVER_NAME_PROPERTY_NAME = "db.driver";
-    private static final String DATABASE_URL_PROPERTY_NAME = "db.url";
     private final Logger logger = LogManager.getLogger();
     private final BlockingQueue<ProxyConnection> freeConnections;
     private final Queue<Connection> givenAwayConnections;
 
-    private final static int DEFAULT_POOL_SIZE = 1;
+    private static final String DATABASE_PROPERTIES_PATH = "dataSrc.database";
+    private static final String POOL_SIZE_PROPERTY_NAME = "pool.size";
+    private final int DEFAULT_POOL_SIZE;
 
     CustomConnectionPool() {
-        ClassLoader loader = this.getClass().getClassLoader();
-        InputStream resource = loader.getResourceAsStream(DATABASE_PROPERTIES_PATH);
-        Properties connectionProperties = new Properties();
         try {
-            connectionProperties.load(resource);
-            String DRIVER_NAME = connectionProperties.getProperty(DRIVER_NAME_PROPERTY_NAME);
-            Class.forName(DRIVER_NAME);
-        } catch (IOException | ClassNotFoundException e) {
-            logger.fatal("Error during pool initializing", e);
-            throw new RuntimeException(e);
+            ResourceBundle bundle = ResourceBundle.getBundle(DATABASE_PROPERTIES_PATH);
+            DEFAULT_POOL_SIZE = Integer.parseInt(bundle.getString(POOL_SIZE_PROPERTY_NAME)); //todo int parse
+        } catch(MissingResourceException e) {
+            logger.fatal(e);
+            throw new RuntimeException("Error during properties reading", e);
         }
-        String DATABASE_URL = connectionProperties.getProperty(DATABASE_URL_PROPERTY_NAME);
 
         freeConnections = new LinkedBlockingDeque<>(DEFAULT_POOL_SIZE);
         givenAwayConnections = new ArrayDeque<>(DEFAULT_POOL_SIZE);
 
         boolean attemptFlag = false;
-        while (freeConnections.size() < DEFAULT_POOL_SIZE) {
+        while (freeConnections.size() != DEFAULT_POOL_SIZE) {
             try {
-                Connection connection = DriverManager.getConnection(DATABASE_URL, connectionProperties);
+                Connection connection = ConnectionFactory.create();
                 ProxyConnection proxyConnection = new ProxyConnection(connection);
                 freeConnections.add(proxyConnection);
-            } catch (SQLException e) {
+            } catch (ConnectionPoolException e) {
                 if (attemptFlag && freeConnections.size() == 0) {
                     logger.fatal("Error during connection establishing");
                     throw new RuntimeException(e);
