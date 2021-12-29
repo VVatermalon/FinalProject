@@ -1,4 +1,4 @@
-package by.skarulskaya.MusicBandProject.exception;
+package by.skarulskaya.finalproject.exception;
 
 public class ConnectionPoolException extends Exception {
     public ConnectionPoolException() {

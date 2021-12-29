@@ -1,4 +1,4 @@
-package by.skarulskaya.MusicBandProject.exception;
+package by.skarulskaya.finalproject.exception;
 
 public class DaoException extends Exception{
     public DaoException() {

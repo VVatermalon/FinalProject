@@ -1,6 +1,6 @@
-package by.skarulskaya.MusicBandProject.pool;
+package by.skarulskaya.finalproject.model.pool;
 
-import by.skarulskaya.MusicBandProject.exception.ConnectionPoolException;
+import by.skarulskaya.finalproject.exception.ConnectionPoolException;
 import org.apache.logging.log4j.LogManager;
 
 import java.sql.*;

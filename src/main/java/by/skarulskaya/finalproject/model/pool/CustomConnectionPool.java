@@ -1,7 +1,6 @@
-package by.skarulskaya.MusicBandProject.pool;
+package by.skarulskaya.finalproject.model.pool;
 
-import by.skarulskaya.MusicBandProject.connection.ConnectionCreator;
-import by.skarulskaya.MusicBandProject.exception.ConnectionPoolException;
+import by.skarulskaya.finalproject.exception.ConnectionPoolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +27,7 @@ public enum CustomConnectionPool {
     private final int DEFAULT_POOL_SIZE;
 
     CustomConnectionPool() {
-        try {
+        try { // todo вынести отдельно
             ResourceBundle bundle = ResourceBundle.getBundle(DATABASE_PROPERTIES_PATH);
             DEFAULT_POOL_SIZE = Integer.parseInt(bundle.getString(POOL_SIZE_PROPERTY_NAME)); //todo int parse
         } catch(MissingResourceException e) {
@@ -55,15 +54,15 @@ public enum CustomConnectionPool {
         }
     }
 
-    public Connection getConnection() throws ConnectionPoolException {
+    public Connection getConnection() {
         Connection connection = null;
         try {
             connection = freeConnections.take();
+            givenAwayConnections.offer(connection);
         } catch (InterruptedException e) {
             logger.error(e);
-            throw new ConnectionPoolException(e);
+            Thread.currentThread().interrupt();
         }
-        givenAwayConnections.offer(connection);
         return connection;
     }
 
@@ -84,7 +83,7 @@ public enum CustomConnectionPool {
             deregisterDrivers();
         } catch (InterruptedException e) {
             logger.error(e);
-            throw new ConnectionPoolException(e);
+            Thread.currentThread().interrupt();
         }
     }
 
