@@ -17,7 +17,9 @@ public class UserDaoImpl extends UserDao {
     private static final String SQL_FIND_USER_BY_ID = """
         SELECT user_id, email, password, name, surname, role, status 
         FROM users WHERE user_id = ?""";
-    private static final String SQL_FIND_USER_BY_LOGIN_AND_PASSWORD = """
+    private static final String SQL_FIND_USER_BY_EMAIL = """
+        SELECT user_id FROM users WHERE email = ?""";
+    private static final String SQL_FIND_USER_BY_EMAIL_AND_PASSWORD = """
         SELECT user_id, email, password, name, surname,role, status
         FROM users WHERE email = ? and password = ?""";
     private static final String SQL_CREATE_USER = """
@@ -64,10 +66,11 @@ public class UserDaoImpl extends UserDao {
         return output;
     }
 
+    @Override
     public Optional<User> findUserByEmailAndPassword(String email, String password) throws DaoException {
         ResultSet resultSet = null;
         Optional<User> output = Optional.empty();
-        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_BY_LOGIN_AND_PASSWORD)) {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_BY_EMAIL_AND_PASSWORD)) {
             statement.setString(1, email);
             statement.setString(2, password);
             resultSet = statement.executeQuery();
@@ -75,13 +78,28 @@ public class UserDaoImpl extends UserDao {
                 User user = mapper.map(resultSet);
                 output = Optional.of(user);
             }
+            return output;
         } catch (SQLException e) {
             logger.error(e);
             throw new DaoException(e);
         } finally {
             close(resultSet);
         }
-        return output;
+    }
+
+    @Override
+    public boolean findUserByEmail(String email) throws DaoException {
+        ResultSet resultSet = null;
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_BY_EMAIL)) {
+            statement.setString(1, email);
+            resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        } finally {
+            close(resultSet);
+        }
     }
 
     @Override
@@ -96,18 +114,18 @@ public class UserDaoImpl extends UserDao {
         try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_BY_ID, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE)) {
             statement.setInt(1, id);
             resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                resultSet.updateInt("status", User.Status.DELETED.ordinal());
-                resultSet.updateRow();
-                return true;
+            if (!resultSet.next()) {
+                return false;
             }
+            resultSet.updateInt("status", User.Status.DELETED.ordinal()); //todo или надо удалять каскадом все?
+            resultSet.updateRow();
+            return true;
         } catch (SQLException e) {
             logger.error(e);
             throw new DaoException(e);
         } finally {
             close(resultSet);
         }
-        return false;
     }
 
     @Override
@@ -122,16 +140,17 @@ public class UserDaoImpl extends UserDao {
             statement.setString(6, entity.getStatus().name());
             statement.executeUpdate();
             keys = statement.getGeneratedKeys(); //todo where to close resultSet?
-            if (keys.next()) {
-                int id = keys.getInt(1);
-                entity.setId(id);
+            if (!keys.next()) {
+                throw new DaoException("Smth wrong with generated id"); //todo is that possible?
             }
+            int id = keys.getInt(1);
+            entity.setId(id);
+            return true;
         } catch (SQLException e) {
             throw new DaoException(e);
         } finally {
             close(keys);
         }
-        return true; //fixme
     }
 
     @Override

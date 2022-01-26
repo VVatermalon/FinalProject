@@ -17,7 +17,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public enum CustomConnectionPool {
     INSTANCE;
-
     private final Logger logger = LogManager.getLogger();
     private final BlockingQueue<ProxyConnection> freeConnections;
     private final Queue<Connection> givenAwayConnections;
@@ -45,9 +44,9 @@ public enum CustomConnectionPool {
                 ProxyConnection proxyConnection = new ProxyConnection(connection);
                 freeConnections.add(proxyConnection);
             } catch (ConnectionPoolException e) {
-                if (attemptFlag && freeConnections.size() == 0) {
-                    logger.fatal("Error during connection establishing");
-                    throw new RuntimeException(e);
+                if (attemptFlag && freeConnections.isEmpty()) {
+                    logger.fatal("Error during connection establishing", e);
+                    throw new RuntimeException("Error during connection establishing", e);
                 }
                 attemptFlag = true;
             }
@@ -75,26 +74,27 @@ public enum CustomConnectionPool {
         freeConnections.offer((ProxyConnection) connection);
     }
 
-    public void destroyPool() throws ConnectionPoolException {
-        try {
-            for (int i = 0; i < DEFAULT_POOL_SIZE; i++) {
+    public void destroyPool() {
+        for (int i = 0; i < DEFAULT_POOL_SIZE; i++) {
+            try {
                 freeConnections.take().closeConnection();
+            } catch (InterruptedException e) {
+                logger.error(e);
+                Thread.currentThread().interrupt();
+            } catch (ConnectionPoolException e) {
+                logger.error(e);
             }
-            deregisterDrivers();
-        } catch (InterruptedException e) {
-            logger.error(e);
-            Thread.currentThread().interrupt();
         }
+        deregisterDrivers();
     }
 
-    private void deregisterDrivers() throws ConnectionPoolException {
+    private void deregisterDrivers() {
         while(DriverManager.getDrivers().hasMoreElements()) {
             Driver driver = DriverManager.getDrivers().nextElement();
             try {
                 DriverManager.deregisterDriver(driver);
             } catch (SQLException e) {
                 logger.error(e);
-                throw new ConnectionPoolException(e);
             }
         }
     }

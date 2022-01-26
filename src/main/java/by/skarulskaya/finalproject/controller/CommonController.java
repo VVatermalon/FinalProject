@@ -3,8 +3,10 @@ package by.skarulskaya.finalproject.controller;
 import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.controller.command.CommandType;
 import by.skarulskaya.finalproject.exception.CommandException;
+import by.skarulskaya.finalproject.exception.ConnectionPoolException;
 import by.skarulskaya.finalproject.model.pool.CustomConnectionPool;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
+@WebServlet(urlPatterns = {"/controller"})
 public class CommonController extends HttpServlet {
     private static final Logger logger = LogManager.getLogger();
     @Override
@@ -32,6 +35,7 @@ public class CommonController extends HttpServlet {
         logger.debug(commandName);
         try {
             Command command = CommandType.provideCommand(commandName);
+            logger.info(command);
             Router router;
             router = command.execute(req);
             String page = router.getCurrentPage();

@@ -13,6 +13,10 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
+import static by.skarulskaya.finalproject.controller.Parameters.*;
+import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
+import static by.skarulskaya.finalproject.controller.PagesPaths.*;
+
 public class SignIn implements Command {
     private static final Logger logger = LogManager.getLogger();
     private final UserService userService = UserService.getInstance();
@@ -20,9 +24,8 @@ public class SignIn implements Command {
     public Router execute(HttpServletRequest request) throws CommandException {
         HttpSession session = request.getSession();
         Router router = new Router();
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        logger.debug(email, password);
+        String email = request.getParameter(USER_EMAIL);
+        String password = request.getParameter(USER_PASSWORD);
         Optional<User> userOptional;
         try {
             userOptional = userService.signIn(email, password);
@@ -32,26 +35,28 @@ public class SignIn implements Command {
         }
         if(userOptional.isPresent()) {
             User user = userOptional.get();
-            session.setAttribute("user", user);
+            session.setAttribute(USER, user);
             switch(user.getRole()) {
                 case ADMIN -> {
-                    router.setCurrentPage("admin page");
+                    router.setCurrentPage(ADMIN_PAGE);
+                    logger.info("admin");
                 }
                 case CUSTOMER -> {
                     if(user.getStatus() == User.Status.BLOCKED) {
-                        session.setAttribute("message", "You're blocked");
-                        router.setCurrentPage("sign in");
+                        logger.info("blocked");
+                        session.setAttribute(USER_STATUS_BLOCKED, USER_BLOCKED_MESSAGE);
+                        router.setCurrentPage(SIGN_IN_PAGE);
                     }
                     else {
                         logger.info("Client page");
-                        router.setCurrentPage("client page");
+                        router.setCurrentPage(CLIENT_PAGE);
                     }
                 }
             }
         }
         else {
-            session.setAttribute("error", "error incorrect log or pass");
-            router.setCurrentPage("sign in");
+            session.setAttribute(ERROR_INCORRECT_LOGIN_OR_PASSWORD, ERROR_INCORRECT_LOGIN_OR_PASSWORD_MESSAGE);
+            router.setCurrentPage(SIGN_IN_PAGE);
         }
         return router;
     }

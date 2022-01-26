@@ -1,5 +1,6 @@
 package by.skarulskaya.finalproject.controller.command;
 
+import by.skarulskaya.finalproject.controller.command.impl.Registration;
 import by.skarulskaya.finalproject.controller.command.impl.SignIn;
 import by.skarulskaya.finalproject.exception.CommandException;
 
@@ -7,7 +8,8 @@ import java.util.Locale;
 import java.util.Optional;
 
 public enum CommandType {
-    SIGN_IN(new SignIn());
+    SIGN_IN(new SignIn()),
+    REGISTRATION(new Registration());
 
     private final Command command;
 
@@ -28,7 +30,7 @@ public enum CommandType {
             return commandType.getCommand();
         }
         catch (IllegalArgumentException e) {
-            throw new CommandException("can't find such command");
+            throw new CommandException("Can't find such command: " + command);
         }
     }
 }
