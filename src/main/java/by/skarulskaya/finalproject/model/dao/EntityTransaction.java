@@ -51,7 +51,10 @@ public class EntityTransaction implements AutoCloseable {
             throw new DaoException("Connection value is null");
         }
         try {
-            connection.setAutoCommit(true);
+            if(!connection.getAutoCommit()) {
+                rollback();
+                connection.setAutoCommit(true);
+            }
             CustomConnectionPool.INSTANCE.releaseConnection(connection);
         } catch (SQLException | ConnectionPoolException e) {
             logger.error(e);

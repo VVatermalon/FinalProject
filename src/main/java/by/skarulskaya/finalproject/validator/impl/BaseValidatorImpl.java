@@ -11,9 +11,9 @@ import static by.skarulskaya.finalproject.controller.Parameters.*;
 public enum BaseValidatorImpl implements BaseValidator {
     INSTANCE;
     private static final String USER_NAME_PATTERN = "^[A-Za-zА-Яа-я]{3,50}$";
-    private static final String USER_PASSWORD_PATTERN = "^[A-Za-zА-Яа-я0-9\\._*]{5,40}$";
-    private static final String USER_EMAIL_PATTERN = "^[a-z0-9\\._]{1,25}@[a-z]{2,7}\\.[a-z]{2,4}$";
-    private static final String USER_PHONE_NUMBER_PATTERN = "(29|25|44|33)\\d{7}";
+    private static final String USER_PASSWORD_PATTERN = "^[A-Za-zА-Яа-я0-9._*]{5,40}$";
+    private static final String USER_EMAIL_PATTERN = "^[a-z0-9._]{1,25}@[a-z]{2,7}\\.[a-z]{2,4}$";
+    private static final String USER_PHONE_NUMBER_PATTERN = "\\+375(29|25|44|33)\\d{7}";
 private static final Logger logger = LogManager.getLogger();
 
     @Override
@@ -70,5 +70,10 @@ private static final Logger logger = LogManager.getLogger();
             result = false;
         }
         return result;
+    }
+
+    @Override
+    public boolean validateSignIn(String email, String password) {
+        return validateEmail(email) && validatePassword(password);
     }
 }

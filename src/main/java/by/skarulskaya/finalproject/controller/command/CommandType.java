@@ -1,7 +1,6 @@
 package by.skarulskaya.finalproject.controller.command;
 
-import by.skarulskaya.finalproject.controller.command.impl.Registration;
-import by.skarulskaya.finalproject.controller.command.impl.SignIn;
+import by.skarulskaya.finalproject.controller.command.impl.*;
 import by.skarulskaya.finalproject.exception.CommandException;
 
 import java.util.Locale;
@@ -9,7 +8,12 @@ import java.util.Optional;
 
 public enum CommandType {
     SIGN_IN(new SignIn()),
-    REGISTRATION(new Registration());
+    SIGN_OUT(new SignOut()),
+    REGISTRATION(new Registration()),
+    FIND_ALL_ITEMS(new FindAllItems()),
+    FIND_BY_CATEGORY_ITEMS(new FindByCategoryItems()),
+    OPEN_ITEM_PAGE(new OpenItemPage()),
+    CHANGE_LANGUAGE(new ChangeLanguage());
 
     private final Command command;
 

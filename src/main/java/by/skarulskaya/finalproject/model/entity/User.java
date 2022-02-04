@@ -2,7 +2,7 @@ package by.skarulskaya.finalproject.model.entity;
 
 public class User extends CustomEntity {
     public enum Role {
-        ADMIN, CUSTOMER, GUEST
+        GUEST, CUSTOMER, ADMIN
     }
     public enum Status {
         ACTIVE, BLOCKED, IN_REGISTRATION_PROCESS, DELETED
@@ -13,6 +13,8 @@ public class User extends CustomEntity {
     private String surname;
     private Role role;
     private Status status;
+
+    public User() {}
 
     public User(String email, String password, String name, String surname, Role role, Status status) {
         this.email = email;
@@ -98,27 +100,27 @@ public class User extends CustomEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(o == null) return false;
+        if (o == null) return false;
         if (o.getClass() != getClass()) return false;
 
         User user = (User) o;
 
-        if (!email.equals(user.email)) return false; //todo is that correct without null check?
-        if (!password.equals(user.password)) return false;
-        if (!name.equals(user.name)) return false;
-        if (!surname.equals(user.surname)) return false;
+        if (email != null ? !email.equals(user.email) : user.email != null) return false;
+        if (password != null ? !password.equals(user.password) : user.password != null) return false;
+        if (name != null ? !name.equals(user.name) : user.name != null) return false;
+        if (surname != null ? !surname.equals(user.surname) : user.surname != null) return false;
         if (role != user.role) return false;
         return status == user.status;
     }
 
     @Override
     public int hashCode() {
-        int result = email.hashCode();
-        result = 31 * result + password.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + surname.hashCode();
-        result = 31 * result + role.hashCode();
-        result = 31 * result + status.hashCode();
+        int result = email != null ? email.hashCode() : 0;
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (surname != null ? surname.hashCode() : 0);
+        result = 31 * result + (role != null ? role.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
         return result;
     }
 }

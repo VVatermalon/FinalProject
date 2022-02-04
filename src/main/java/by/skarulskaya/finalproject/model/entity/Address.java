@@ -1,6 +1,6 @@
 package by.skarulskaya.finalproject.model.entity;
 
-public class Address {
+public class Address extends CustomEntity {
     private String country;
     private String city;
     private String street;

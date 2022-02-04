@@ -15,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
+import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_500;
+
 @WebServlet(urlPatterns = {"/controller"})
 public class CommonController extends HttpServlet {
     private static final Logger logger = LogManager.getLogger();
@@ -46,11 +48,9 @@ public class CommonController extends HttpServlet {
                 logger.debug("redirect");
                 resp.sendRedirect(page);
             }
-        } catch (CommandException e) {
+        } catch (CommandException e) { //todo добавить описание ошибки, плюс еще какие ошибки могут быть
             logger.error(e);
-            Router router = new Router();
-            router.setCurrentPage("error 500");
-            resp.sendRedirect(router.getCurrentPage());
+            resp.sendRedirect(ERROR_500);
         }
     }
 
