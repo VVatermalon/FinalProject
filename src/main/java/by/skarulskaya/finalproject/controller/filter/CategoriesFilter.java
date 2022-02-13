@@ -2,6 +2,7 @@ package by.skarulskaya.finalproject.controller.filter;
 
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.CustomEntity;
+import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.entity.ItemCategory;
 import by.skarulskaya.finalproject.model.service.impl.CategoryService;
 import jakarta.servlet.*;
@@ -12,12 +13,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_404;
 import static by.skarulskaya.finalproject.controller.Parameters.CATEGORY_LIST;
-import static by.skarulskaya.finalproject.controller.Parameters.CURRENT_PAGE;
+import static by.skarulskaya.finalproject.controller.Parameters.ITEMS_SORT_LIST;
 
 public class CategoriesFilter implements Filter {
     private static final CategoryService categoryService = CategoryService.getInstance();

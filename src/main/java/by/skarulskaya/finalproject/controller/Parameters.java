@@ -2,9 +2,13 @@ package by.skarulskaya.finalproject.controller;
 
 public class Parameters {
     public static final String COMMAND = "command";
-    public static final String CURRENT_PAGE = "current_page";
+    public static final String PAGE = "page";
+    public static final String IS_NEXT_PAGE = "is_next_page";
     public static final String CATEGORY_ID = "category_id";
     public static final String CATEGORY_LIST = "category_list";
+    public static final String SORT = "sort";
+    public static final String SORT_ORDER = "sort_order";
+    public static final String ITEMS_SORT_LIST = "items_sort_list";
     public static final String ERROR_INCORRECT_LOGIN_OR_PASSWORD = "error_incorrect_login_or_password";
     public static final String IMAGE_PATH = "image_path";
     public static final String INVALID_EMAIL = "invalid_email";

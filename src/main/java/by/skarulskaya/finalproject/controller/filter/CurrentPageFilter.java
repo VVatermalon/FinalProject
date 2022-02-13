@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-import static by.skarulskaya.finalproject.controller.Parameters.CURRENT_PAGE;
+import static by.skarulskaya.finalproject.controller.Parameters.PAGE;
 
 public class CurrentPageFilter implements Filter {
     private static final Logger logger = LogManager.getLogger();
@@ -28,7 +28,7 @@ public class CurrentPageFilter implements Filter {
         if (query != null) {
             requestURI = request.getContextPath() + CONTROLLER_PATTERN + query;
         }
-        session.setAttribute(CURRENT_PAGE, requestURI);
+        session.setAttribute(PAGE, requestURI);
         logger.debug("Current page " + requestURI);
         filterChain.doFilter(servletRequest, servletResponse);
     }

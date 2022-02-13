@@ -2,13 +2,12 @@ package by.skarulskaya.finalproject.controller.command.impl;
 
 import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
-import by.skarulskaya.finalproject.exception.CommandException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static by.skarulskaya.finalproject.controller.Parameters.CURRENT_PAGE;
+import static by.skarulskaya.finalproject.controller.Parameters.PAGE;
 import static by.skarulskaya.finalproject.controller.Parameters.LANGUAGE;
 
 public class ChangeLanguage implements Command {
@@ -20,7 +19,7 @@ public class ChangeLanguage implements Command {
     public Router execute(HttpServletRequest request) {
         HttpSession session = request.getSession();
         Router router = new Router();
-        String currentPage = (String) session.getAttribute(CURRENT_PAGE);
+        String currentPage = (String) session.getAttribute(PAGE);
         String language = request.getParameter(LANGUAGE);
         logger.debug("Language parameter is " + language);
         if(language==null || (!language.equals(ENGLISH) && !language.equals(RUSSIAN))){

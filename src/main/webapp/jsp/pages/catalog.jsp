@@ -350,6 +350,71 @@
     <header>
         <%@include file="header/headerCommon.jsp"%>
     </header>
+    <div class="container">
+        <div class="row">
+            <div class="btn-group col-auto">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <fmt:message key="action.sort"/></button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <form name="sortByPrice" action="${absolutePath}/controller">
+                            <input type="hidden" name="command" value="sort_items">
+                            <input type="hidden" name="sort" value="PRICE">
+                            <input type="hidden" name="sort_order" value="ASC">
+                            <c:if test="${not empty param.category_id}">
+                                <input type="hidden" name="category_id" value="${param.category_id}">
+                            </c:if>
+                            <button type="submit" class="dropdown-item"><fmt:message key="action.sort_by_price_asc"/></button>
+                        </form>
+                    </li>
+                    <li>
+                        <form name="sortByPrice" action="${absolutePath}/controller">
+                            <input type="hidden" name="command" value="sort_items">
+                            <input type="hidden" name="sort" value="PRICE">
+                            <input type="hidden" name="sort_order" value="DESC">
+                            <c:if test="${not empty param.category_id}">
+                                <input type="hidden" name="category_id" value="${param.category_id}">
+                            </c:if>
+                            <button type="submit" class="dropdown-item"><fmt:message key="action.sort_by_price_desc"/></button>
+                        </form>
+                    </li>
+                    <li>
+                        <form name="sortByName" action="${absolutePath}/controller">
+                            <input type="hidden" name="command" value="sort_items">
+                            <input type="hidden" name="sort" value="ITEM_NAME">
+                            <input type="hidden" name="sort_order" value="ASC">
+                            <c:if test="${not empty param.category_id}">
+                                <input type="hidden" name="category_id" value="${param.category_id}">
+                            </c:if>
+                            <button type="submit" class="dropdown-item"><fmt:message key="action.sort_by_name_asc"/></button>
+                        </form>
+                    </li>
+                    <li>
+                       <form name="sortByName" action="${absolutePath}/controller">
+                            <input type="hidden" name="command" value="sort_items">
+                            <input type="hidden" name="sort" value="ITEM_NAME">
+                            <input type="hidden" name="sort_order" value="DESC">
+                            <c:if test="${not empty param.category_id}">
+                                <input type="hidden" name="category_id" value="${param.category_id}">
+                            </c:if>
+                            <button type="submit" class="dropdown-item"><fmt:message key="action.sort_by_name_desc"/></button>
+                        </form>
+                    </li>
+                    <li>
+                        <form name="sortByPopularity" action="${absolutePath}/controller">
+                            <input type="hidden" name="command" value="sort_items">
+                            <input type="hidden" name="sort" value="POPULARITY">
+                            <input type="hidden" name="sort_order" value="DESC">
+                            <c:if test="${not empty param.category_id}">
+                                <input type="hidden" name="category_id" value="${param.category_id}">
+                            </c:if>
+                            <button type="submit" class="dropdown-item"><fmt:message key="action.sort_by_popularity_desc"/></button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <div class="box box_padding catalog-wrapp catalog-body">
         <div class="catalog">
             <c:forEach items="${item_list}" var="item">
@@ -365,28 +430,8 @@
                                 <img src="${absolutePath}/images/${item.imagePath}" alt="${item.name}" class="product_img">
                             </div>
                         </a>
-<%--                        <div class="product_info"><fmt:message key="menu.product_weight"/> ${menu.weight}</div>--%>
-<%--                        <div class="product_consist mb-2"><fmt:message key="menu.product_composition"/> ${menu.composition}<br><br><br></div>--%>
                         <div class="">
                             <div class="product_price "><strong id="price"> <fmt:message key="menu.product_money"/> ${item.price}</strong> </div>
-<%--                            <div class="product_price" ><b id="discount"><fmt:message key="menu.product_discount"/></b> <fmt:formatNumber type="number"  maxFractionDigits="0" value="${menu.discount * 100}"/>%  </div>--%>
-<%--                            <div class="product_price"><b id="total_price"><fmt:message key="menu.product_price"/></b> <fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2"  value="${menu.price - menu.discount * menu.price}"/>   </div>--%>
-                                <%--                            <c:if test="${user.role eq 'CLIENT'}">--%>
-                                <%--                                <form action="${abs}/controller" method="post">--%>
-                                <%--                                    <input type="hidden" name="command" value="add_meal_to_cart_command">--%>
-                                <%--                                    <input type="hidden" name="selected" value="${order.id}">--%>
-                                <%--                                    <input type="hidden" name="product" value="${current_menu.type.toString()}">--%>
-                                <%--                                    <input type="hidden" name="page" value="${page}">--%>
-                                <%--                                    <div class="product_actions">--%>
-                                <%--                                        <div class="counter">--%>
-                                <%--                                            <div class="counter_btn counter_btn_minus">-</div>--%>
-                                <%--                                            <input type="text" class="counter_number" id="meal_number" name="meal_number" value="1">--%>
-                                <%--                                            <div class="counter_btn counter_btn_plus">+</div>--%>
-                                <%--                                        </div>--%>
-                                <%--                                        <button type="submit" class="btn btn_type_light js_add-to-cart">${to_cart}</button>--%>
-                                <%--                                    </div>--%>
-                                <%--                                </form>--%>
-                                <%--                            </c:if>--%>
 <%--                            <c:if test="${user.role eq 'ADMIN'}">--%>
 <%--                                <form name="UploadPhoto" method="post" action="${absolutePath}/controller" enctype="multipart/form-data">--%>
 <%--                                    <input type="hidden" name="command" value="upload_product_photo">--%>
@@ -404,40 +449,73 @@
                 </div>
             </c:forEach>
         </div>
-        <%--        <div class="container">--%>
-        <%--            <div class="row" style="justify-content: center">--%>
-        <%--                <nav aria-label="Page navigation">--%>
-        <%--                    <ul class="pagination">--%>
-        <%--                        <li class="page-item">--%>
-        <%--                            <c:choose>--%>
-        <%--                                <c:when test="${requestScope.page > 1}">--%>
-        <%--                                    <a class="page-link"--%>
-        <%--                                       href="${pageContext.request.contextPath}/controller?command=show_all_jewelry&page=${requestScope.page-1}"--%>
-        <%--                                       aria-label="Previous">--%>
-        <%--                                        <span aria-hidden="true">&laquo;</span>--%>
-        <%--                                    </a>--%>
-        <%--                                </c:when>--%>
-        <%--                                <c:when test="${requestScope.page < 1}">--%>
-        <%--                                    <a class="page-link"--%>
-        <%--                                       href="#"--%>
-        <%--                                       aria-label="Previous">--%>
-        <%--                                        <span aria-hidden="true">&laquo;</span>--%>
-        <%--                                    </a>--%>
-        <%--                                </c:when>--%>
-        <%--                            </c:choose>--%>
-        <%--                        </li>--%>
-        <%--                        <li class="page-item"><span class="page-link">${requestScope.page}</span></li>--%>
-        <%--                        <li class="page-item">--%>
-        <%--                            <a class="page-link"--%>
-        <%--                               href="${pageContext.request.contextPath}/controller?command=show_all_jewelry&page=${requestScope.page+1}"--%>
-        <%--                               aria-label="Next">--%>
-        <%--                                <span aria-hidden="true">&raquo;</span>--%>
-        <%--                            </a>--%>
-        <%--                        </li>--%>
-        <%--                    </ul>--%>
-        <%--                </nav>--%>
-        <%--            </div>--%>
-        <%--        </div>--%>
+        <div class="container">
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-lg justify-content-center">
+                    <form id="paginationPrevious" action="${absolutePath}/controller">
+                        <input type="hidden" name="command" value="find_all_items">
+                        <c:if test="${not empty param.category_id}">
+                            <input type="hidden" name="category_id" value="${param.category_id}">
+                        </c:if>
+                        <c:if test="${not empty param.sort}">
+                            <input type="hidden" name="sort" value="${param.sort}">
+                        </c:if>
+                        <c:if test="${not empty param.sort_order}">
+                            <input type="hidden" name="sort_order" value="${param.sort_order}">
+                        </c:if>
+                        <input type="hidden" name="page" value="${requestScope.page-1}"/>
+                        <c:choose>
+                            <c:when test="${requestScope.page > 1}">
+                                <li class="page-item">
+                                    <a class="page-link" aria-label="Previous"
+                                       onclick="document.getElementById('paginationPrevious').submit(); return false;">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            </c:otherwise>
+                        </c:choose>
+                    </form>
+                    <li class="page-item"><span class="page-link">${requestScope.page}</span></li>
+                    <form id="paginationNext" action="${absolutePath}/controller">
+                        <input type="hidden" name="command" value="find_all_items">
+                        <c:if test="${not empty param.category_id}">
+                            <input type="hidden" name="category_id" value="${param.category_id}">
+                        </c:if>
+                        <c:if test="${not empty param.sort}">
+                            <input type="hidden" name="sort" value="${param.sort}">
+                        </c:if>
+                        <c:if test="${not empty param.sort_order}">
+                            <input type="hidden" name="sort_order" value="${param.sort_order}">
+                        </c:if>
+                        <input type="hidden" name="page" value="${requestScope.page+1}"/>
+                        <c:choose>
+                            <c:when test="${!empty is_next_page}">
+                                <li class="page-item">
+                                    <a class="page-link" aria-label="Next"
+                                       onclick="document.getElementById('paginationNext').submit(); return false;">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </c:otherwise>
+                        </c:choose>
+                    </form>
+                </ul>
+            </nav>
+        </div>
     </div>
     <div class="text-center">
         <ctg:custom-footer/>

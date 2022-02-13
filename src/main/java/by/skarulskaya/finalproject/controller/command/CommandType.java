@@ -12,6 +12,7 @@ public enum CommandType {
     REGISTRATION(new Registration()),
     FIND_ALL_ITEMS(new FindAllItems()),
     FIND_BY_CATEGORY_ITEMS(new FindByCategoryItems()),
+    SORT_ITEMS(new SortItems()),
     OPEN_ITEM_PAGE(new OpenItemPage()),
     CHANGE_LANGUAGE(new ChangeLanguage());
 

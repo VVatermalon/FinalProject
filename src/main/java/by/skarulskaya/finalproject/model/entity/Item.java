@@ -1,8 +1,21 @@
 package by.skarulskaya.finalproject.model.entity;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 public class Item extends CustomEntity {
+    public enum ItemSortParameter {
+        ITEM_NAME("name"), PRICE("price"), POPULARITY("popularity");
+        private final String name;
+
+        ItemSortParameter(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
     private String name;
     private ItemCategory category;
     private BigDecimal price;

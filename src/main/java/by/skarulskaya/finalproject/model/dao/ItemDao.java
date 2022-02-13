@@ -9,4 +9,6 @@ import java.util.List;
 public abstract class ItemDao extends AbstractDao<Integer, Item> {
     public abstract List<Item> findAllByName(String name) throws DaoException;
     public abstract List<Item> findAllByCategory(Integer id) throws DaoException;
+    public abstract List<Item> findAllByPage(int count, int offset) throws DaoException;
+    public abstract List<Item> findAllByCategoryByPage(Integer id, int count, int offset) throws DaoException;
 }

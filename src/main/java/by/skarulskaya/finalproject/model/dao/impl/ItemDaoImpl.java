@@ -3,11 +3,9 @@ package by.skarulskaya.finalproject.model.dao.impl;
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.model.dao.ItemDao;
 import by.skarulskaya.finalproject.model.entity.Item;
-import by.skarulskaya.finalproject.model.entity.ItemCategory;
-import by.skarulskaya.finalproject.model.entity.User;
+import by.skarulskaya.finalproject.model.entity.SortOrder;
 import by.skarulskaya.finalproject.model.mapper.EntityMapper;
 import by.skarulskaya.finalproject.model.mapper.impl.ItemMapper;
-import by.skarulskaya.finalproject.model.mapper.impl.UserMapper;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,14 +19,89 @@ public class ItemDaoImpl extends ItemDao {
     private static final String SQL_SELECT_ALL_ITEMS = """
         SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
         I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id""";
-    private static final String SQL_FIND_ITEM_BY_ID = """
+    private static final String SQL_SELECT_ITEMS_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_SORT_BY_PRICE_ASC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        ORDER BY I.price
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_SORT_BY_PRICE_DESC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        ORDER BY I.price DESC
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_SORT_BY_NAME_ASC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        ORDER BY I.item_name
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_SORT_BY_NAME_DESC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        ORDER BY I.item_name DESC
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_SORT_BY_POPULARITY_ASC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        ORDER BY I.popularity
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_SORT_BY_POPULARITY_DESC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        ORDER BY I.popularity DESC
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEM_BY_ID = """
         SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
         I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
         WHERE I.item_id = ?""";
-    private static final String SQL_FIND_ITEMS_BY_CATEGORY = """
+    private static final String SQL_SELECT_ITEMS_BY_CATEGORY = """
         SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
         I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
         WHERE I.category_id = ?""";
+    private static final String SQL_SELECT_ITEMS_BY_CATEGORY_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        WHERE I.category_id = ?
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_PRICE_ASC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        WHERE I.category_id = ?
+        ORDER BY I.price
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_PRICE_DESC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        WHERE I.category_id = ?
+        ORDER BY I.price DESC
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_NAME_ASC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        WHERE I.category_id = ?
+        ORDER BY I.item_name
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_NAME_DESC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        WHERE I.category_id = ?
+        ORDER BY I.item_name DESC
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_POPULARITY_ASC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        WHERE I.category_id = ?
+        ORDER BY I.popularity
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_POPULARITY_DESC_LIMIT = """
+        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        WHERE I.category_id = ?
+        ORDER BY I.popularity
+        LIMIT ? OFFSET ?""";
     private static final EntityMapper<Item> mapper = new ItemMapper();
 
     @Override
@@ -46,41 +119,135 @@ public class ItemDaoImpl extends ItemDao {
         }
     }
 
-    @Override
-    public Optional<Item> findEntityById(Integer id) throws DaoException {
-        ResultSet resultSet = null;
-        try(PreparedStatement statement = connection.prepareStatement(SQL_FIND_ITEM_BY_ID)) {
-            statement.setInt(1, id);
-            resultSet = statement.executeQuery();
-            if(resultSet.next()) {
-                Item item = mapper.map(resultSet);
-                return Optional.of(item);
-            }
-            return Optional.empty();
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-        finally {
-            close(resultSet);
-        }
-    }
-    @Override
-    public List<Item> findAllByCategory(Integer id) throws DaoException {
-        ResultSet resultSet = null;
+    public List<Item> findAllByPage(int count, int offset) throws DaoException {
         List<Item> itemList = new ArrayList<>();
-        try(PreparedStatement statement = connection.prepareStatement(SQL_FIND_ITEMS_BY_CATEGORY)) {
-            statement.setInt(1, id);
-            resultSet = statement.executeQuery();
-            while(resultSet.next()) {
-                Item item = mapper.map(resultSet);
-                itemList.add(item);
+        try(PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ITEMS_LIMIT)) {
+            statement.setInt(1, count);
+            statement.setInt(2, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Item item = mapper.map(resultSet);
+                    itemList.add(item);
+                }
             }
             return itemList;
         } catch (SQLException e) {
             throw new DaoException(e);
         }
-        finally {
-            close(resultSet);
+    }
+
+    public List<Item> findAllByPageSort(Item.ItemSortParameter sortParameter, SortOrder order, int count, int offset) throws DaoException {
+        List<Item> itemList = new ArrayList<>();
+        String sql = null;
+        if(order == SortOrder.ASC) {
+            switch (sortParameter) {
+                case PRICE -> sql = SQL_SELECT_ITEMS_SORT_BY_PRICE_ASC_LIMIT;
+                case ITEM_NAME -> sql = SQL_SELECT_ITEMS_SORT_BY_NAME_ASC_LIMIT;
+                case POPULARITY -> sql = SQL_SELECT_ITEMS_SORT_BY_POPULARITY_ASC_LIMIT;
+            }
+        }
+        else {
+            switch (sortParameter) {
+                case PRICE -> sql = SQL_SELECT_ITEMS_SORT_BY_PRICE_DESC_LIMIT;
+                case ITEM_NAME -> sql = SQL_SELECT_ITEMS_SORT_BY_NAME_DESC_LIMIT;
+                case POPULARITY -> sql = SQL_SELECT_ITEMS_SORT_BY_POPULARITY_DESC_LIMIT;
+            }
+        }
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, count);
+            statement.setInt(2, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Item item = mapper.map(resultSet);
+                    itemList.add(item);
+                }
+            }
+            return itemList;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public Optional<Item> findEntityById(Integer id) throws DaoException {
+        try(PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ITEM_BY_ID)) {
+            statement.setInt(1, id);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    Item item = mapper.map(resultSet);
+                    return Optional.of(item);
+                }
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+    @Override
+    public List<Item> findAllByCategory(Integer id) throws DaoException {
+        List<Item> itemList = new ArrayList<>();
+        try(PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ITEMS_BY_CATEGORY)) {
+            statement.setInt(1, id);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Item item = mapper.map(resultSet);
+                    itemList.add(item);
+                }
+            }
+            return itemList;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    public List<Item> findAllByCategoryByPage(Integer id, int count, int offset) throws DaoException {
+        List<Item> itemList = new ArrayList<>();
+        try(PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ITEMS_BY_CATEGORY_LIMIT)) {
+            statement.setInt(1, id);
+            statement.setInt(2, count);
+            statement.setInt(3, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Item item = mapper.map(resultSet);
+                    itemList.add(item);
+                }
+            }
+            return itemList;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    public List<Item> findAllByCategoryByPageSort(Integer id, Item.ItemSortParameter sortParameter, SortOrder order, int count, int offset) throws DaoException {
+        List<Item> itemList = new ArrayList<>();
+        String sql = null;
+        if(order == SortOrder.ASC) {
+            switch (sortParameter) {
+                case PRICE -> sql = SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_PRICE_ASC_LIMIT;
+                case ITEM_NAME -> sql = SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_NAME_ASC_LIMIT;
+                case POPULARITY -> sql = SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_POPULARITY_ASC_LIMIT;
+            }
+        }
+        else {
+            switch (sortParameter) {
+                case PRICE -> sql = SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_PRICE_DESC_LIMIT;
+                case ITEM_NAME -> sql = SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_NAME_DESC_LIMIT;
+                case POPULARITY -> sql = SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_POPULARITY_DESC_LIMIT;
+            }
+        }
+        try(PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            statement.setInt(2, count);
+            statement.setInt(3, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Item item = mapper.map(resultSet);
+                    itemList.add(item);
+                }
+            }
+            return itemList;
+        } catch (SQLException e) {
+            throw new DaoException(e);
         }
     }
 
