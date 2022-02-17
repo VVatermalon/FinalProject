@@ -34,7 +34,7 @@
 - manage items
 - manage categories
 - create administrators
-- block\unblock clients
+- block/unblock customers
 - manage orders
 - update profile
 - change password
