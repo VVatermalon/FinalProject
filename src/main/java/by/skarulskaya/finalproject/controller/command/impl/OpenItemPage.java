@@ -33,6 +33,7 @@ public class OpenItemPage implements Command {
             throw new CommandException(e);
         }
         if (itemOptional.isPresent()) {
+            logger.debug(itemOptional.get().getSizes().size());
             request.setAttribute(ITEM, itemOptional.get());
             router.setCurrentPage(ITEM_PAGE);
         } else {

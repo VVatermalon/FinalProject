@@ -22,31 +22,37 @@ public class SortItems implements Command {
     public Router execute(HttpServletRequest request) throws CommandException {
         Router router = new Router();
         int currentPage = request.getParameter(PAGE) != null ? Integer.parseInt(request.getParameter(PAGE)) : 1; //todo если параметр неправильный
+        int offset = (currentPage - 1) * ITEM_PER_PAGE;
         Item.ItemSortParameter sortParameter = Item.ItemSortParameter.valueOf(request.getParameter(SORT));
         SortOrder sortOrder = SortOrder.valueOf(request.getParameter(SORT_ORDER));
         String category = request.getParameter(CATEGORY_ID);
         List<Item> itemList;
         try {
             if(category == null) {
-                itemList = itemService.findAllByPageSort(sortParameter, sortOrder, ITEM_PER_PAGE, (currentPage - 1) * ITEM_PER_PAGE);
+                itemList = itemService.findAllByPageSort(sortParameter, sortOrder, ITEM_PER_PAGE, offset);
                 if(itemList.size() == ITEM_PER_PAGE) {
                     request.setAttribute(IS_NEXT_PAGE, true);
                 }
                 if(itemList.isEmpty() && currentPage > 1){
                     currentPage--;
-                    itemList = itemService.findAllByPageSort(sortParameter, sortOrder, ITEM_PER_PAGE, (currentPage - 1) * ITEM_PER_PAGE);
+                    offset = (currentPage - 1) * ITEM_PER_PAGE;
+                    itemList = itemService.findAllByPageSort(sortParameter, sortOrder, ITEM_PER_PAGE, offset);
                 }
             }
             else {
                 int categoryId = Integer.parseInt(category);
-                itemList = itemService.findAllByCategoryByPageSort(categoryId, sortParameter, sortOrder, ITEM_PER_PAGE, (currentPage - 1) * ITEM_PER_PAGE);
+                itemList = itemService.findAllByCategoryByPageSort(categoryId, sortParameter, sortOrder, ITEM_PER_PAGE, offset);
                 if(itemList.size() == ITEM_PER_PAGE) {
                     request.setAttribute(IS_NEXT_PAGE, true);
                 }
                 if(itemList.isEmpty() && currentPage > 1){
                     currentPage--;
-                    itemList = itemService.findAllByCategoryByPageSort(categoryId, sortParameter, sortOrder, ITEM_PER_PAGE, (currentPage - 1) * ITEM_PER_PAGE);
+                    offset = (currentPage - 1) * ITEM_PER_PAGE;
+                    itemList = itemService.findAllByCategoryByPageSort(categoryId, sortParameter, sortOrder, ITEM_PER_PAGE, offset);
                 }
+            }
+            if(itemList.isEmpty()) {
+                request.setAttribute(NO_ITEMS, NO_ITEMS);
             }
             request.setAttribute(ITEM_LIST, itemList);
             request.setAttribute(PAGE, currentPage);

@@ -2,6 +2,8 @@ package by.skarulskaya.finalproject.model.entity;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public class Item extends CustomEntity {
     public enum ItemSortParameter {
@@ -16,18 +18,21 @@ public class Item extends CustomEntity {
             return name;
         }
     }
+
     private String name;
-    private ItemCategory category;
+    private List<ItemCategory> categories;
+    private List<ItemSize> sizes;
     private BigDecimal price;
     private int amountInStock;
     private double popularity;
     private String description;
     private String imagePath;
 
-    public Item(String name, ItemCategory category, BigDecimal price, int amountInStock, double popularity,
-                String description, String imagePath) {
+    public Item(String name, List<ItemCategory> categories, List<ItemSize> sizes, BigDecimal price,
+                int amountInStock, double popularity, String description, String imagePath) {
         this.name = name;
-        this.category = category;
+        this.categories = categories;
+        this.sizes = sizes;
         this.price = price;
         this.amountInStock = amountInStock;
         this.popularity = popularity;
@@ -35,11 +40,23 @@ public class Item extends CustomEntity {
         this.imagePath = imagePath;
     }
 
-    public Item(int id, String name, ItemCategory category, BigDecimal price, int amountInStock, double popularity,
+    public Item(int id, String name, List<ItemCategory> categories, List<ItemSize> sizes, BigDecimal price,
+                int amountInStock, double popularity, String description, String imagePath) {
+        super(id);
+        this.name = name;
+        this.categories = categories;
+        this.sizes = sizes;
+        this.price = price;
+        this.amountInStock = amountInStock;
+        this.popularity = popularity;
+        this.description = description;
+        this.imagePath = imagePath;
+    }
+
+    public Item(int id, String name, BigDecimal price, int amountInStock, double popularity,
                 String description, String imagePath) {
         super(id);
         this.name = name;
-        this.category = category;
         this.price = price;
         this.amountInStock = amountInStock;
         this.popularity = popularity;
@@ -55,12 +72,20 @@ public class Item extends CustomEntity {
         this.name = name;
     }
 
-    public ItemCategory getCategory() {
-        return category;
+    public List<ItemCategory> getCategories() {
+        return categories;
     }
 
-    public void setCategory(ItemCategory category) {
-        this.category = category;
+    public void setCategories(List<ItemCategory> categories) {
+        this.categories = categories;
+    }
+
+    public List<ItemSize> getSizes() {
+        return sizes;
+    }
+
+    public void setSizes(List<ItemSize> sizes) {
+        this.sizes = sizes;
     }
 
     public BigDecimal getPrice() {
@@ -108,7 +133,8 @@ public class Item extends CustomEntity {
         final StringBuffer sb = new StringBuffer("Item{");
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
-        sb.append(", category=").append(category);
+        sb.append(", categories=").append(categories);
+        sb.append(", sizes=").append(sizes);
         sb.append(", price=").append(price);
         sb.append(", amountInStock=").append(amountInStock);
         sb.append(", popularity=").append(popularity);
@@ -129,7 +155,8 @@ public class Item extends CustomEntity {
         if (amountInStock != item.amountInStock) return false;
         if (Double.compare(item.popularity, popularity) != 0) return false;
         if (!name.equals(item.name)) return false;
-        if (!category.equals(item.category)) return false;
+        if (!categories.equals(item.categories)) return false;
+        if (!sizes.equals(item.sizes)) return false;
         if (!price.equals(item.price)) return false;
         if (!description.equals(item.description)) return false;
         return imagePath.equals(item.imagePath);
@@ -140,7 +167,8 @@ public class Item extends CustomEntity {
         int result;
         long temp;
         result = name.hashCode();
-        result = 31 * result + category.hashCode();
+        result = 31 * result + categories.hashCode();
+        result = 31 * result + sizes.hashCode();
         result = 31 * result + price.hashCode();
         result = 31 * result + amountInStock;
         temp = Double.doubleToLongBits(popularity);

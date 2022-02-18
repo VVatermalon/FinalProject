@@ -26,6 +26,7 @@ public class Parameters {
     public static final String NOT_UNIQUE_EMAIL = "not_unique_email";
     public static final String NOT_UNIQUE_PHONE = "not_unique_phone";
     public static final String ITEM_LIST = "item_list";
+    public static final String NO_ITEMS = "no_items";
     public static final String OLD_PASSWORD = "old_password";
     public static final String NEW_PASSWORD = "new_password";
     public static final String REPEAT_PASSWORD = "repeat_password";

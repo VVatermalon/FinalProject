@@ -385,14 +385,29 @@
                         <form action="${absolutePath}/controller" method="post">
                             <input type="hidden" name="command" value="add_item_to_cart_command">
                             <input type="hidden" name="selected" value="${order.id}">
-                            <div class="product_actions">
-                                <div class="counter">
-                                    <div class="counter_btn counter_btn_minus btn-secondary">-</div>
-                                    <input type="text" class="counter_number" id="product_number" name="product_number" value="1">
-                                    <div class="counter_btn counter_btn_plus btn-secondary">+</div>
+                            <c:if test="${item.sizes.size() > 1}">
+                                <div class="row">
+                                    <c:forEach items="${item.sizes}" var="size">
+                                        <div class="col">
+                                            <c:choose>
+                                                <c:when test="${size.amount_in_stock > 0}">
+                                                    <input type="radio" name="size" id="size${size.size_name}" value="${size}" checked>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <input type="radio" name="size" id="size${size.size_name}" value="${size}" disabled>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <label for="size${size.size_name}">${size.size_name}</label>
+                                        </div>
+                                    </c:forEach>
                                 </div>
-                                <button type="submit" class="btn btn_type_light js_add-to-cart"><fmt:message key="item.to_cart"/></button>
+                            </c:if>
+                            <div class="counter">
+                                <div class="counter_btn counter_btn_minus btn-secondary">-</div>
+                                <input type="text" class="counter_number" id="product_number" name="product_number" value="1">
+                                <div class="counter_btn counter_btn_plus btn-secondary">+</div>
                             </div>
+                            <button type="submit" class="btn btn_type_light js_add-to-cart"><fmt:message key="item.to_cart"/></button>
                         </form>
                     </c:if>
                     <%--                            <c:if test="${user.role eq 'ADMIN'}">--%>

@@ -31,14 +31,19 @@ public class FindAllItems implements Command {
         }
         Router router = new Router();
         int currentPage = request.getParameter(PAGE) != null ? Integer.parseInt(request.getParameter(PAGE)) : 1; //todo если параметр неправильный
+        int offset = (currentPage - 1) * ITEM_PER_PAGE;
         try {
-            List<Item> itemList = itemService.findAllByPage(ITEM_PER_PAGE, (currentPage - 1) * ITEM_PER_PAGE);
+            List<Item> itemList = itemService.findAllByPage(ITEM_PER_PAGE, offset);
             if(itemList.size() == ITEM_PER_PAGE) {
                 request.setAttribute(IS_NEXT_PAGE, true);
             }
             if(itemList.isEmpty() && currentPage > 1){
                 currentPage--;
-                itemList = itemService.findAllByPage(ITEM_PER_PAGE, (currentPage - 1) * ITEM_PER_PAGE);
+                offset = (currentPage - 1) * ITEM_PER_PAGE;
+                itemList = itemService.findAllByPage(ITEM_PER_PAGE, offset);
+            }
+            if(itemList.isEmpty()) {
+                request.setAttribute(NO_ITEMS, NO_ITEMS);
             }
             request.setAttribute(ITEM_LIST, itemList);
             request.setAttribute(PAGE, currentPage);

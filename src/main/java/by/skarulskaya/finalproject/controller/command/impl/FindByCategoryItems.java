@@ -26,15 +26,20 @@ public class FindByCategoryItems implements Command {
     public Router execute(HttpServletRequest request) throws CommandException {
         Router router = new Router();
         int currentPage = request.getParameter(PAGE) != null ? Integer.parseInt(request.getParameter(PAGE)) : 1;
+        int offset = (currentPage - 1) * ITEM_PER_PAGE;
         int categoryId = Integer.parseInt(request.getParameter(CATEGORY_ID));
         try {
-            List<Item> itemList = itemService.findAllByCategoryByPage(categoryId, ITEM_PER_PAGE, (currentPage - 1) * ITEM_PER_PAGE);
+            List<Item> itemList = itemService.findAllByCategoryByPage(categoryId, ITEM_PER_PAGE, offset);
             if(itemList.size() == ITEM_PER_PAGE) {
                 request.setAttribute(IS_NEXT_PAGE, true);
             }
             if(itemList.isEmpty() && currentPage > 1){
                 currentPage--;
-                itemList = itemService.findAllByCategoryByPage(categoryId, ITEM_PER_PAGE, (currentPage - 1) * ITEM_PER_PAGE);
+                offset = (currentPage - 1) * ITEM_PER_PAGE;
+                itemList = itemService.findAllByCategoryByPage(categoryId, ITEM_PER_PAGE, offset);
+            }
+            if(itemList.isEmpty()) {
+                request.setAttribute(NO_ITEMS, NO_ITEMS);
             }
             request.setAttribute(ITEM_LIST, itemList);
             request.setAttribute(PAGE, currentPage);

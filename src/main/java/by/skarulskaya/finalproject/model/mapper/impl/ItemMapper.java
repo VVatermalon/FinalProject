@@ -13,8 +13,6 @@ import java.sql.SQLException;
 public class ItemMapper implements EntityMapper<Item> {
     private static final String ID_LABEL = "item_id";
     private static final String NAME_LABEL = "item_name";
-    private static final String CATEGORY_LABEL = "category_id";
-    private static final String CATEGORY_NAME_LABEL = "category_name";
     private static final String PRICE_LABEL = "price";
     private static final String AMOUNT_LABEL = "amount_in_stock";
     private static final String POPULARITY_LABEL = "popularity";
@@ -26,15 +24,12 @@ public class ItemMapper implements EntityMapper<Item> {
         try {
             int id = resultSet.getInt(ID_LABEL);
             String name = resultSet.getString(NAME_LABEL);
-            int categoryId = resultSet.getInt(CATEGORY_LABEL);
-            String categoryName = resultSet.getString(CATEGORY_NAME_LABEL);
-            ItemCategory category = new ItemCategory(categoryId, categoryName);
             BigDecimal price = resultSet.getBigDecimal(PRICE_LABEL);
             int amount = resultSet.getInt(AMOUNT_LABEL);
             double popularity = resultSet.getDouble(POPULARITY_LABEL);
             String image = resultSet.getString(IMAGE_LABEL);
             String description = resultSet.getString(DESCRIPTION_LABEL);
-            item = new Item(id, name, category, price, amount, popularity, description, image);
+            item = new Item(id, name, price, amount, popularity, description, image);
         } catch (SQLException e) {
             throw new DaoException(e);
         }

@@ -5,6 +5,7 @@ import by.skarulskaya.finalproject.model.dao.CategoryDao;
 import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.entity.ItemCategory;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,6 +16,10 @@ import java.util.Optional;
 public class CategoryDaoImpl extends CategoryDao {
     private static final String SQL_SELECT_ALL_CATEGORIES = """
         SELECT item_category_id, category_name FROM item_categories""";
+    private static final String SQL_SELECT_ALL_CATEGORIES_FOR_ITEM = """
+            SELECT C.item_category_id, C.category_name FROM items_item_categories IC 
+            JOIN item_categories C on IC.item_category_id = C.item_category_id
+            WHERE IC.item_id = ?""";
     @Override
     public List<ItemCategory> findAll() throws DaoException {
         List<ItemCategory> categoryList = new ArrayList<>();
@@ -27,6 +32,24 @@ public class CategoryDaoImpl extends CategoryDao {
                 categoryList.add(category);
             }
             return categoryList;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    public List<ItemCategory> findAllCategoriesForItem(int itemId) throws DaoException {
+        List<ItemCategory> categoryList = new ArrayList<>();
+        try(PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ALL_CATEGORIES_FOR_ITEM)) {
+            statement.setInt(1, itemId);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    int id = resultSet.getInt(1);
+                    String name = resultSet.getString(2);
+                    ItemCategory category = new ItemCategory(id, name);
+                    categoryList.add(category);
+                }
+                return categoryList;
+            }
         } catch (SQLException e) {
             throw new DaoException(e);
         }

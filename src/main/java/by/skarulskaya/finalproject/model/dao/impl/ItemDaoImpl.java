@@ -17,90 +17,100 @@ import java.util.Optional;
 
 public class ItemDaoImpl extends ItemDao {
     private static final String SQL_SELECT_ALL_ITEMS = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id""";
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, I.image_path, I.description
+        FROM items I JOIN items_item_sizes S ON I.item_id = S.item_id GROUP BY I.item_id""";
     private static final String SQL_SELECT_ITEMS_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, I.image_path, I.description 
+        FROM items I JOIN items_item_sizes S ON I.item_id = S.item_id GROUP BY I.item_id
+        ORDER BY sum(S.amount_in_stock) = 0
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_SORT_BY_PRICE_ASC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        ORDER BY I.price
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, I.image_path, I.description
+        FROM items I JOIN items_item_sizes S ON I.item_id = S.item_id GROUP BY I.item_id
+        ORDER BY sum(S.amount_in_stock) = 0, I.price
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_SORT_BY_PRICE_DESC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        ORDER BY I.price DESC
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, I.image_path, I.description
+        FROM items I JOIN items_item_sizes S ON I.item_id = S.item_id GROUP BY I.item_id
+        ORDER BY sum(S.amount_in_stock) 0 ASC, I.price DESC
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_SORT_BY_NAME_ASC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        ORDER BY I.item_name
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, I.image_path, I.description
+        FROM items I JOIN items_item_sizes S ON I.item_id = S.item_id GROUP BY I.item_id
+        ORDER BY sum(S.amount_in_stock) = 0, I.item_name
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_SORT_BY_NAME_DESC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        ORDER BY I.item_name DESC
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, I.image_path, I.description
+        FROM items I JOIN items_item_sizes S ON I.item_id = S.item_id GROUP BY I.item_id
+        ORDER BY sum(S.amount_in_stock) = 0 ASC, I.item_name DESC
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_SORT_BY_POPULARITY_ASC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        ORDER BY I.popularity
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, I.image_path, I.description
+        FROM items I JOIN items_item_sizes S ON I.item_id = S.item_id GROUP BY I.item_id
+        ORDER BY sum(S.amount_in_stock) = 0, I.popularity
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_SORT_BY_POPULARITY_DESC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        ORDER BY I.popularity DESC
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, I.image_path, I.description
+        FROM items I JOIN items_item_sizes S ON I.item_id = S.item_id GROUP BY I.item_id
+        ORDER BY sum(S.amount_in_stock) = 0 ASC, I.popularity DESC
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEM_BY_ID = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        WHERE I.item_id = ?""";
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, I.image_path, I.description
+        FROM items I JOIN items_item_sizes S ON I.item_id = S.item_id 
+        WHERE I.item_id = ? GROUP BY I.item_id""";
     private static final String SQL_SELECT_ITEMS_BY_CATEGORY = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        WHERE I.category_id = ?""";
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I
+        JOIN items_item_categories IC ON I.item_id = IC.item_id
+        JOIN items_item_sizes S ON I.item_id = S.item_id
+        WHERE IC.item_category_id = ? GROUP BY I.item_id""";
     private static final String SQL_SELECT_ITEMS_BY_CATEGORY_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        WHERE I.category_id = ?
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I
+        JOIN items_item_categories IC ON I.item_id = IC.item_id
+        JOIN items_item_sizes S ON I.item_id = S.item_id WHERE IC.item_category_id = ? GROUP BY I.item_id
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_PRICE_ASC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        WHERE I.category_id = ?
-        ORDER BY I.price
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I
+        JOIN items_item_categories IC on I.item_id = IC.item_id
+        JOIN items_item_sizes S on I.item_id = S.item_id
+        WHERE IC.item_category_id = ? group by I.item_id ORDER BY I.price
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_PRICE_DESC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        WHERE I.category_id = ?
-        ORDER BY I.price DESC
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I
+        JOIN items_item_categories IC on I.item_id = IC.item_id
+        JOIN items_item_sizes S on I.item_id = S.item_id
+        WHERE IC.item_category_id = ? group by I.item_id ORDER BY I.price DESC
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_NAME_ASC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        WHERE I.category_id = ?
-        ORDER BY I.item_name
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I
+        JOIN items_item_categories IC on I.item_id = IC.item_id
+        JOIN items_item_sizes S on I.item_id = S.item_id
+        WHERE IC.item_category_id = ? group by I.item_id ORDER BY I.item_name
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_NAME_DESC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        WHERE I.category_id = ?
-        ORDER BY I.item_name DESC
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I
+        JOIN items_item_categories IC on I.item_id = IC.item_id
+        JOIN items_item_sizes S on I.item_id = S.item_id
+        WHERE IC.item_category_id = ? group by I.item_id ORDER BY I.item_name DESC
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_POPULARITY_ASC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        WHERE I.category_id = ?
-        ORDER BY I.popularity
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I
+        JOIN items_item_categories IC on I.item_id = IC.item_id
+        JOIN items_item_sizes S on I.item_id = S.item_id
+        WHERE IC.item_category_id = ? group by I.item_id ORDER BY I.popularity
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_BY_CATEGORY_SORT_BY_POPULARITY_DESC_LIMIT = """
-        SELECT I.item_id, I.item_name, I.category_id, C.category_name, I.price, I.amount_in_stock, I.popularity, 
-        I.image_path, I.description FROM items I JOIN item_categories C on I.category_id = C.item_category_id
-        WHERE I.category_id = ?
-        ORDER BY I.popularity
+        SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, 
+        I.image_path, I.description FROM items I
+        JOIN items_item_categories IC on I.item_id = IC.item_id
+        JOIN items_item_sizes S on I.item_id = S.item_id
+        WHERE IC.item_category_id = ? group by I.item_id ORDER BY I.popularity
         LIMIT ? OFFSET ?""";
     private static final EntityMapper<Item> mapper = new ItemMapper();
 
@@ -132,6 +142,7 @@ public class ItemDaoImpl extends ItemDao {
             }
             return itemList;
         } catch (SQLException e) {
+            logger.debug("From findAll items");
             throw new DaoException(e);
         }
     }
