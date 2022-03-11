@@ -137,12 +137,7 @@
             </div>
             <div class="row mt-2 justify-content-end">
                 <div class="col col-auto">
-                    <c:if test="${!empty customer}">
-                        <a href="${absolutePath}/jsp/pages/checkOutOrder.jsp" role="button" class="btn btn-info"><fmt:message key="cart.check_out"/></a>
-                    </c:if>
-                    <c:if test="${empty customer}">
-                        <a href="${absolutePath}/jsp/pages/signIn.jsp" role="button" class="btn btn-info"><fmt:message key="cart.check_out"/></a>
-                    </c:if>
+                    <a href="${absolutePath}/jsp/pages/checkOutOrder.jsp" role="button" class="btn btn-info"><fmt:message key="cart.check_out"/></a>
                 </div>
             </div>
         </div>

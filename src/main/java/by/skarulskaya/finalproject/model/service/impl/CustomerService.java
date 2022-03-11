@@ -8,7 +8,6 @@ import by.skarulskaya.finalproject.model.dao.impl.CustomerDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.UserDaoImpl;
 import by.skarulskaya.finalproject.model.entity.Customer;
 import by.skarulskaya.finalproject.model.entity.User;
-import by.skarulskaya.finalproject.model.service.BaseService;
 import by.skarulskaya.finalproject.util.encryptor.PasswordEncryptor;
 import by.skarulskaya.finalproject.util.mail.MailSender;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
@@ -26,7 +25,7 @@ public class CustomerService {
         return INSTANCE;
     }
 
-    public Optional<Customer> signIn(int id) throws ServiceException {
+    public Optional<Customer> findCustomerById(int id) throws ServiceException {
         CustomerDao customerDao = new CustomerDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(customerDao);
@@ -36,9 +35,9 @@ public class CustomerService {
         }
     }
 
-    public boolean registerCustomer(Map<String, String> mapData) throws ServiceException {
+    public int registerCustomer(Map<String, String> mapData) throws ServiceException {
         if(!BaseValidatorImpl.INSTANCE.validateRegistration(mapData)) {
-            return false;
+            return -1;
         }
         String email = mapData.get(USER_EMAIL);
         String password = mapData.get(USER_PASSWORD);
@@ -52,24 +51,49 @@ public class CustomerService {
             transaction.beginTransaction(userDao, customerDao);
             if(userDao.findUserByEmail(email)) {
                 mapData.put(USER_EMAIL, NOT_UNIQUE_EMAIL);
-                return false;
+                return -1;
             }
             if(customerDao.findCustomerByPhone(phoneNumber)) {
                 mapData.put(USER_PHONE_NUMBER, NOT_UNIQUE_PHONE);
-                return false;
+                return -1;
             }
             try {
                 sendMessageRegistration(email);
             } catch(ServiceException e) {
-                mapData.put(USER_EMAIL, WRONG_EMAIL); //todo подтверждение почти через ввод числа
-                return false;
+                mapData.put(USER_EMAIL, WRONG_EMAIL); //todo подтверждение почты через ввод сгенерированной последовательности, храним их в бд и периодически чистим
+                return -1;
             }
             Customer customer = new Customer(BigDecimal.ZERO, phoneNumber, Optional.empty(), email, password, name, surname, User.Role.CUSTOMER, User.Status.IN_REGISTRATION_PROCESS);
             //todo после отправки письма статус другой
             userDao.create(customer);
             customerDao.create(customer);
             transaction.commit();
-            return true;
+            return customer.getId();
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    public Customer addMoneyToAccount(int money, int customerId) throws ServiceException {
+        Optional<Customer> customerOpt = findCustomerById(customerId);
+        if(customerOpt.isEmpty()) {
+            throw new ServiceException("Can't find customer by id = " + customerId);
+        }
+        Customer customer = customerOpt.get();
+        BigDecimal bankAccount = customer.getBankAccount();
+        if(bankAccount.compareTo(BigDecimal.valueOf(1000)) > 0) {
+            return customer;
+        }
+        BigDecimal newBankAccount = bankAccount.add(BigDecimal.valueOf(money));
+        newBankAccount = newBankAccount.min(BigDecimal.valueOf(1000));
+        CustomerDao customerDao = new CustomerDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(customerDao);
+            if(customerDao.updateBankAccount(newBankAccount, customerId)) {
+                customer.setBankAccount(newBankAccount);
+                return customer;
+            }
+            return customer;
         } catch (DaoException e) {
             throw new ServiceException(e);
         }

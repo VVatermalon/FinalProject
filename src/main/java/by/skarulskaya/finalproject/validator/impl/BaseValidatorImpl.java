@@ -1,20 +1,26 @@
 package by.skarulskaya.finalproject.validator.impl;
 
+import by.skarulskaya.finalproject.model.entity.Address;
 import by.skarulskaya.finalproject.validator.BaseValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Locale;
 import java.util.Map;
 
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 
 public enum BaseValidatorImpl implements BaseValidator {
     INSTANCE;
+    private static final Logger logger = LogManager.getLogger();
     private static final String USER_NAME_PATTERN = "^[A-Za-zА-Яа-я]{3,50}$";
     private static final String USER_PASSWORD_PATTERN = "^[A-Za-zА-Яа-я0-9._*]{5,40}$";
     private static final String USER_EMAIL_PATTERN = "^[a-z0-9._]{1,25}@[a-z]{2,7}\\.[a-z]{2,4}$";
     private static final String USER_PHONE_NUMBER_PATTERN = "\\+375(29|25|44|33)\\d{7}";
-private static final Logger logger = LogManager.getLogger();
+    private static final String ADDRESS_CITY_PATTERN = "^[A-Za-zА-Яа-я\\-]{2,20}$";
+    private static final String ADDRESS_ADDRESS_PATTERN = "^[\\wА-Яа-я\\h\\.,/]{5,50}$";
+    private static final String ADDRESS_APARTMENT_PATTERN = "^(\\d{1,5}|\\d{1,4}[A-Za-zА-Яа-я])$";
+    private static final String ADDRESS_POSTAL_CODE_PATTERN = "^[\\dA-Za-z]{3,10}$";
 
     @Override
     public boolean validateEmail(String email) {
@@ -75,5 +81,67 @@ private static final Logger logger = LogManager.getLogger();
     @Override
     public boolean validateSignIn(String email, String password) {
         return validateEmail(email) && validatePassword(password);
+    }
+
+    @Override
+    public boolean validateCountry(String country) {
+        try {
+            Address.AVAILABLE_COUNTRIES.valueOf(country.toUpperCase());
+            return true;
+        }
+        catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean validateCity(String city) {
+        return city != null && !city.isBlank() && city.matches(ADDRESS_CITY_PATTERN);
+    }
+
+    @Override
+    public boolean validateAddress(String address) {
+        return address != null && !address.isBlank() && address.matches(ADDRESS_ADDRESS_PATTERN);
+    }
+
+    @Override
+    public boolean validateApartment(String apartment) {
+        return apartment == null || apartment.isBlank() || apartment.matches(ADDRESS_APARTMENT_PATTERN);
+    }
+
+    @Override
+    public boolean validatePostalCode(String postalCode) {
+        return postalCode != null && !postalCode.isBlank() && postalCode.matches(ADDRESS_POSTAL_CODE_PATTERN);
+    }
+
+    @Override
+    public boolean validateAddress(Map<String, String> map) {
+        boolean result = true;
+        String country = map.get(COUNTRY);
+        String city = map.get(CITY);
+        String address = map.get(ADDRESS);
+        String apartment = map.get(APARTMENT);
+        String postalCode = map.get(POSTAL_CODE);
+        if(!validateCountry(country)){
+            map.put(COUNTRY, INVALID_COUNTRY);
+            result = false;
+        }
+        if(!validateCity(city)){
+            map.put(CITY,INVALID_CITY);
+            result = false;
+        }
+        if(!validateAddress(address)){
+            map.put(ADDRESS,INVALID_ADDRESS);
+            result = false;
+        }
+        if(!validateApartment(apartment)){
+            map.put(APARTMENT,INVALID_APARTMENT);
+            result = false;
+        }
+        if(!validatePostalCode(postalCode)){
+            map.put(POSTAL_CODE,INVALID_POSTAL_CODE);
+            result = false;
+        }
+        return result;
     }
 }

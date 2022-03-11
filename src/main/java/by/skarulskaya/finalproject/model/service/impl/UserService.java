@@ -39,6 +39,17 @@ public class UserService implements BaseService {
         }
     }
 
+    @Override
+    public Optional<User> findUserById(int id) throws ServiceException {
+        UserDaoImpl userDao = new UserDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(userDao);
+            return userDao.findEntityById(id);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
 //    @Override
 //    public boolean registerUser(Map<String, String> mapData) throws ServiceException {
 //        if(!BaseValidatorImpl.INSTANCE.validateRegistration(mapData)) {

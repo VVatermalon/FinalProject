@@ -95,7 +95,7 @@
                 <label class="form-label">${email}</label>
                 <input type="text" name="user_email" class="form-control form-control-sm" placeholder="${enter_email}" pattern="^[A-Za-z0-9\._]{1,25}@[a-z]{2,7}\.[a-z]{2,4}$">
                 <div class="invalid-feedback">
-                    <fmt:message key="registration.invalid_mail"/>
+                    <fmt:message key="registration.invalid_email"/>
                 </div>
             </div>
             </br>
@@ -116,7 +116,7 @@
                     <fmt:message key="${user_status_blocked}"/>
                 </div>
             </c:if>
-            </br>
+            <br/>
             <div class="text-center">
                 <button type="submit" class="btn btn-primary">${sign_in}</button>
             </div>

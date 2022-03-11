@@ -8,13 +8,16 @@ public class PagesPaths {
     public static final String ERROR_500 = "/jsp/error/error500.jsp";
     public static final String CATALOG_PAGE = "/jsp/pages/catalog.jsp";
     public static final String ITEM_PAGE = "/jsp/pages/item.jsp";
+    public static final String CART_PAGE = "jsp/pages/cart.jsp";
     public static final String ADD_MENU_PAGE = "/jsp/pages/admin/addproducts.jsp";
     public static final String SETTINGS_PAGE = "/jsp/pages/common/settings.jsp";
     public static final String SIGN_IN_PAGE = "/jsp/pages/signIn.jsp";
     public static final String REGISTRATION_PAGE = "/jsp/pages/registration.jsp";
     public static final String USERS_PAGE = "/jsp/pages/admin/users.jsp";
     public static final String PROFILE_PAGE = "jsp/pages/common/profile.jsp";
-    public static final String DISCOUNT_PAGE = "/jsp/pages/client/discount.jsp";
+    public static final String BANK_ACCOUNT_PAGE = "/jsp/pages/bankAccount.jsp";
+    public static final String CHECK_OUT_ORDER_PAGE = "/jsp/pages/checkOutOrder.jsp";
+    public static final String PAYMENT_PAGE = "/jsp/pages/payment.jsp";
 
     private PagesPaths(){}
 }

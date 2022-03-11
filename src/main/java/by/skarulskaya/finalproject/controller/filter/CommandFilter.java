@@ -27,7 +27,6 @@ public class CommandFilter implements Filter {
         HttpSession session = request.getSession();
         String command = request.getParameter(COMMAND);
         if (command == null){
-            logger.debug("command = " + command);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             //request.getRequestDispatcher(ERROR_404).forward(request,response);
             return;
@@ -56,13 +55,11 @@ public class CommandFilter implements Filter {
         boolean isCorrect = Arrays.stream(CommandType.values())
                 .anyMatch(commandType -> command.equalsIgnoreCase(commandType.toString()));
         if(!isCorrect) {
-            logger.debug("404 command = " + command);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             //request.getRequestDispatcher(ERROR_404).forward(httpServletRequest,httpServletResponse);
             return;
         }
         if(commands.contains(command.toUpperCase())){
-            logger.debug("403 command = " + command);
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }

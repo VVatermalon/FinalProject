@@ -18,7 +18,11 @@
 <html>
 <head>
     <title><fmt:message key="title.shop"/> </title>
-    <script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
         function disableBack() {
             window.history.forward();
         }
@@ -31,7 +35,7 @@
         $(document).ready(function() {
             $('.counter_btn_minus').click(function () {
                 var $input = $(this).parent().find('input');
-                var count = parseInt($input.val()) - 1;
+                let count = parseInt($input.val()) - 1;
                 count = count < 1 ? 1 : count;
                 $input.val(count);
                 $input.change();
@@ -39,7 +43,9 @@
             });
             $('.counter_btn_plus').click(function () {
                 var $input = $(this).parent().find('input');
-                $input.val(parseInt($input.val()) + 1);
+                let count = parseInt($input.val()) + 1;
+                count = count > 50 ? 50 : count;
+                $input.val(count);
                 $input.change();
                 return false;
             });
@@ -354,13 +360,6 @@
             left: 40%;
         }
     </style>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <%--    <link rel="stylesheet" href="${absolutePath}/CSS/styles.css">--%>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-
 </head>
 <body>
 <div class="page">
@@ -380,34 +379,59 @@
                     <div class="product_header">
                         <div class="product_title">${item.name}</div>
                     </div>
-                    <div class="product_price "><strong id="price"> <fmt:message key="menu.product_money"/> ${item.price}</strong> </div>
+                    <div class="product_price"><strong id="price"> <fmt:message key="menu.product_money"/> ${item.price}</strong> </div>
                     <c:if test="${user.role ne 'ADMIN'}">
                         <form action="${absolutePath}/controller" method="post">
-                            <input type="hidden" name="command" value="add_item_to_cart_command">
-                            <input type="hidden" name="selected" value="${order.id}">
+                            <input type="hidden" name="command" value="add_item_to_cart">
+                            <input type="hidden" name="item_id" value="${item.id}">
                             <c:if test="${item.sizes.size() > 1}">
+                                <label><fmt:message key="item.size"/></label>
                                 <div class="row">
                                     <c:forEach items="${item.sizes}" var="size">
                                         <div class="col">
                                             <c:choose>
-                                                <c:when test="${size.amount_in_stock > 0}">
-                                                    <input type="radio" name="size" id="size${size.size_name}" value="${size}" checked>
+                                                <c:when test="${size.amountInStock > 0}">
+                                                    <c:choose>
+                                                        <c:when test="${!empty param.size_id && size.id eq param.size_id}">
+                                                            <input type="radio" name="size_id" id="size${size.sizeName}" value="${size.id}" checked>
+                                                        </c:when>
+                                                        <c:when test="${empty param.size_id}">
+                                                            <input type="radio" name="size_id" id="size${size.sizeName}" value="${size.id}" checked>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <input type="radio" name="size_id" id="size${size.sizeName}" value="${size.id}">
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <input type="radio" name="size" id="size${size.size_name}" value="${size}" disabled>
+                                                    <input type="radio" name="size_id" id="size${size.sizeName}" value="${size.id}" disabled>
                                                 </c:otherwise>
                                             </c:choose>
-                                            <label for="size${size.size_name}">${size.size_name}</label>
+                                            <label for="size${size.sizeName}">${size.sizeName}</label>
                                         </div>
                                     </c:forEach>
                                 </div>
                             </c:if>
                             <div class="counter">
                                 <div class="counter_btn counter_btn_minus btn-secondary">-</div>
-                                <input type="text" class="counter_number" id="product_number" name="product_number" value="1">
+                                <input type="text" class="counter_number" id="product_number" name="amount" max="50" readonly value="${empty param.amount ? 1 : param.amount}">
                                 <div class="counter_btn counter_btn_plus btn-secondary">+</div>
                             </div>
-                            <button type="submit" class="btn btn_type_light js_add-to-cart"><fmt:message key="item.to_cart"/></button>
+                            <div class="text-start">
+                                <c:choose>
+                                    <c:when test="${not empty customer}">
+                                        <button type="submit" class="btn btn_type_light"><fmt:message key="item.to_cart"/></button>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="${absolutePath}/jsp/pages/signIn.jsp" role="button" class="btn btn-info"><fmt:message key="item.to_cart"/></a>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                            <c:if test="${!empty param.error_cannot_add_item_to_cart}">
+                                <div class="invalid-feedback-backend" style="color: red">
+                                    <fmt:message key="${param.error_cannot_add_item_to_cart}"/>
+                                </div>
+                            </c:if>
                         </form>
                     </c:if>
                     <%--                            <c:if test="${user.role eq 'ADMIN'}">--%>
@@ -422,7 +446,7 @@
                     <%--                                    <button type="submit" class="btn btn-primary btn-sm"><fmt:message key="menu.insert_menu"/></button>--%>
                     <%--                                </form>--%>
                     <%--                            </c:if>--%>
-                    <div class="item_description text-left" style="white-space: pre-line">${item.description}</div>
+                    <div class="item_description text-start" style="white-space: pre-line">${item.description}</div>
                 </div>
             </div>
         </div>

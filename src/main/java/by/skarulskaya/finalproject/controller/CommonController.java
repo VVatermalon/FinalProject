@@ -37,15 +37,12 @@ public class CommonController extends HttpServlet {
         logger.debug(commandName);
         try {
             Command command = CommandType.provideCommand(commandName);
-            logger.info(command);
             Router router;
-            router = command.execute(req);
+            router = command.execute(req, resp);
             String page = router.getCurrentPage();
             if (router.getCurrentType() == Router.Type.FORWARD) {
-                logger.debug("forward");
                 req.getRequestDispatcher(page).forward(req, resp);
             } else {
-                logger.debug("redirect");
                 resp.sendRedirect(page);
             }
         } catch (CommandException e) { //todo добавить описание ошибки, плюс еще какие ошибки могут быть

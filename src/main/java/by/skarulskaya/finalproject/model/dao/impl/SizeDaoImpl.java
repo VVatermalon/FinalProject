@@ -17,6 +17,8 @@ public class SizeDaoImpl extends SizeDao {
             SELECT S.item_size_id, S.item_size_name, ItemS.amount_in_stock FROM items_item_sizes ItemS 
             JOIN item_sizes S on ItemS.item_size_id = S.item_size_id
             WHERE ItemS.item_id = ?""";
+    private static final String SQL_SELECT_SIZE_BY_ID = """
+            SELECT item_size_id, item_size_name FROM item_sizes where item_size_id = ?""";
     @Override
     public List<ItemSize> findAllSizesForItem(int itemId) throws DaoException {
         List<ItemSize> sizeList = new ArrayList<>();
@@ -44,8 +46,21 @@ public class SizeDaoImpl extends SizeDao {
     }
 
     @Override
-    public Optional<ItemSize> findEntityById(Integer id) throws DaoException {
-        throw new UnsupportedOperationException();
+    public Optional<ItemSize> findEntityById(Integer sizeId) throws DaoException {
+        try(PreparedStatement statement = connection.prepareStatement(SQL_SELECT_SIZE_BY_ID)) {
+            statement.setInt(1, sizeId);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int id = resultSet.getInt(1);
+                    String name = resultSet.getString(2);
+                    return Optional.of(new ItemSize(id, name));
+                }
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            logger.info("from sizeDao");
+            throw new DaoException(e);
+        }
     }
 
     @Override

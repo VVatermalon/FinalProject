@@ -420,7 +420,7 @@
     </div>
     <div class="box box_padding catalog-wrapp catalog-body">
         <c:choose>
-            <c:when test="${not empty no_items}">
+            <c:when test="${item_list.isEmpty() eq 'true'}">
                 <div class="product_title"><fmt:message key="catalog.no_items"/></div>
             </c:when>
             <c:otherwise>
@@ -439,7 +439,7 @@
                                     </div>
                                 </a>
                                 <div class="">
-                                    <div class="product_price "><strong id="price"> <fmt:message key="menu.product_money"/> ${item.price}</strong> </div>
+                                    <div class="product_price "><strong id="price"> <fmt:message key="menu.product_money"/>${item.price}</strong> </div>
                                         <%--                            <c:if test="${user.role eq 'ADMIN'}">--%>
                                         <%--                                <form name="UploadPhoto" method="post" action="${absolutePath}/controller" enctype="multipart/form-data">--%>
                                         <%--                                    <input type="hidden" name="command" value="upload_product_photo">--%>

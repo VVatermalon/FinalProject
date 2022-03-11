@@ -1,4 +1,4 @@
-package by.skarulskaya.finalproject.controller.command.impl;
+package by.skarulskaya.finalproject.controller.command.impl.common;
 
 import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
@@ -9,6 +9,7 @@ import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.entity.SortOrder;
 import by.skarulskaya.finalproject.model.service.impl.ItemService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class SortItems implements Command {
     private static final int ITEM_PER_PAGE = 6;
     private static final ItemService itemService = ItemService.getInstance();
     @Override
-    public Router execute(HttpServletRequest request) throws CommandException {
+    public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         Router router = new Router();
         int currentPage = request.getParameter(PAGE) != null ? Integer.parseInt(request.getParameter(PAGE)) : 1; //todo если параметр неправильный
         int offset = (currentPage - 1) * ITEM_PER_PAGE;
@@ -51,12 +52,8 @@ public class SortItems implements Command {
                     itemList = itemService.findAllByCategoryByPageSort(categoryId, sortParameter, sortOrder, ITEM_PER_PAGE, offset);
                 }
             }
-            if(itemList.isEmpty()) {
-                request.setAttribute(NO_ITEMS, NO_ITEMS);
-            }
             request.setAttribute(ITEM_LIST, itemList);
             request.setAttribute(PAGE, currentPage);
-            //request.setAttribute(CATEGORY_ID, categoryId);
             router.setCurrentPage(CATALOG_PAGE);
         } catch (ServiceException e) {
             throw new CommandException(e);

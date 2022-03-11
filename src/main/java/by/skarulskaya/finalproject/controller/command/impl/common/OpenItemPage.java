@@ -1,4 +1,4 @@
-package by.skarulskaya.finalproject.controller.command.impl;
+package by.skarulskaya.finalproject.controller.command.impl.common;
 
 import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
@@ -7,6 +7,7 @@ import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.service.impl.ItemService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +23,7 @@ public class OpenItemPage implements Command {
     private static final ItemService itemService = ItemService.getInstance();
 
     @Override
-    public Router execute(HttpServletRequest request) throws CommandException {
+    public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         Router router = new Router();
         int id = Integer.parseInt(request.getParameter(ID));
         logger.info("Find item id = "+id);
@@ -33,7 +34,6 @@ public class OpenItemPage implements Command {
             throw new CommandException(e);
         }
         if (itemOptional.isPresent()) {
-            logger.debug(itemOptional.get().getSizes().size());
             request.setAttribute(ITEM, itemOptional.get());
             router.setCurrentPage(ITEM_PAGE);
         } else {

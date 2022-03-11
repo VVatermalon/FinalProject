@@ -28,18 +28,12 @@ public class PageFilter implements Filter {
         User.Role role = User.Role.GUEST;
         User user = (User) session.getAttribute(USER);
         Customer customer = (Customer) session.getAttribute(CUSTOMER);
-        if(user == null && customer == null) {
-            user = new User();
-            user.setRole(User.Role.GUEST);
-            session.setAttribute(USER, user);
-        }
         if(user != null){
             role = user.getRole();
         }
         if(customer != null) {
             role  = customer.getRole();
         }
-        logger.debug(role);
         boolean isIncorrect;
         Set<String> pages;
         switch (role){
@@ -56,7 +50,6 @@ public class PageFilter implements Filter {
                 isIncorrect = pages.stream().anyMatch(requestURI::contains);
             }
         }
-        logger.debug(isIncorrect);
         if(isIncorrect) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;

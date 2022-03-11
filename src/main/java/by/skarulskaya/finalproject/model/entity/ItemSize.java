@@ -1,42 +1,47 @@
 package by.skarulskaya.finalproject.model.entity;
 
 public class ItemSize extends CustomEntity{
-    private String size_name;
-    private int amount_in_stock;
+    private String sizeName;
+    private int amountInStock;
 
-    public ItemSize(String size_name, int amount_in_stock) {
-        this.size_name = size_name;
-        this.amount_in_stock = amount_in_stock;
+    public ItemSize(String sizeName, int amountInStock) {
+        this.sizeName = sizeName;
+        this.amountInStock = amountInStock;
     }
 
-    public ItemSize(int id, String size_name, int amount_in_stock) {
+    public ItemSize(int id, String sizeName) {
         super(id);
-        this.size_name = size_name;
-        this.amount_in_stock = amount_in_stock;
+        this.sizeName = sizeName;
     }
 
-    public String getSize_name() {
-        return size_name;
+    public ItemSize(int id, String sizeName, int amountInStock) {
+        super(id);
+        this.sizeName = sizeName;
+        this.amountInStock = amountInStock;
     }
 
-    public void setSize_name(String size_name) {
-        this.size_name = size_name;
+    public String getSizeName() {
+        return sizeName;
     }
 
-    public int getAmount_in_stock() {
-        return amount_in_stock;
+    public void setSizeName(String sizeName) {
+        this.sizeName = sizeName;
     }
 
-    public void setAmount_in_stock(int amount_in_stock) {
-        this.amount_in_stock = amount_in_stock;
+    public int getAmountInStock() {
+        return amountInStock;
+    }
+
+    public void setAmountInStock(int amountInStock) {
+        this.amountInStock = amountInStock;
     }
 
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("ItemSize{");
         sb.append("id=").append(id);
-        sb.append(", size_name='").append(size_name).append('\'');
-        sb.append(", count=").append(amount_in_stock);
+        sb.append(", size_name='").append(sizeName).append('\'');
+        sb.append(", count=").append(amountInStock);
         sb.append('}');
         return sb.toString();
     }
@@ -49,14 +54,14 @@ public class ItemSize extends CustomEntity{
 
         ItemSize itemSize = (ItemSize) o;
 
-        if (amount_in_stock != itemSize.amount_in_stock) return false;
-        return size_name.equals(itemSize.size_name);
+        if (amountInStock != itemSize.amountInStock) return false;
+        return sizeName.equals(itemSize.sizeName);
     }
 
     @Override
     public int hashCode() {
-        int result = size_name.hashCode();
-        result = 31 * result + amount_in_stock;
+        int result = sizeName.hashCode();
+        result = 31 * result + amountInStock;
         return result;
     }
 }

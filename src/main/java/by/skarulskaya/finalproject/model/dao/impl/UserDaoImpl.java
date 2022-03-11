@@ -163,8 +163,7 @@ public class UserDaoImpl extends UserDao {
             statement.setString(5, entity.getRole().name());
             statement.setString(6, entity.getStatus().name());
             statement.setInt(7, entity.getId());
-            int result = statement.executeUpdate();
-            return result == 1;
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error(e);
             throw new DaoException(e);

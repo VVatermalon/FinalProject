@@ -20,6 +20,12 @@
 <fmt:message var="e_address" key="input.placeholder.address"/>
 <fmt:message var="e_apartment" key="input.placeholder.apartment"/>
 <fmt:message var="e_postal_code" key="input.placeholder.postal_code"/>
+<c:set var="defaultFullAddress" scope="page" value="${customer.defaultAddress.isPresent() eq 'true' ? customer.defaultAddress.get() : null}"/>
+<c:set var="defaultCountry" scope="page" value="${defaultFullAddress != null ? defaultFullAddress.country.toString() : null}"/>
+<c:set var="defaultCity" scope="page" value="${defaultFullAddress != null ? defaultFullAddress.city : null}"/>
+<c:set var="defaultAddress" scope="page" value="${defaultFullAddress != null ? defaultFullAddress.address : null}"/>
+<c:set var="defaultApartment" scope="page" value="${defaultFullAddress != null ? (defaultFullAddress.apartment.isPresent() ? defaultFullAddress.apartment.get() : null) : null}"/>
+<c:set var="defaultPostalCode" scope="page" value="${defaultFullAddress != null ? defaultFullAddress.postalCode : null}"/>
 <html>
 <head>
     <title>CHECKOUT</title>
@@ -53,7 +59,14 @@
 <%--                    <input name="country" required class="form-control" list="datalistOptions" placeholder="${e_country}">--%>
                     <select class="form-select" name="country" required>
                         <c:forEach items="${applicationScope.country_list}" var="country">
-                            <option value="${country}"><fmt:message key="country.${country}"/></option>
+                            <c:choose>
+                                <c:when test="${!empty address_data_map ? address_data_map.country eq country : defaultCountry eq country}">
+                                    <option value="${country}" selected><fmt:message key="country.${country}"/></option>
+                                </c:when>
+                                <c:otherwise>
+                                    <option value="${country}"><fmt:message key="country.${country}"/></option>
+                                </c:otherwise>
+                            </c:choose>
                         </c:forEach>
                     </select>
                     <c:if test="${!empty invalid_country}">
@@ -67,7 +80,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label"><fmt:message key="order.label.city"/></label>
-                    <input type="text" name="city" value="${data_map.city}" class="form-control" placeholder="${e_city}" required pattern="^[A-Za-zА-Яа-я\-]{2,20}$">
+                    <input type="text" name="city" value="${!empty address_data_map ? address_data_map.city : defaultCity}" class="form-control" placeholder="${e_city}" required pattern="^[A-Za-zА-Яа-я\-]{2,20}$">
                     <div class="form-text"><fmt:message key="order.correct_city"/></div>
                     <c:if test="${!empty invalid_city}">
                         <div class="invalid-feedback-backend" style="color: red">
@@ -80,7 +93,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label"><fmt:message key="order.label.address"/></label>
-                    <input type="text" name="address" value="${data_map.address}" class="form-control" placeholder="${e_address}" required pattern="^[\wА-Яа-я\h\.,/]{5,50}$">
+                    <input type="text" name="address" value="${!empty address_data_map ? address_data_map.address : defaultAddress}" class="form-control" placeholder="${e_address}" required pattern="^[\wА-Яа-я\h\.,/]{5,50}$">
                     <div class="form-text"><fmt:message key="order.correct_address"/></div>
                     <c:if test="${!empty invalid_address}">
                         <div class="invalid-feedback-backend" style="color: red">
@@ -93,7 +106,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label"><fmt:message key="order.label.apartment"/></label>
-                    <input type="text" name="apartment" value="${data_map.apartment}" class="form-control" placeholder="${e_apartment}" pattern="^[\dA-Za-zА-Яа-я]{1,5}$">
+                    <input type="text" name="apartment" value="${!empty address_data_map ? address_data_map.apartment : defaultApartment}" class="form-control" placeholder="${e_apartment}" pattern="^(\d{1,5}|\d{1,4}[A-Za-zА-Яа-я])$">
                     <div class="form-text"><fmt:message key="order.correct_apartment"/></div>
                     <c:if test="${!empty invalid_apartment}">
                         <div class="invalid-feedback-backend" style="color: red">
@@ -106,7 +119,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label"><fmt:message key="order.label.postal_code"/></label>
-                    <input type="text" name="postal_code" value="${data_map.postal_code}" class="form-control form-control-sm" placeholder="${e_postal_code}" required pattern="^[\dA-Za-z]{3,10}$">
+                    <input type="text" name="postal_code" value="${!empty address_data_map ? address_data_map.postal_code : defaultPostalCode}" class="form-control form-control-sm" placeholder="${e_postal_code}" required pattern="^[\dA-Za-z]{3,10}$">
                     <div class="form-text"><fmt:message key="order.correct_postal_code"/></div>
                     <c:if test="${!empty invalid_postal_code}">
                         <div class="invalid-feedback-backend" style="color: red">
@@ -116,6 +129,10 @@
                     <div class="invalid-feedback">
                         <fmt:message key="order.invalid_postal_code"/>
                     </div>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="saveForLater" name="save_for_later">
+                    <label class="form-label" for="saveForLater"><fmt:message key="order.label.save_for_later"/></label>
                 </div>
                 <div class="row gy-3 justify-content-evenly">
                     <div class="col text-center mb-3">

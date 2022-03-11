@@ -8,6 +8,9 @@ import java.util.Optional;
 
 public interface BaseService {
     Optional<User> signIn(String login, String password) throws ServiceException;
+
+    Optional<User> findUserById(int id) throws ServiceException;
+
     //boolean registerUser(Map<String, String> mapData) throws ServiceException;
     void sendMessageRegistration(String email) throws ServiceException;
 }
