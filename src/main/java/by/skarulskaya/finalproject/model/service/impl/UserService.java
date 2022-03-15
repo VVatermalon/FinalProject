@@ -29,11 +29,15 @@ public class UserService implements BaseService {
         if(!BaseValidatorImpl.INSTANCE.validateSignIn(email, password)) {
             return Optional.empty();
         }
-        UserDaoImpl userDao = new UserDaoImpl();
         String encryptedPassword = PasswordEncryptor.encrypt(password);
+        return findUserByEmailAndPassword(email, encryptedPassword);
+    }
+
+    public Optional<User> findUserByEmailAndPassword(String email, String password) throws ServiceException {
+        UserDaoImpl userDao = new UserDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(userDao);
-            return userDao.findUserByEmailAndPassword(email, encryptedPassword);
+            return userDao.findUserByEmailAndPassword(email, password);
         } catch (DaoException e) {
             throw new ServiceException(e);
         }

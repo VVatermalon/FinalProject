@@ -24,6 +24,7 @@ import static by.skarulskaya.finalproject.controller.ParametersMessages.USER_BLO
 
 public class GuestFilter implements Filter {
     private static final Logger logger = LogManager.getLogger();
+    private static final String EMPTY_STRING = "";
     private final UserService userService = UserService.getInstance();
     private final CustomerService customerService = CustomerService.getInstance();
     private final OrderService orderService = OrderService.getInstance();
@@ -42,20 +43,21 @@ public class GuestFilter implements Filter {
             return;
         }
         if (cookies != null) {
-            Optional<Cookie> userIdOptional = Arrays.stream(cookies).
-                    filter(cookie -> cookie.getName().equals(USER)).findFirst();
-            if (userIdOptional.isPresent()) {
-                Cookie userIdCookie = userIdOptional.get();
-                int userId = Integer.parseInt(userIdCookie.getValue());
-                logger.info("Found user in cookies, id = " + userId);
-                if (addUserToSession(userId, session)) {
+            Optional<Cookie> userEmailOptional = Arrays.stream(cookies).
+                    filter(cookie -> cookie.getName().equals(USER_EMAIL)).findFirst();
+            Optional<Cookie> userPasswordOptional = Arrays.stream(cookies).
+                    filter(cookie -> cookie.getName().equals(USER_PASSWORD)).findFirst();
+            if (userPasswordOptional.isPresent() && userEmailOptional.isPresent()) {
+                String userEmail = userEmailOptional.get().getValue();
+                String userPassword = userPasswordOptional.get().getValue();
+                logger.info("Found user in cookies, email = " + userEmail);
+                if (addUserToSession(userEmail, userPassword, session)) {
                     filterChain.doFilter(request, response);
                     return;
                 }
-                Cookie newUserCookie = new Cookie(USER, "");
-                newUserCookie.setMaxAge(0);
-                response.addCookie(newUserCookie);
             }
+            deleteCookie(USER_EMAIL, response);
+            deleteCookie(USER_PASSWORD, response);
         }
         logger.info("No user in cookies and session, add guest user");
         user = new User();
@@ -64,10 +66,9 @@ public class GuestFilter implements Filter {
         filterChain.doFilter(request, response);
     }
 
-    private boolean addUserToSession(int userId, HttpSession session) {
-        Optional<User> userOptional;
+    private boolean addUserToSession(String email, String password, HttpSession session) {
         try {
-            userOptional = userService.findUserById(userId);
+            Optional<User> userOptional = userService.findUserByEmailAndPassword(email, password);
             if (userOptional.isEmpty()) {
                 return false;
             }
@@ -99,5 +100,11 @@ public class GuestFilter implements Filter {
             logger.error(e);
             return false;
         }
+    }
+
+    private void deleteCookie(String name, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, EMPTY_STRING);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 }

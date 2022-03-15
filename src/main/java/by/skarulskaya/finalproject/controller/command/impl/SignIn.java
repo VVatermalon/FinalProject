@@ -60,9 +60,9 @@ public class SignIn implements Command {
         switch(user.getRole()) {
             case ADMIN -> {
                 session.setAttribute(USER, user);
-                Cookie cookie = new Cookie(USER, String.valueOf(user.getId()));
-                cookie.setMaxAge(COOKIE_MAX_AGE);
-                response.addCookie(cookie);
+
+                addCookie(USER_PASSWORD, user.getPassword(), response);
+                addCookie(USER_EMAIL, user.getEmail(), response);
 
                 router.setCurrentPage(ADMIN_PAGE);
             }
@@ -76,9 +76,8 @@ public class SignIn implements Command {
                         Optional<Customer> customerOptional = customerService.findCustomerById(user.getId());
                         if (customerOptional.isPresent()) {
                             session.setAttribute(CUSTOMER, customerOptional.get());
-                            Cookie cookie = new Cookie(USER, String.valueOf(user.getId()));
-                            cookie.setMaxAge(COOKIE_MAX_AGE);
-                            response.addCookie(cookie);
+                            addCookie(USER_PASSWORD, user.getPassword(), response);
+                            addCookie(USER_EMAIL, user.getEmail(), response);
                             session.removeAttribute(USER);
 
                             int cartOrderId = orderService.findCartOrderId(user.getId());
@@ -96,5 +95,11 @@ public class SignIn implements Command {
                 }
             }
         }
+    }
+
+    private void addCookie(String name, String value, HttpServletResponse response) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setMaxAge(COOKIE_MAX_AGE);
+        response.addCookie(cookie);
     }
 }
