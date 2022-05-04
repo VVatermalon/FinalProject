@@ -17,8 +17,15 @@ public class SizeDaoImpl extends SizeDao {
             SELECT S.item_size_id, S.item_size_name, ItemS.amount_in_stock FROM items_item_sizes ItemS 
             JOIN item_sizes S on ItemS.item_size_id = S.item_size_id
             WHERE ItemS.item_id = ?""";
+    private static final String SQL_SELECT_ALL_BY_ORDER_ID = """
+            SELECT orders.item_id, orders.item_size_id, orders.amount, item_sizes.amount_in_stock
+            FROM orders_items orders JOIN items_item_sizes item_sizes
+            ON (orders.item_id = item_sizes.item_id AND orders.item_size_id = item_sizes.item_size_id)
+            WHERE order_id = ?""";
     private static final String SQL_SELECT_SIZE_BY_ID = """
             SELECT item_size_id, item_size_name FROM item_sizes where item_size_id = ?""";
+    private static final String SQL_UPDATE_AMOUNT_IN_STOCK = """
+            UPDATE items_item_sizes SET amount_in_stock = ? WHERE item_id = ? AND item_size_id = ?""";
     @Override
     public List<ItemSize> findAllSizesForItem(int itemId) throws DaoException {
         List<ItemSize> sizeList = new ArrayList<>();
@@ -81,5 +88,35 @@ public class SizeDaoImpl extends SizeDao {
     @Override
     public boolean update(ItemSize entity) throws DaoException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean changeAmountInStockForAllOrderItems(int orderId) throws DaoException {
+        try (PreparedStatement selectStatement = connection.prepareStatement(SQL_SELECT_ALL_BY_ORDER_ID, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+             PreparedStatement updateStatement = connection.prepareStatement(SQL_UPDATE_AMOUNT_IN_STOCK)) {
+            selectStatement.setInt(1, orderId);
+            try (ResultSet resultSet = selectStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int itemId = resultSet.getInt(1);
+                    int itemSizeId = resultSet.getInt(2);
+                    int amount = resultSet.getInt(3);
+                    int amountInStock = resultSet.getInt(4);
+                    if (amountInStock < amount) {
+                        return false;
+                    }
+                    int newAmount = amountInStock - amount;
+                    updateStatement.setInt(1, newAmount);
+                    updateStatement.setInt(2, itemId);
+                    updateStatement.setInt(3, itemSizeId);
+                    if (updateStatement.executeUpdate() <= 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.info("from sizeDao");
+            throw new DaoException(e);
+        }
     }
 }

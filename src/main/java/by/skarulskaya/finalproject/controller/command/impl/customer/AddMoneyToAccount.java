@@ -26,11 +26,11 @@ public class AddMoneyToAccount implements Command {
         Customer customer = (Customer) session.getAttribute(CUSTOMER);
         try {
             BigDecimal expectedAmount = customer.getBankAccount().add(BigDecimal.valueOf(money));
-            Customer updatedCustomer = customerService.addMoneyToAccount(money, customer.getId());
-            if(updatedCustomer.getBankAccount().compareTo(expectedAmount) != 0) {
+            boolean isUpdated = customerService.addMoneyToAccount(money, customer);
+            if(!isUpdated || customer.getBankAccount().compareTo(expectedAmount) != 0) {
                 request.setAttribute(ERROR_ADD_MONEY, ERROR_CANNOT_ADD_MONEY_OVER_LIMIT);
             }
-            session.setAttribute(CUSTOMER, updatedCustomer);
+            session.setAttribute(CUSTOMER, customer);
         } catch (ServiceException e) {
             throw new CommandException(e);
         }

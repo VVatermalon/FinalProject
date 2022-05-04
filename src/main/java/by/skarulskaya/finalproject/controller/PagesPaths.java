@@ -16,8 +16,9 @@ public class PagesPaths {
     public static final String USERS_PAGE = "/jsp/pages/admin/users.jsp";
     public static final String PROFILE_PAGE = "jsp/pages/common/profile.jsp";
     public static final String BANK_ACCOUNT_PAGE = "/jsp/pages/bankAccount.jsp";
-    public static final String CHECK_OUT_ORDER_PAGE = "/jsp/pages/checkOutOrder.jsp";
+    public static final String ADD_SHIPPING_ADDRESS_PAGE = "/jsp/pages/addShippingAddress.jsp";
     public static final String PAYMENT_PAGE = "/jsp/pages/payment.jsp";
+    public static final String ORDER_SUCCESS_PAGE = "/jsp/pages/orderSuccess.jsp";
 
     private PagesPaths(){}
 }

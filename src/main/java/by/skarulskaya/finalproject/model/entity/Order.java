@@ -1,5 +1,6 @@
 package by.skarulskaya.finalproject.model.entity;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,7 @@ public class Order extends CustomEntity {
     private Date dateOrdered;
     private Address address;
     private String giftCard;
+    private BigDecimal totalPrice;
     private List<OrderComponent> components;
 
     public Order() {
@@ -19,20 +21,22 @@ public class Order extends CustomEntity {
         components = new ArrayList<>();
     }
 
-    public Order(OrderStatus status, Date dateOrdered, Address address, String giftCard, List<OrderComponent> components) {
+    public Order(OrderStatus status, Date dateOrdered, Address address, String giftCard, BigDecimal totalPrice, List<OrderComponent> components) {
         this.status = status;
         this.dateOrdered = dateOrdered;
         this.address = address;
         this.giftCard = giftCard;
+        this.totalPrice = totalPrice;
         this.components = components;
     }
 
-    public Order(int id, OrderStatus status, Date dateOrdered, Address address, String giftCard, List<OrderComponent> components) {
+    public Order(int id, OrderStatus status, Date dateOrdered, Address address, String giftCard, BigDecimal totalPrice, List<OrderComponent> components) {
         super(id);
         this.status = status;
         this.dateOrdered = dateOrdered;
         this.address = address;
         this.giftCard = giftCard;
+        this.totalPrice = totalPrice;
         this.components = components;
     }
 
@@ -66,6 +70,14 @@ public class Order extends CustomEntity {
 
     public void setGiftCard(String giftCard) {
         this.giftCard = giftCard;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public List<OrderComponent> getComponents() {

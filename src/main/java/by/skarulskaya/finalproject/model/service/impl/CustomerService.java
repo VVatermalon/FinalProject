@@ -74,35 +74,34 @@ public class CustomerService {
         }
     }
 
-    public Customer addMoneyToAccount(int money, int customerId) throws ServiceException {
-        Optional<Customer> customerOpt = findCustomerById(customerId);
-        if(customerOpt.isEmpty()) {
-            throw new ServiceException("Can't find customer by id = " + customerId);
-        }
-        Customer customer = customerOpt.get();
+    public boolean addMoneyToAccount(int money, Customer customer) throws ServiceException {
         BigDecimal bankAccount = customer.getBankAccount();
-        if(bankAccount.compareTo(BigDecimal.valueOf(1000)) > 0) {
-            return customer;
+        if(bankAccount.compareTo(BigDecimal.valueOf(1000)) >= 0) {
+            return false;
         }
         BigDecimal newBankAccount = bankAccount.add(BigDecimal.valueOf(money));
         newBankAccount = newBankAccount.min(BigDecimal.valueOf(1000));
-        CustomerDao customerDao = new CustomerDaoImpl();
-        try(EntityTransaction transaction = new EntityTransaction()) {
-            transaction.init(customerDao);
-            if(customerDao.updateBankAccount(newBankAccount, customerId)) {
-                customer.setBankAccount(newBankAccount);
-                return customer;
-            }
-            return customer;
-        } catch (DaoException e) {
-            throw new ServiceException(e);
+        if(updateBankAccount(newBankAccount, customer.getId())) {
+            customer.setBankAccount(newBankAccount);
+            return true;
         }
+        return false;
     }
 
     public void sendMessageRegistration(String email) throws ServiceException {
         try {
             MailSender.INSTANCE.send(email, "Registration in system", "Welcome! Registration was successful"); //todo сделать тут локализацию
         } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    private boolean updateBankAccount(BigDecimal newBankAccount, int customerId) throws ServiceException {
+        CustomerDao customerDao = new CustomerDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(customerDao);
+            return customerDao.updateBankAccount(newBankAccount, customerId);
+        } catch (DaoException e) {
             throw new ServiceException(e);
         }
     }

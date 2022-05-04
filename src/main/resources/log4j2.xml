@@ -1,7 +1,7 @@
 <Configuration status="error" monitorInterval="43200">
     <Properties>
         <!-- Here has made pattern for Appenders format string and VARs for configuration -->
-        <property name="LOG_FOLDER">logs</property>
+        <property name="LOG_FOLDER">D:/MusicBandWebProject/logs</property>
         <property name="pattern_cmd">%-5level %logger{5} %msg%n</property>
         <property name="pattern_file">%d{yyyy-MM-dd HH:mm:ss} [%t] %logger{5} [%M] [%L] %-5level - %msg%n</property>
     </Properties>

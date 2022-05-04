@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -41,6 +42,11 @@ public class UploadCart implements Command {
             request.setAttribute(UPLOADED_CART, uploadedCart);
             int itemsInCartCount = uploadedCart.stream().mapToInt(OrderComponent::getAmount).sum();
             session.setAttribute(ITEMS_IN_CART_COUNT, itemsInCartCount);
+            BigDecimal totalPrice = uploadedCart.stream()
+                    .map(component -> component.getItem().getPrice().multiply(BigDecimal.valueOf(component.getAmount())))
+                    .reduce(BigDecimal::add)
+                    .orElse(BigDecimal.ZERO);
+            session.setAttribute(CART_TOTAL_PRICE, totalPrice);
         } catch (ServiceException e) {
             throw new CommandException(e);
         }

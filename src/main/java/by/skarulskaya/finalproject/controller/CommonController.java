@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 
 import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_500;
+import static by.skarulskaya.finalproject.controller.Parameters.COMMAND;
 
 @WebServlet(urlPatterns = {"/controller"})
 public class CommonController extends HttpServlet {
@@ -33,7 +34,7 @@ public class CommonController extends HttpServlet {
     }
 
     private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String commandName = req.getParameter("command");
+        String commandName = req.getParameter(COMMAND);
         logger.debug(commandName);
         try {
             Command command = CommandType.provideCommand(commandName);

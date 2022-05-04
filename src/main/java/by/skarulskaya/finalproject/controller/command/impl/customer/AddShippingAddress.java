@@ -17,12 +17,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static by.skarulskaya.finalproject.controller.PagesPaths.CHECK_OUT_ORDER_PAGE;
+import static by.skarulskaya.finalproject.controller.PagesPaths.ADD_SHIPPING_ADDRESS_PAGE;
 import static by.skarulskaya.finalproject.controller.PagesPaths.PAYMENT_PAGE;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
 
-public class CheckOutOrder implements Command {
+public class AddShippingAddress implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final AddressService addressService = AddressService.getInstance();
     @Override
@@ -41,16 +41,20 @@ public class CheckOutOrder implements Command {
         try {
             Optional<Address> address = addressService.createAddress(mapData, customer.getId());
             if(address.isPresent()) {
-                session.setAttribute(ADDRESS, address.get());
+                session.setAttribute(ADDRESS_ID, address.get().getId());
                 if(saveAddress != null) {
                     customer.setDefaultAddress(address);
                     session.setAttribute(CUSTOMER, customer);
                 }
-                router.setCurrentPage(PAYMENT_PAGE);
+                router.setCurrentType(Router.Type.REDIRECT);
+                router.setCurrentPage(request.getContextPath() + PAYMENT_PAGE);
                 return router;
             }
             for(String key: mapData.keySet()) {
                 String message = mapData.get(key);
+                if(message == null) {
+                    continue;
+                }
                 switch(message) {
                     case INVALID_COUNTRY -> {
                         request.setAttribute(INVALID_COUNTRY, INVALID_COUNTRY_MESSAGE);
@@ -75,7 +79,7 @@ public class CheckOutOrder implements Command {
                 }
             }
             request.setAttribute(ADDRESS_DATA_MAP, mapData);
-            router.setCurrentPage(CHECK_OUT_ORDER_PAGE);
+            router.setCurrentPage(ADD_SHIPPING_ADDRESS_PAGE);
             return router;
         } catch (ServiceException e) {
             throw new CommandException(e);

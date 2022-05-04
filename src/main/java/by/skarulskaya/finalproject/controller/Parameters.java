@@ -15,9 +15,11 @@ public class Parameters {
     public static final String UPLOADED_CART = "uploaded_cart";
     public static final String CART_ORDER_ID = "cart_order_id";
     public static final String ITEMS_IN_CART_COUNT = "items_in_cart_count";
+    public static final String CART_TOTAL_PRICE = "cart_total_price";
     public static final String SIZE_ID = "size_id";
     public static final String AMOUNT = "amount";
     public static final String ERROR_CART = "error_cart";
+    public static final String ERROR_PAY_ORDER = "error_pay_order";
     public static final String ERROR_INCORRECT_LOGIN_OR_PASSWORD = "error_incorrect_login_or_password";
     public static final String INVALID_EMAIL = "invalid_email";
     public static final String WRONG_EMAIL = "wrong_email";
@@ -49,6 +51,7 @@ public class Parameters {
     public static final String ERROR_ADD_MONEY = "error_add_money";
     public static final String COUNTRY = "country";
     public static final String CITY = "city";
+    public static final String ADDRESS_ID = "address_id";
     public static final String ADDRESS = "address";
     public static final String APARTMENT = "apartment";
     public static final String POSTAL_CODE = "postal_code";

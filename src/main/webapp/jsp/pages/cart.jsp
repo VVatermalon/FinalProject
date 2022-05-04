@@ -57,7 +57,6 @@
         <div class="text-start" style="white-space: pre-line"><fmt:message key="cart.empty"/></div>
     </c:if>
     <c:if test="${uploaded_cart.isEmpty() eq 'false'}">
-        <c:set var="subtotal" value="${0}" scope="page"/>
         <table width="95%">
             <thead>
             <th colspan="3" class="text-left"><fmt:message key="cart.product"/></th>
@@ -113,7 +112,6 @@
                         <strong>
                             <fmt:message key="menu.product_money"/>${component.item.price.multiply(component.amount)}
                         </strong>
-                        <c:set var="subtotal" value="${subtotal + component.item.price.multiply(component.amount)}" scope="page"/>
                     </td>
                 </tr>
             </c:forEach>
@@ -122,7 +120,7 @@
         <div class="container">
             <div class="row justify-content-end">
                 <div class="col col-auto">
-                    <strong><fmt:message key="cart.subtotal"/> <fmt:message key="menu.product_money"/>${subtotal}</strong>
+                    <strong><fmt:message key="cart.subtotal"/> <fmt:message key="menu.product_money"/>${sessionScope.cart_total_price}</strong>
                 </div>
             </div>
             <div class="invalid-feedback-backend row mt-2 justify-content-end" style="color: red">
@@ -137,7 +135,7 @@
             </div>
             <div class="row mt-2 justify-content-end">
                 <div class="col col-auto">
-                    <a href="${absolutePath}/jsp/pages/checkOutOrder.jsp" role="button" class="btn btn-info"><fmt:message key="cart.check_out"/></a>
+                    <a href="${absolutePath}/jsp/pages/addShippingAddress.jsp" role="button" class="btn btn-info"><fmt:message key="cart.check_out"/></a>
                 </div>
             </div>
         </div>

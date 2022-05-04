@@ -12,6 +12,7 @@ import by.skarulskaya.finalproject.model.service.BaseService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class OrderComponentService {
@@ -132,6 +133,28 @@ public class OrderComponentService {
         try (EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(orderComponentDao);
             return orderComponentDao.countItemsInCart(cartOrderId);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    public BigDecimal findCartTotalPrice(int cartOrderId) throws ServiceException {
+        OrderComponentDao orderComponentDao = new OrderComponentDaoImpl();
+        try (EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(orderComponentDao);
+            return orderComponentDao.findCartTotalPrice(cartOrderId);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    public boolean checkCartBeforePayment(int cartOrderId) throws ServiceException {
+        OrderComponentDao orderComponentDao = new OrderComponentDaoImpl();
+        try (EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(orderComponentDao);
+            return orderComponentDao.findNotEnoughInStockItemsInOrder(cartOrderId);
         } catch (DaoException e) {
             logger.error(e);
             throw new ServiceException(e);

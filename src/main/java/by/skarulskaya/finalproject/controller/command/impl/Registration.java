@@ -36,8 +36,7 @@ public class Registration implements Command {
         try {
             int createdCustomerId = customerService.registerCustomer(mapData);
             if (createdCustomerId >= 0) {
-                Order newCart = new Order();
-                orderService.createCart(createdCustomerId, newCart);
+                orderService.createCart(createdCustomerId);
                 router.setCurrentType(Router.Type.REDIRECT);
                 router.setCurrentPage(request.getContextPath() + SIGN_IN_PAGE);
                 return router;

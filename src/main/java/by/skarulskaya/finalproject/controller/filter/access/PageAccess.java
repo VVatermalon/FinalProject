@@ -9,7 +9,8 @@ public enum PageAccess {
             REGISTRATION_PAGE,
             CART_PAGE,
             BANK_ACCOUNT_PAGE,
-            CHECK_OUT_ORDER_PAGE)),
+            ADD_SHIPPING_ADDRESS_PAGE,
+            PAYMENT_PAGE)),
     CUSTOMER(Set.of(SIGN_IN_PAGE,
             REGISTRATION_PAGE,
             USERS_PAGE,
@@ -18,7 +19,8 @@ public enum PageAccess {
             SETTINGS_PAGE,
             CART_PAGE,
             BANK_ACCOUNT_PAGE,
-            CHECK_OUT_ORDER_PAGE));
+            ADD_SHIPPING_ADDRESS_PAGE,
+            PAYMENT_PAGE));
 
     Set<String> userPages;
 

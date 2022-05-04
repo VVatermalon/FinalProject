@@ -5,6 +5,7 @@ import by.skarulskaya.finalproject.model.dao.OrderComponentDao;
 import by.skarulskaya.finalproject.model.entity.OrderComponent;
 import by.skarulskaya.finalproject.model.entity.User;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,9 +13,8 @@ import java.util.*;
 
 public class OrderComponentDaoImpl extends OrderComponentDao {
     private static final String SQL_FIND_ALL_CART_COMPONENTS = """
-        SELECT OI.order_id, OI.item_id, OI.item_size_id, OI.amount
-        FROM orders O JOIN orders_items OI ON O.order_id = OI.order_id
-        WHERE O.order_id = ?""";
+        SELECT order_id, item_id, item_size_id, amount
+        FROM orders_items WHERE order_id = ?""";
     private static final String SQL_CREATE_ORDER_COMPONENT = """
         INSERT INTO orders_items(order_id, item_id, item_size_id, amount) 
         VALUES(?,?,?,?)""";
@@ -26,6 +26,13 @@ public class OrderComponentDaoImpl extends OrderComponentDao {
         SELECT amount FROM orders_items WHERE order_id = ? AND item_id = ? AND item_size_id = ?""";
     private static final String SQL_FIND_ITEM_AMOUNT_IN_ORDER = """
         SELECT SUM(amount) FROM orders_items GROUP BY order_id HAVING order_id = ?""";
+    private static final String SQL_FIND_CART_TOTAL_PRICE = """
+        SELECT OI.amount, I.price FROM orders_items OI JOIN items I ON OI.item_id = I.item_id
+        WHERE order_id = ?""";
+    private static final String SQL_FIND_NOT_ENOUGH_IN_STOCK_ITEMS_IN_ORDER = """
+        SELECT * FROM orders_items OI JOIN items I ON OI.item_id = I.item_id
+        JOIN items_item_sizes S ON I.item_id = S.item_id
+        WHERE OI.order_id = ? AND S.item_size_id = OI.item_size_id AND S.amount_in_stock < OI.amount""";
 
     @Override
     public List<OrderComponent> findAll() throws DaoException {
@@ -142,6 +149,38 @@ public class OrderComponentDaoImpl extends OrderComponentDao {
                     return resultSet.getInt(1);
                 }
                 return 0;
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public BigDecimal findCartTotalPrice(int cartOrderId) throws DaoException {
+        BigDecimal result = BigDecimal.ZERO;
+        try(PreparedStatement statement = connection.prepareStatement(SQL_FIND_CART_TOTAL_PRICE)) {
+            statement.setInt(1, cartOrderId);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while(resultSet.next()) {
+                    int amount =  resultSet.getInt(1);
+                    BigDecimal price = resultSet.getBigDecimal(2);
+                    result = result.add(price.multiply(BigDecimal.valueOf(amount)));
+                }
+                return result;
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean findNotEnoughInStockItemsInOrder(int cartOrderId) throws DaoException {
+        try(PreparedStatement statement = connection.prepareStatement(SQL_FIND_NOT_ENOUGH_IN_STOCK_ITEMS_IN_ORDER)) {
+            statement.setInt(1, cartOrderId);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
             }
         } catch (SQLException e) {
             logger.error(e);

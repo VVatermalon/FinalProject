@@ -18,7 +18,8 @@ public enum CommandType {
     CHANGE_ITEM_AMOUNT_IN_CART(new ChangeItemAmountInCart()),
     UPLOAD_CART(new UploadCart()),
     ADD_MONEY_TO_ACCOUNT(new AddMoneyToAccount()),
-    CHECK_OUT_ORDER(new CheckOutOrder()),
+    PAY_ORDER(new PayOrder()),
+    ADD_SHIPPING_ADDRESS(new AddShippingAddress()),
     CHANGE_LANGUAGE(new ChangeLanguage());
 
     private final Command command;

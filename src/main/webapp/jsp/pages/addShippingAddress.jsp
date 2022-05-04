@@ -51,12 +51,11 @@
     <div class="container justify-content-center col-12 col-sm-6 mt-3">
         <h3 class="text-center p-3"><fmt:message key="order.shipping_address"/></h3>
         <form role="form" action="${absolutePath}/controller" method="post" class="needs-validation" novalidate>
-            <input type="hidden" name="command" value="check_out_order"/>
+            <input type="hidden" name="command" value="add_shipping_address"/>
             <div class="row gy-3">
                 <div class="form-group">
                     <label class="form-label"><fmt:message key="order.label.country"/></label>
                     <br/>
-<%--                    <input name="country" required class="form-control" list="datalistOptions" placeholder="${e_country}">--%>
                     <select class="form-select" name="country" required>
                         <c:forEach items="${applicationScope.country_list}" var="country">
                             <c:choose>

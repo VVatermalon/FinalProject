@@ -15,6 +15,7 @@ public class ParametersMessages {
     public static final String ERROR_CANNOT_ADD_ITEM_TO_CART_NOT_ENOUGH_AMOUNT_MESSAGE = "cart.cannot_add_more_items";
     public static final String ERROR_CART_WAS_CHANGED_MESSAGE = "cart.cart_changed";
     public static final String ERROR_CANNOT_ADD_MONEY_OVER_LIMIT = "bank_account.money_limit";
+    public static final String ERROR_NOT_ENOUGH_MONEY = "payment.not_enough_money";
     public static final String INVALID_COUNTRY_MESSAGE = "order.invalid_country";
     public static final String INVALID_CITY_MESSAGE = "order.invalid_city";
     public static final String INVALID_ADDRESS_MESSAGE = "order.invalid_address";
