@@ -1,6 +1,6 @@
 package by.skarulskaya.finalproject.controller;
 
-public class ParametersMessages {
+public final class ParametersMessages {
     public static final String ERROR_INCORRECT_LOGIN_OR_PASSWORD_MESSAGE = "error.login_or_password";
     public static final String INVALID_EMAIL_MESSAGE = "registration.invalid_email";
     public static final String INVALID_NAME_MESSAGE = "registration.invalid_first_name";

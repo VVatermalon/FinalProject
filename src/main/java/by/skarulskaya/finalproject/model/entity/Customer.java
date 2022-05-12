@@ -48,13 +48,12 @@ public class Customer extends User {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Customer{");
-        sb.append("id=").append(id);
-        sb.append(", bankAccount=").append(bankAccount);
-        sb.append(", phoneNumber='").append(phoneNumber).append('\'');
-        sb.append(", defaultAddress=").append(defaultAddress);
-        sb.append('}');
-        return sb.toString();
+        return "Customer{" +
+                "id=" + id +
+                ", bankAccount=" + bankAccount +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", defaultAddress=" + defaultAddress +
+                '}';
     }
 
     @Override

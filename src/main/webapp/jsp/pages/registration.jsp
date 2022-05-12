@@ -128,7 +128,7 @@
                 <div class="form-group">
                     <label class="form-label">${user_phone}</label>
                     <input type="tel" name="phone_number" value="${data_map.phone_number}" class="form-control" placeholder="${e_phone}" required pattern="+375(29|25|44|33)\d{7}">
-                    <div id="phoneHelp" class="form-text"><fmt:message key="registration.correct_phone_number"></fmt:message></div>
+                    <div id="phoneHelp" class="form-text"><fmt:message key="registration.correct_phone_number"/></div>
                     <c:if test="${!empty invalid_phone_number}">
                         <div class="invalid-feedback-backend" style="color: red">
                             <fmt:message key="${invalid_phone_number}"/>

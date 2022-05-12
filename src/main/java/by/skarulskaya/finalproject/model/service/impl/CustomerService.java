@@ -74,7 +74,7 @@ public class CustomerService {
         }
     }
 
-    public boolean addMoneyToAccount(int money, Customer customer) throws ServiceException {
+    public boolean addMoneyToAccount(double money, Customer customer) throws ServiceException {
         BigDecimal bankAccount = customer.getBankAccount();
         if(bankAccount.compareTo(BigDecimal.valueOf(1000)) >= 0) {
             return false;

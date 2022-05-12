@@ -85,6 +85,9 @@ public enum BaseValidatorImpl implements BaseValidator {
 
     @Override
     public boolean validateCountry(String country) {
+        if(country == null || country.isBlank()) {
+            return false;
+        }
         try {
             Address.AVAILABLE_COUNTRIES.valueOf(country.toUpperCase());
             return true;

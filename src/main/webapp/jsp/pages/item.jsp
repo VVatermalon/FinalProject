@@ -419,11 +419,18 @@
                             </div>
                             <div class="text-start">
                                 <c:choose>
-                                    <c:when test="${not empty customer}">
-                                        <button type="submit" class="btn btn_type_light"><fmt:message key="item.to_cart"/></button>
+                                    <c:when test="${item.amountInStock == 0}">
+                                        <button class="btn btn_type_light" disabled><fmt:message key="catalog.sold_out"/></button>
                                     </c:when>
                                     <c:otherwise>
-                                        <a href="${absolutePath}/jsp/pages/signIn.jsp" role="button" class="btn btn-info"><fmt:message key="item.to_cart"/></a>
+                                        <c:choose>
+                                            <c:when test="${not empty customer}">
+                                                <button type="submit" class="btn btn_type_light"><fmt:message key="item.to_cart"/></button>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a href="${absolutePath}/jsp/pages/signIn.jsp" role="button" class="btn btn-info"><fmt:message key="item.to_cart"/></a>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:otherwise>
                                 </c:choose>
                             </div>

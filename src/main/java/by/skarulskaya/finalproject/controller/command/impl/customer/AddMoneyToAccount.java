@@ -22,7 +22,8 @@ public class AddMoneyToAccount implements Command {
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         Router router = new Router();
         HttpSession session = request.getSession();
-        int money = Integer.parseInt(request.getParameter(MONEY));
+        String moneyParameter = request.getParameter(MONEY);
+        double money = Double.parseDouble(moneyParameter);
         Customer customer = (Customer) session.getAttribute(CUSTOMER);
         try {
             BigDecimal expectedAmount = customer.getBankAccount().add(BigDecimal.valueOf(money));

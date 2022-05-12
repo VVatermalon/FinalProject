@@ -5,6 +5,7 @@ import by.skarulskaya.finalproject.controller.filter.access.CommandAccess;
 import by.skarulskaya.finalproject.model.entity.Customer;
 import by.skarulskaya.finalproject.model.entity.User;
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -18,6 +19,7 @@ import java.util.Set;
 import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_404;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 
+@WebFilter(filterName = "commandFilter", urlPatterns = "/controller")
 public class CommandFilter implements Filter {
     private static final Logger logger = LogManager.getLogger();
     @Override

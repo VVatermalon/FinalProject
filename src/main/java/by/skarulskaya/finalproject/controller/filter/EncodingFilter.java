@@ -1,11 +1,14 @@
 package by.skarulskaya.finalproject.controller.filter;
 
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
+@WebFilter(filterName = "encodingFilter", urlPatterns = "/*", initParams = @WebInitParam(name = "encoding", value = "UTF-8"))
 public class EncodingFilter implements Filter {
     private static final Logger logger = LogManager.getLogger();
     private static final String ENCODING_PARAMETER = "encoding";

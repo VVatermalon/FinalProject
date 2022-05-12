@@ -31,7 +31,8 @@ public class ChangeItemAmountInCart implements Command {
         String sizeParameter = request.getParameter(SIZE_ID);
         int sizeId = sizeParameter == null ? 1 : Integer.parseInt(sizeParameter);
         OrderComponent.OrderComponentKey key = new OrderComponent.OrderComponentKey(cartOrderId, itemId, sizeId);
-        StringBuilder page = new StringBuilder(request.getContextPath() + COMMAND_PARAMETER);
+        StringBuilder page = new StringBuilder(100);
+        page.append(request.getContextPath()).append(COMMAND_PARAMETER);
 
         try {
             if (!orderComponentService.changeItemAmountInCart(key, amount)) {

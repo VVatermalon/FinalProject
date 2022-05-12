@@ -6,6 +6,7 @@ import by.skarulskaya.finalproject.model.entity.CustomEntity;
 import by.skarulskaya.finalproject.model.entity.ItemCategory;
 import by.skarulskaya.finalproject.model.service.impl.CategoryService;
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -21,6 +22,7 @@ import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_404;
 import static by.skarulskaya.finalproject.controller.Parameters.CATEGORY_LIST;
 import static by.skarulskaya.finalproject.controller.Parameters.COUNTRY_LIST;
 
+@WebFilter(filterName = "countriesFilter", urlPatterns = "/*")
 public class CountriesFilter implements Filter {
     private static final Logger logger = LogManager.getLogger();
     @Override

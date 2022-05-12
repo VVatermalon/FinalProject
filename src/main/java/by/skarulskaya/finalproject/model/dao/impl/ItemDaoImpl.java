@@ -32,7 +32,7 @@ public class ItemDaoImpl extends ItemDao {
     private static final String SQL_SELECT_ITEMS_SORT_BY_PRICE_DESC_LIMIT = """
         SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, I.image_path, I.description
         FROM items I JOIN items_item_sizes S ON I.item_id = S.item_id GROUP BY I.item_id
-        ORDER BY sum(S.amount_in_stock) 0 ASC, I.price DESC
+        ORDER BY sum(S.amount_in_stock) = 0 ASC, I.price DESC
         LIMIT ? OFFSET ?""";
     private static final String SQL_SELECT_ITEMS_SORT_BY_NAME_ASC_LIMIT = """
         SELECT I.item_id, I.item_name, I.price, sum(S.amount_in_stock) amount_in_stock, I.popularity, I.image_path, I.description
@@ -110,8 +110,10 @@ public class ItemDaoImpl extends ItemDao {
         I.image_path, I.description FROM items I
         JOIN items_item_categories IC on I.item_id = IC.item_id
         JOIN items_item_sizes S on I.item_id = S.item_id
-        WHERE IC.item_category_id = ? group by I.item_id ORDER BY I.popularity
+        WHERE IC.item_category_id = ? group by I.item_id ORDER BY I.popularity DESC
         LIMIT ? OFFSET ?""";
+    private static final String SQL_UPDATE_POPULARITY = """
+        UPDATE items SET popularity = (popularity + ?) / 2 WHERE item_id = ?""";
     private static final EntityMapper<Item> mapper = new ItemMapper();
 
     @Override
@@ -129,6 +131,7 @@ public class ItemDaoImpl extends ItemDao {
         }
     }
 
+    @Override
     public List<Item> findAllByPage(int count, int offset) throws DaoException {
         List<Item> itemList = new ArrayList<>();
         try(PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ITEMS_LIMIT)) {
@@ -147,6 +150,7 @@ public class ItemDaoImpl extends ItemDao {
         }
     }
 
+    @Override
     public List<Item> findAllByPageSort(Item.ItemSortParameter sortParameter, SortOrder order, int count, int offset) throws DaoException {
         List<Item> itemList = new ArrayList<>();
         String sql = null;
@@ -195,7 +199,7 @@ public class ItemDaoImpl extends ItemDao {
         }
     }
     @Override
-    public List<Item> findAllByCategory(Integer id) throws DaoException {
+    public List<Item> findAllByCategory(int id) throws DaoException {
         List<Item> itemList = new ArrayList<>();
         try(PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ITEMS_BY_CATEGORY)) {
             statement.setInt(1, id);
@@ -211,7 +215,8 @@ public class ItemDaoImpl extends ItemDao {
         }
     }
 
-    public List<Item> findAllByCategoryByPage(Integer id, int count, int offset) throws DaoException {
+    @Override
+    public List<Item> findAllByCategoryByPage(int id, int count, int offset) throws DaoException {
         List<Item> itemList = new ArrayList<>();
         try(PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ITEMS_BY_CATEGORY_LIMIT)) {
             statement.setInt(1, id);
@@ -229,6 +234,7 @@ public class ItemDaoImpl extends ItemDao {
         }
     }
 
+    @Override
     public List<Item> findAllByCategoryByPageSort(Integer id, Item.ItemSortParameter sortParameter, SortOrder order, int count, int offset) throws DaoException {
         List<Item> itemList = new ArrayList<>();
         String sql = null;
@@ -257,6 +263,17 @@ public class ItemDaoImpl extends ItemDao {
                 }
             }
             return itemList;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean updatePopularity(int id, long popularity) throws DaoException {
+        try(PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_POPULARITY)) {
+            statement.setLong(1, popularity);
+            statement.setInt(2, id);
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DaoException(e);
         }

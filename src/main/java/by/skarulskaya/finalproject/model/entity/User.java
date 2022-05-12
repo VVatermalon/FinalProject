@@ -85,16 +85,15 @@ public class User extends CustomEntity {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("User{");
-        sb.append("id='").append(id).append('\'');
-        sb.append("email='").append(email).append('\'');
-        sb.append(", password='").append(password).append('\'');
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", surname='").append(surname).append('\'');
-        sb.append(", role=").append(role);
-        sb.append(", status=").append(status);
-        sb.append('}');
-        return sb.toString();
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", role=" + role +
+                ", status=" + status +
+                '}';
     }
 
     @Override

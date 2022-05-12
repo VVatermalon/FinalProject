@@ -1,6 +1,7 @@
 package by.skarulskaya.finalproject.controller.filter;
 
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 import static by.skarulskaya.finalproject.controller.Parameters.LANGUAGE;
 
+@WebFilter(filterName = "languageFilter", urlPatterns = "/*")
 public class LanguageFilter implements Filter {
     private static final Logger logger = LogManager.getLogger();
     @Override

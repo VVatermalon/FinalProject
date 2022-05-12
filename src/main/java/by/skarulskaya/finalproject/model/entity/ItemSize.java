@@ -38,12 +38,11 @@ public class ItemSize extends CustomEntity{
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("ItemSize{");
-        sb.append("id=").append(id);
-        sb.append(", size_name='").append(sizeName).append('\'');
-        sb.append(", count=").append(amountInStock);
-        sb.append('}');
-        return sb.toString();
+        return "ItemSize{" +
+                "id=" + id +
+                ", sizeName='" + sizeName + '\'' +
+                ", amountInStock=" + amountInStock +
+                '}';
     }
 
     @Override

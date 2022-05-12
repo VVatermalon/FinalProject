@@ -39,7 +39,7 @@
         <%@include file="header/headerCommon.jsp"%>
     </header>
     <div class="back">
-        <a href="${absolutePath}/controller?command=upload_cart"><-<fmt:message key="back.shop"/></a>
+        <a href="${absolutePath}/controller?command=find_all_items"><-<fmt:message key="back.shop"/></a>
     </div>
     <div class="container justify-content-center col-12 col-sm-6 mt-3">
         <h3 class="text-center p-3"><fmt:message key="bank_account.name"/></h3>
@@ -48,7 +48,7 @@
         <form role="form" action="${absolutePath}/controller" method="post" class="needs-validation" novalidate>
             <input type="hidden" name="command" value="add_money_to_account"/>
             <div class="form-group">
-                <input type="text" name="money" class="form-control" placeholder="${e_money}" required pattern="^\d{1,3}$">
+                <input type="text" name="money" class="form-control" placeholder="${e_money}" required pattern="^([1-9]\d{0,2}|[1-9]\d{0,2}\.\d{1,2}|0.([1-9]\d?|\d[1-9]))$">
                 <c:if test="${!empty error_add_money}">
                     <div class="invalid-feedback-backend" style="color: red">
                         <fmt:message key="${error_add_money}"/>

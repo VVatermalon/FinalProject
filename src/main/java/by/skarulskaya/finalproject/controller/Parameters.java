@@ -1,6 +1,6 @@
 package by.skarulskaya.finalproject.controller;
 
-public class Parameters {
+public final class Parameters {
     public static final int COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
     public static final String COMMAND = "command";
     public static final String PAGE = "page";

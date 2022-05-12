@@ -439,7 +439,10 @@
                                     </div>
                                 </a>
                                 <div class="">
-                                    <div class="product_price "><strong id="price"> <fmt:message key="menu.product_money"/>${item.price}</strong> </div>
+                                    <div class="product_price"><strong id="price"> <fmt:message key="menu.product_money"/>${item.price}</strong> </div>
+                                    <c:if test="${item.amountInStock == 0}">
+                                        <div style="color: red"><fmt:message key="catalog.sold_out"/></div>
+                                    </c:if>
                                         <%--                            <c:if test="${user.role eq 'ADMIN'}">--%>
                                         <%--                                <form name="UploadPhoto" method="post" action="${absolutePath}/controller" enctype="multipart/form-data">--%>
                                         <%--                                    <input type="hidden" name="command" value="upload_product_photo">--%>

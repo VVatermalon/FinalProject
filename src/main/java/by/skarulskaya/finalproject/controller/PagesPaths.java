@@ -1,6 +1,6 @@
 package by.skarulskaya.finalproject.controller;
 
-public class PagesPaths {
+public final class PagesPaths {
     public static final String ADMIN_PAGE = "/jsp/pages/admin.jsp";
     public static final String START_PAGE = "/jsp/pages/start.jsp";
     public static final String GUEST_PAGE = "/jsp/pages/guest.jsp";
@@ -14,7 +14,7 @@ public class PagesPaths {
     public static final String SIGN_IN_PAGE = "/jsp/pages/signIn.jsp";
     public static final String REGISTRATION_PAGE = "/jsp/pages/registration.jsp";
     public static final String USERS_PAGE = "/jsp/pages/admin/users.jsp";
-    public static final String PROFILE_PAGE = "jsp/pages/common/profile.jsp";
+    public static final String PROFILE_PAGE = "jsp/pages/common/settings.jsp";
     public static final String BANK_ACCOUNT_PAGE = "/jsp/pages/bankAccount.jsp";
     public static final String ADD_SHIPPING_ADDRESS_PAGE = "/jsp/pages/addShippingAddress.jsp";
     public static final String PAYMENT_PAGE = "/jsp/pages/payment.jsp";

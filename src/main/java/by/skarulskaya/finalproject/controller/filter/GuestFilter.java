@@ -8,6 +8,8 @@ import by.skarulskaya.finalproject.model.service.impl.OrderComponentService;
 import by.skarulskaya.finalproject.model.service.impl.OrderService;
 import by.skarulskaya.finalproject.model.service.impl.UserService;
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +24,7 @@ import static by.skarulskaya.finalproject.controller.PagesPaths.*;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 import static by.skarulskaya.finalproject.controller.ParametersMessages.USER_BLOCKED_MESSAGE;
 
+@WebFilter(filterName = "guestFilter", urlPatterns = "/*")
 public class GuestFilter implements Filter {
     private static final Logger logger = LogManager.getLogger();
     private static final String EMPTY_STRING = "";

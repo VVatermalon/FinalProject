@@ -24,12 +24,12 @@ public class Item extends CustomEntity {
     private List<ItemSize> sizes;
     private BigDecimal price;
     private int amountInStock;
-    private double popularity;
+    private long popularity;
     private String description;
     private String imagePath;
 
     public Item(String name, List<ItemCategory> categories, List<ItemSize> sizes, BigDecimal price,
-                int amountInStock, double popularity, String description, String imagePath) {
+                int amountInStock, long popularity, String description, String imagePath) {
         this.name = name;
         this.categories = categories;
         this.sizes = sizes;
@@ -41,7 +41,7 @@ public class Item extends CustomEntity {
     }
 
     public Item(int id, String name, List<ItemCategory> categories, List<ItemSize> sizes, BigDecimal price,
-                int amountInStock, double popularity, String description, String imagePath) {
+                int amountInStock, long popularity, String description, String imagePath) {
         super(id);
         this.name = name;
         this.categories = categories;
@@ -53,7 +53,7 @@ public class Item extends CustomEntity {
         this.imagePath = imagePath;
     }
 
-    public Item(int id, String name, BigDecimal price, int amountInStock, double popularity,
+    public Item(int id, String name, BigDecimal price, int amountInStock, long popularity,
                 String description, String imagePath) {
         super(id);
         this.name = name;
@@ -104,11 +104,11 @@ public class Item extends CustomEntity {
         this.amountInStock = amountInStock;
     }
 
-    public double getPopularity() {
+    public long getPopularity() {
         return popularity;
     }
 
-    public void setPopularity(double popularity) {
+    public void setPopularity(long popularity) {
         this.popularity = popularity;
     }
 
@@ -130,18 +130,17 @@ public class Item extends CustomEntity {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Item{");
-        sb.append("id=").append(id);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", categories=").append(categories);
-        sb.append(", sizes=").append(sizes);
-        sb.append(", price=").append(price);
-        sb.append(", amountInStock=").append(amountInStock);
-        sb.append(", popularity=").append(popularity);
-        sb.append(", description='").append(description).append('\'');
-        sb.append(", imagePath='").append(imagePath).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "Item{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", categories=" + categories +
+                ", sizes=" + sizes +
+                ", price=" + price +
+                ", amountInStock=" + amountInStock +
+                ", popularity=" + popularity +
+                ", description='" + description + '\'' +
+                ", imagePath='" + imagePath + '\'' +
+                '}';
     }
 
     @Override

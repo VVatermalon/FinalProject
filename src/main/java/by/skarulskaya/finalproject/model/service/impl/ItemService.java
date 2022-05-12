@@ -5,6 +5,7 @@ import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.dao.CategoryDao;
 import by.skarulskaya.finalproject.model.dao.EntityTransaction;
+import by.skarulskaya.finalproject.model.dao.ItemDao;
 import by.skarulskaya.finalproject.model.dao.SizeDao;
 import by.skarulskaya.finalproject.model.dao.impl.CategoryDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.ItemDaoImpl;
@@ -27,7 +28,7 @@ public class ItemService {
     }
 
     public List<Item> findAllItems() throws ServiceException {
-        ItemDaoImpl itemDao = new ItemDaoImpl();
+        ItemDao itemDao = new ItemDaoImpl();
         CategoryDao categoryDao = new CategoryDaoImpl();
         SizeDao sizeDao = new SizeDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
@@ -40,7 +41,7 @@ public class ItemService {
     }
 
     public List<Item> findAllByPage(int count, int offset) throws ServiceException {
-        ItemDaoImpl itemDao = new ItemDaoImpl();
+        ItemDao itemDao = new ItemDaoImpl();
         CategoryDao categoryDao = new CategoryDaoImpl();
         SizeDao sizeDao = new SizeDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
@@ -53,7 +54,7 @@ public class ItemService {
     }
 
     public List<Item> findAllByPageSort(Item.ItemSortParameter sortParameter, SortOrder order, int count, int offset) throws ServiceException {
-        ItemDaoImpl itemDao = new ItemDaoImpl();
+        ItemDao itemDao = new ItemDaoImpl();
         CategoryDao categoryDao = new CategoryDaoImpl();
         SizeDao sizeDao = new SizeDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
@@ -66,7 +67,7 @@ public class ItemService {
     }
 
     public List<Item> findAllByCategory(int id) throws ServiceException {
-        ItemDaoImpl itemDao = new ItemDaoImpl();
+        ItemDao itemDao = new ItemDaoImpl();
         CategoryDao categoryDao = new CategoryDaoImpl();
         SizeDao sizeDao = new SizeDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
@@ -79,7 +80,7 @@ public class ItemService {
     }
 
     public List<Item> findAllByCategoryByPage(int id, int count, int offset) throws ServiceException {
-        ItemDaoImpl itemDao = new ItemDaoImpl();
+        ItemDao itemDao = new ItemDaoImpl();
         CategoryDao categoryDao = new CategoryDaoImpl();
         SizeDao sizeDao = new SizeDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
@@ -92,7 +93,7 @@ public class ItemService {
     }
 
     public List<Item> findAllByCategoryByPageSort(int id, Item.ItemSortParameter sortParameter, SortOrder order, int count, int offset) throws ServiceException {
-        ItemDaoImpl itemDao = new ItemDaoImpl();
+        ItemDao itemDao = new ItemDaoImpl();
         CategoryDao categoryDao = new CategoryDaoImpl();
         SizeDao sizeDao = new SizeDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
@@ -105,7 +106,7 @@ public class ItemService {
     }
 
     public Optional<Item> findItemById(int id) throws ServiceException {
-        ItemDaoImpl itemDao = new ItemDaoImpl();
+        ItemDao itemDao = new ItemDaoImpl();
         CategoryDao categoryDao = new CategoryDaoImpl();
         SizeDao sizeDao = new SizeDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
@@ -120,6 +121,17 @@ public class ItemService {
             }
             transaction.commit();
             return itemOptional;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    public boolean updatePopularity(int id) throws ServiceException {
+        ItemDao itemDao = new ItemDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(itemDao);
+            long popularity = System.currentTimeMillis();
+            return itemDao.updatePopularity(id, popularity);
         } catch (DaoException e) {
             throw new ServiceException(e);
         }

@@ -26,7 +26,7 @@ public class ItemMapper implements EntityMapper<Item> {
             String name = resultSet.getString(NAME_LABEL);
             BigDecimal price = resultSet.getBigDecimal(PRICE_LABEL);
             int amount = resultSet.getInt(AMOUNT_LABEL);
-            double popularity = resultSet.getDouble(POPULARITY_LABEL);
+            long popularity = resultSet.getLong(POPULARITY_LABEL);
             String image = resultSet.getString(IMAGE_LABEL);
             String description = resultSet.getString(DESCRIPTION_LABEL);
             item = new Item(id, name, price, amount, popularity, description, image);
