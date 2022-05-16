@@ -10,7 +10,7 @@ public final class PagesPaths {
     public static final String ITEM_PAGE = "/jsp/pages/item.jsp";
     public static final String CART_PAGE = "jsp/pages/cart.jsp";
     public static final String ADD_MENU_PAGE = "/jsp/pages/admin/addproducts.jsp";
-    public static final String SETTINGS_PAGE = "/jsp/pages/common/settings.jsp";
+    public static final String SETTINGS_PAGE = "/jsp/pages/settings.jsp";
     public static final String SIGN_IN_PAGE = "/jsp/pages/signIn.jsp";
     public static final String REGISTRATION_PAGE = "/jsp/pages/registration.jsp";
     public static final String USERS_PAGE = "/jsp/pages/admin/users.jsp";

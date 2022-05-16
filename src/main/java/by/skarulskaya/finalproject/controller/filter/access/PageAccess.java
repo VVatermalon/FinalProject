@@ -16,11 +16,11 @@ public enum PageAccess {
             USERS_PAGE,
             ADD_MENU_PAGE)),
     GUEST(Set.of(PROFILE_PAGE,
-            SETTINGS_PAGE,
             CART_PAGE,
             BANK_ACCOUNT_PAGE,
             ADD_SHIPPING_ADDRESS_PAGE,
-            PAYMENT_PAGE));
+            PAYMENT_PAGE,
+            SETTINGS_PAGE));
 
     Set<String> userPages;
 

@@ -22,12 +22,20 @@ public class UserDaoImpl extends UserDao {
     private static final String SQL_FIND_USER_BY_EMAIL_AND_PASSWORD = """
         SELECT user_id, email, password, name, surname,role, status
         FROM users WHERE email = ? and password = ?""";
+    private static final String SQL_FIND_USER_BY_ID_AND_PASSWORD = """
+        Select user_id FROM users WHERE user_id = ? AND password = ?""";
     private static final String SQL_CREATE_USER = """
         INSERT INTO users(email, password, name, surname, role, status) 
         VALUES(?,?,?,?,?,?)""";
     private static final String SQL_UPDATE_USER = """
         UPDATE users set email = ?, password = ?, name = ?, surname = ?, 
         role = ?, status = ? WHERE user_id = ?""";
+    private static final String SQL_UPDATE_NAME = """
+        UPDATE users set name = ? WHERE user_id = ?""";
+    private static final String SQL_UPDATE_SURNAME = """
+        UPDATE users set surname = ? WHERE user_id = ?""";
+    private static final String SQL_UPDATE_PASSWORD = """
+        UPDATE users set password = ? WHERE user_id = ?""";
     private static final EntityMapper<User> mapper = new UserMapper();
 
     @Override
@@ -103,6 +111,20 @@ public class UserDaoImpl extends UserDao {
     }
 
     @Override
+    public boolean checkCorrectPassword(int id, String password) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_BY_ID_AND_PASSWORD)) {
+            statement.setInt(1, id);
+            statement.setString(2, password);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
     public boolean delete(User entity) throws DaoException {
         int user_id = entity.getId();
         return delete(user_id);
@@ -163,6 +185,42 @@ public class UserDaoImpl extends UserDao {
             statement.setString(5, entity.getRole().name());
             statement.setString(6, entity.getStatus().name());
             statement.setInt(7, entity.getId());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean updateName(int id, String name) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_NAME)) {
+            statement.setString(1, name);
+            statement.setInt(2, id);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean updateSurname(int id, String surname) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_SURNAME)) {
+            statement.setString(1, surname);
+            statement.setInt(2, id);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean updatePassword(int id, String password) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PASSWORD)) {
+            statement.setString(1, password);
+            statement.setInt(2, id);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error(e);

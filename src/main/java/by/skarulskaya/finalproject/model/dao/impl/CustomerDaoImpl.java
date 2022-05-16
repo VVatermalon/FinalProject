@@ -29,6 +29,9 @@ public class CustomerDaoImpl extends CustomerDao {
     private static final String SQL_UPDATE_BANK_ACCOUNT = """
         UPDATE customers SET bank_account = ?
         WHERE customer_id = ?""";
+    private static final String SQL_UPDATE_PHONE_NUMBER = """
+        UPDATE customers SET phone_number = ?
+        WHERE customer_id = ?""";
     private static final String SQL_UPDATE_DEFAULT_ADDRESS = """
         UPDATE customers SET default_address_id = ?
         WHERE customer_id = ?""";
@@ -103,17 +106,27 @@ public class CustomerDaoImpl extends CustomerDao {
     }
 
     @Override
-    public boolean findCustomerByPhone(String phoneNumber) throws DaoException {
-        ResultSet resultSet = null;
-        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_CUSTOMER_BY_PHONE)) {
+    public boolean updatePhoneNumber(int id, String phoneNumber) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PHONE_NUMBER)) {
             statement.setString(1, phoneNumber);
-            resultSet = statement.executeQuery();
-            return resultSet.next();
+            statement.setInt(2, id);
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.error(e);
             throw new DaoException(e);
-        } finally {
-            close(resultSet);
+        }
+    }
+
+    @Override
+    public boolean findCustomerByPhone(String phoneNumber) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_CUSTOMER_BY_PHONE)) {
+            statement.setString(1, phoneNumber);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
         }
     }
 

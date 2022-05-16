@@ -20,7 +20,8 @@ public enum CommandType {
     ADD_MONEY_TO_ACCOUNT(new AddMoneyToAccount()),
     PAY_ORDER(new PayOrder()),
     ADD_SHIPPING_ADDRESS(new AddShippingAddress()),
-    CHANGE_LANGUAGE(new ChangeLanguage());
+    CHANGE_LANGUAGE(new ChangeLanguage()),
+    CHANGE_SETTING(new ChangeSetting());
 
     private final Command command;
 

@@ -15,7 +15,7 @@
     <c:when test="${empty language}"> <fmt:setLocale value="${language = 'ru_RU'}" scope="session"/></c:when>
 </c:choose>
 <fmt:setBundle basename="language.language"/>
-
+<fmt:message key="alt.catalog" var="alt_catalog"/>
 <fmt:message key="header.music" var="music"/>
 <fmt:message key="header.merch" var="merch"/>
 <fmt:message key="header.lisa" var="Lisa"/>
@@ -86,7 +86,7 @@
         </div>
         <div>
             <a class="navbar-brand navbar-center" href="${absolutePath}/controller?command=find_all_items">
-                <img src="${absolutePath}/images/logo.png" alt="Catalog" height="90">
+                <img src="${absolutePath}/images/logo.png" alt="${alt_catalog}" height="90">
             </a>
         </div>
         <div>

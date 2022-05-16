@@ -16,6 +16,9 @@
     <c:when test="${empty language}"> <fmt:setLocale value="${language = 'ru_RU'}" scope="session"/></c:when>
 </c:choose>
 <fmt:setBundle basename="language.language"/>
+<fmt:message key="action.page_navigation" var="page_navigation"/>
+<fmt:message key="action.previous" var="previous"/>
+<fmt:message key="action.next" var="next"/>
 <html>
 <head>
     <title><fmt:message key="title.shop"/> </title>
@@ -461,7 +464,7 @@
                     </c:forEach>
                 </div>
                 <div class="container">
-                    <nav aria-label="Page navigation">
+                    <nav aria-label="${page_navigation}">
                         <ul class="pagination pagination-lg justify-content-center">
                             <form id="paginationPrevious" action="${absolutePath}/controller">
                                 <input type="hidden" name="command" value="find_all_items">
@@ -478,7 +481,7 @@
                                 <c:choose>
                                     <c:when test="${requestScope.page > 1}">
                                         <li class="page-item">
-                                            <a class="page-link" aria-label="Previous"
+                                            <a class="page-link" aria-label="${previous}"
                                                onclick="document.getElementById('paginationPrevious').submit(); return false;">
                                                 <span aria-hidden="true">&laquo;</span>
                                             </a>
@@ -486,7 +489,7 @@
                                     </c:when>
                                     <c:otherwise>
                                         <li class="page-item disabled">
-                                            <a class="page-link" href="#" aria-label="Previous">
+                                            <a class="page-link" href="#" aria-label="${previous}">
                                                 <span aria-hidden="true">&laquo;</span>
                                             </a>
                                         </li>
@@ -509,7 +512,7 @@
                                 <c:choose>
                                     <c:when test="${!empty is_next_page}">
                                         <li class="page-item">
-                                            <a class="page-link" aria-label="Next"
+                                            <a class="page-link" aria-label="${next}"
                                                onclick="document.getElementById('paginationNext').submit(); return false;">
                                                 <span aria-hidden="true">&raquo;</span>
                                             </a>
@@ -517,7 +520,7 @@
                                     </c:when>
                                     <c:otherwise>
                                         <li class="page-item disabled">
-                                            <a class="page-link" href="#" aria-label="Next">
+                                            <a class="page-link" href="#" aria-label="${next}">
                                                 <span aria-hidden="true">&raquo;</span>
                                             </a>
                                         </li>

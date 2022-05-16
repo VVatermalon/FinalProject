@@ -18,7 +18,7 @@
     <c:when test="${empty language}"> <fmt:setLocale value="${language = 'ru_RU'}" scope="session"/></c:when>
 </c:choose>
 <fmt:setBundle basename="language.language"/>
-
+<fmt:message key="alt.main" var="alt_main"/>
 <fmt:message key="header.language" var="lang"/>
 <fmt:message key="registration.name" var="register"/>
 <fmt:message key="input.placeholder.email" var="enter_email"/>
@@ -55,7 +55,7 @@
         <div class="col"></div>
         <div class="col d-flex justify-content-center">
             <a class="navbar-brand m-1" href="${absolutePath}/jsp/pages/start.jsp">
-                <img src="${absolutePath}/images/logo.png" alt="main" height="90">
+                <img src="${absolutePath}/images/logo.png" alt="${alt_main}" height="90">
             </a>
         </div>
         <div class="col d-flex flex-row-reverse">

@@ -23,7 +23,8 @@ public enum CommandAccess {
             CommandType.UPLOAD_CART.name(),
             CommandType.ADD_MONEY_TO_ACCOUNT.name(),
             CommandType.ADD_SHIPPING_ADDRESS.name(),
-            CommandType.PAY_ORDER.name()));
+            CommandType.PAY_ORDER.name(),
+            CommandType.CHANGE_SETTING.name()));
     private final Set<String> commands;
 
     CommandAccess(Set<String> commands){

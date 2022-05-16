@@ -17,45 +17,53 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static by.skarulskaya.finalproject.controller.PagesPaths.ADD_SHIPPING_ADDRESS_PAGE;
-import static by.skarulskaya.finalproject.controller.PagesPaths.PAYMENT_PAGE;
+import static by.skarulskaya.finalproject.controller.PagesPaths.*;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
 
 public class AddShippingAddress implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final AddressService addressService = AddressService.getInstance();
+
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         Router router = new Router();
         Map<String, String> mapData = new HashMap<>();
         HttpSession session = request.getSession();
-        Customer customer = (Customer)session.getAttribute(CUSTOMER);
+        Customer customer = (Customer) session.getAttribute(CUSTOMER);
+        String updateAddress = request.getParameter(UPDATE_ADDRESS);
         mapData.put(COUNTRY, request.getParameter(COUNTRY));
         mapData.put(CITY, request.getParameter(CITY));
         mapData.put(ADDRESS, request.getParameter(ADDRESS));
         mapData.put(APARTMENT, request.getParameter(APARTMENT));
         mapData.put(POSTAL_CODE, request.getParameter(POSTAL_CODE));
         String saveAddress = request.getParameter(SAVE_FOR_LATER);
+        if (updateAddress != null) {
+            saveAddress = UPDATE_ADDRESS;
+        }
         mapData.put(SAVE_FOR_LATER, saveAddress);
         try {
             Optional<Address> address = addressService.createAddress(mapData, customer.getId());
-            if(address.isPresent()) {
+            if (address.isPresent()) {
                 session.setAttribute(ADDRESS_ID, address.get().getId());
-                if(saveAddress != null) {
+                if (saveAddress != null) {
                     customer.setDefaultAddress(address);
                     session.setAttribute(CUSTOMER, customer);
                 }
                 router.setCurrentType(Router.Type.REDIRECT);
-                router.setCurrentPage(request.getContextPath() + PAYMENT_PAGE);
+                if (updateAddress != null) {
+                    router.setCurrentPage(request.getContextPath() + SETTINGS_PAGE);
+                } else {
+                    router.setCurrentPage(request.getContextPath() + PAYMENT_PAGE);
+                }
                 return router;
             }
-            for(String key: mapData.keySet()) {
+            for (String key : mapData.keySet()) {
                 String message = mapData.get(key);
-                if(message == null) {
+                if (message == null) {
                     continue;
                 }
-                switch(message) {
+                switch (message) {
                     case INVALID_COUNTRY -> {
                         request.setAttribute(INVALID_COUNTRY, INVALID_COUNTRY_MESSAGE);
                         mapData.put(key, null);
@@ -79,7 +87,11 @@ public class AddShippingAddress implements Command {
                 }
             }
             request.setAttribute(ADDRESS_DATA_MAP, mapData);
-            router.setCurrentPage(ADD_SHIPPING_ADDRESS_PAGE);
+            if (updateAddress != null) {
+                router.setCurrentPage(SETTINGS_PAGE);
+            } else {
+                router.setCurrentPage(ADD_SHIPPING_ADDRESS_PAGE);
+            }
             return router;
         } catch (ServiceException e) {
             throw new CommandException(e);

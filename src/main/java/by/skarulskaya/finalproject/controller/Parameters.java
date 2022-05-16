@@ -27,7 +27,6 @@ public final class Parameters {
     public static final String INVALID_NAME = "invalid_name";
     public static final String INVALID_SURNAME = "invalid_surname";
     public static final String INVALID_PASSWORD = "invalid_password";
-    public static final String INVALID_NEW_PASSWORD = "invalid_new_password";
     public static final String INVALID_OLD_PASSWORD = "invalid_old_password";
     public static final String INVALID_REPEAT_PASSWORD = "invalid_repeat_password";
     public static final String INVALID_PHONE_NUMBER = "invalid_phone_number";
@@ -42,6 +41,9 @@ public final class Parameters {
     public static final String USER_NAME = "user_name";
     public static final String USER_SURNAME = "user_surname";
     public static final String USER_EMAIL = "user_email";
+    public static final String USER_OLD_PASSWORD = "user_old_password";
+    public static final String USER_NEW_PASSWORD = "user_new_password";
+    public static final String USER_REPEAT_PASSWORD = "user_repeat_password";
     public static final String USER_PASSWORD = "user_password";
     public static final String USER_ID = "id";
     public static final String USER_PHONE_NUMBER = "phone_number";
@@ -62,6 +64,12 @@ public final class Parameters {
     public static final String INVALID_ADDRESS = "invalid_address";
     public static final String INVALID_APARTMENT = "invalid_apartment";
     public static final String INVALID_POSTAL_CODE = "invalid_postal_code";
+    public static final String SETTING = "setting";
+    public static final String SETTING_FIRST_NAME = "first_name";
+    public static final String SETTING_LAST_NAME = "last_name";
+    public static final String SETTING_PHONE_NUMBER = "phone_number";
+    public static final String SETTING_PASSWORD = "password";
+    public static final String UPDATE_ADDRESS = "update_address";
 
     private Parameters(){}
 }

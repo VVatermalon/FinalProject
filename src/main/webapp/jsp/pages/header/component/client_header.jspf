@@ -1,3 +1,4 @@
+<fmt:message key="alt.cart" var="alt_cart"/>
 <c:choose>
     <c:when test="${not empty customer}">
         <li class="nav-item dropdown">
@@ -13,7 +14,7 @@
         </li>
         <li class="nav-item">
             <a class="navbar-brand navbar-center" href="${absolutePath}/controller?command=upload_cart">
-                <img src="${absolutePath}/images/cart.png" alt="Cart" height="25">
+                <img src="${absolutePath}/images/cart.png" alt="${alt_cart}" height="25">
                 <small>${sessionScope.items_in_cart_count}</small>
             </a>
         </li>
