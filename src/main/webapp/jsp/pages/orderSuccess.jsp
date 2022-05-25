@@ -19,7 +19,7 @@
 <fmt:message key="alt.success" var="alt_success"/>
 <html>
 <head>
-    <title>ORDER REGISTERED</title>
+    <title><fmt:message key="title.ordering"/></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -63,10 +63,10 @@
         <p><fmt:message key="order.success_info"/></p>
         <div>
             <a href="${absolutePath}/controller?command=find_all_items" role="button" class="btn btn-info"><fmt:message key="back.shop"/></a>
-            <a href="#" role="button" class="btn btn-info"><fmt:message key="order.continue_to_order_history"/></a>
+            <a href="${absolutePath}/controller?command=upload_order_history" role="button" class="btn btn-info"><fmt:message key="order.continue_to_order_history"/></a>
         </div>
     </div>
-    <div class="text-center">
+    <div class="text-center py-3">
         <ctg:custom-footer/>
     </div>
 </div>

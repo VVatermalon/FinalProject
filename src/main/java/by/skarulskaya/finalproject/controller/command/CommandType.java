@@ -21,7 +21,8 @@ public enum CommandType {
     PAY_ORDER(new PayOrder()),
     ADD_SHIPPING_ADDRESS(new AddShippingAddress()),
     CHANGE_LANGUAGE(new ChangeLanguage()),
-    CHANGE_SETTING(new ChangeSetting());
+    CHANGE_SETTING(new ChangeSetting()),
+    UPLOAD_ORDER_HISTORY(new UploadOrderHistory());
 
     private final Command command;
 

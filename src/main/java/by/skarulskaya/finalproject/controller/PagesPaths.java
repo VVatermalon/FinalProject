@@ -19,6 +19,7 @@ public final class PagesPaths {
     public static final String ADD_SHIPPING_ADDRESS_PAGE = "/jsp/pages/addShippingAddress.jsp";
     public static final String PAYMENT_PAGE = "/jsp/pages/payment.jsp";
     public static final String ORDER_SUCCESS_PAGE = "/jsp/pages/orderSuccess.jsp";
+    public static final String ORDER_HISTORY_PAGE = "/jsp/pages/orderHistory.jsp";
 
     private PagesPaths(){}
 }

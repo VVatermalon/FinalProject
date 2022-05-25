@@ -32,7 +32,7 @@ public class OrderComponentService {
         boolean result = false;
         try (EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(orderComponentDao);
-            HashMap<OrderComponent.OrderComponentKey, Integer> cart = orderComponentDao.findAllCartComponents(cartOrderId);
+            HashMap<OrderComponent.OrderComponentKey, Integer> cart = orderComponentDao.findAllOrderComponents(cartOrderId);
             for (OrderComponent.OrderComponentKey key : cart.keySet()) {
                 Item item = itemService.findItemById(key.getItemId()).get();
                 Optional<ItemSize> sizeOpt = item.getSizes().stream()
@@ -59,6 +59,29 @@ public class OrderComponentService {
                 uploadedCart.add(component);
             }
             return result;
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    public List<OrderComponent> findAllOrderComponents(int orderId) throws ServiceException {
+        List<OrderComponent> components = new ArrayList<>();
+        OrderComponentDao orderComponentDao = new OrderComponentDaoImpl();
+        try (EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(orderComponentDao);
+            HashMap<OrderComponent.OrderComponentKey, Integer> cart = orderComponentDao.findAllOrderComponents(orderId);
+            for (OrderComponent.OrderComponentKey key : cart.keySet()) {
+                Item item = itemService.findItemById(key.getItemId()).get();
+                Optional<ItemSize> sizeOpt = item.getSizes().stream()
+                        .filter(s -> s.getId() == key.getItemSizeId())
+                        .findFirst();
+                ItemSize itemSize = sizeOpt.orElse(null); //todo это маловероятно, но а вдруг?
+                int amountInOrder = cart.get(key);
+                OrderComponent component = new OrderComponent(item, amountInOrder, itemSize);
+                components.add(component);
+            }
+            return components;
         } catch (DaoException e) {
             logger.error(e);
             throw new ServiceException(e);

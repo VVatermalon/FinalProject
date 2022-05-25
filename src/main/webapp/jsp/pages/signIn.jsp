@@ -122,7 +122,7 @@
             </div>
         </form>
     </div>
-    <div class="text-center">
+    <div class="text-center py-3">
         <ctg:custom-footer/>
     </div>
 </div>

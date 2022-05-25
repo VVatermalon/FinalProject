@@ -16,6 +16,9 @@ public class AddressDaoImpl extends AddressDao {
     private static final String SQL_FIND_ADDRESS_BY_ID = """
         SELECT address_id, country, city, address, apartment, postal_code
         FROM addresses where address_id = ?""";
+    private static final String SQL_FIND_ADDRESS_BY_ORDER_ID = """
+        SELECT A.address_id, A.country, A.city, A.address, A.apartment, A.postal_code 
+        FROM addresses A JOIN orders O ON A.address_id = O.shipping_address WHERE O.order_id = ?""";
     private static final String SQL_FIND_ADDRESS = """
         SELECT address_id FROM addresses where country = ? AND city = ? AND
         address = ? AND postal_code = ? AND apartment = ?""";
@@ -34,6 +37,23 @@ public class AddressDaoImpl extends AddressDao {
     @Override
     public Optional<Address> findEntityById(Integer id) throws DaoException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ADDRESS_BY_ID)) {
+            statement.setInt(1, id);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    Address address = mapper.map(resultSet);
+                    return Optional.of(address);
+                }
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public Optional<Address> findAddressByOrderId(Integer id) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ADDRESS_BY_ORDER_ID)) {
             statement.setInt(1, id);
             try(ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {

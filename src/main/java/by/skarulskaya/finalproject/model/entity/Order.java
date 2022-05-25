@@ -7,7 +7,12 @@ import java.util.List;
 
 public class Order extends CustomEntity {
     public enum OrderStatus {
-        IN_PROCESS, NEED_CONFIRMATION, CONFIRMED
+        IN_PROCESS, NEED_CONFIRMATION, CONFIRMED;
+
+        @Override
+        public String toString() {
+            return this.name().toLowerCase();
+        }
     }
     private OrderStatus status;
     private Date dateOrdered;
@@ -38,6 +43,14 @@ public class Order extends CustomEntity {
         this.giftCard = giftCard;
         this.totalPrice = totalPrice;
         this.components = components;
+    }
+
+    public Order(int id, OrderStatus status, Date dateOrdered, String giftCard, BigDecimal totalPrice) {
+        super(id);
+        this.status = status;
+        this.dateOrdered = dateOrdered;
+        this.giftCard = giftCard;
+        this.totalPrice = totalPrice;
     }
 
     public OrderStatus getStatus() {

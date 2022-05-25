@@ -104,7 +104,7 @@
 <div class="text-center">
     <img src="${absolutePath}/images/main.jpg" alt="${alt_the_album}" height="1000"/>
 </div>
-<div class="text-center">
+<div class="text-center py-3">
     <ctg:custom-footer/>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>

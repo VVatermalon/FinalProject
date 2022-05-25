@@ -25,7 +25,7 @@
 <c:set var="defaultPostalCode" scope="page" value="${defaultFullAddress != null ? defaultFullAddress.postalCode : null}"/>
 <html>
 <head>
-    <title>settings</title>
+    <title><fmt:message key="title.settings"/></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -361,7 +361,13 @@
                     <fmt:message key="order.shipping_address"/>
                 </td>
                 <td colspan="2" class="p-3">
-                    <fmt:message key="country.${defaultCountry}"/> ${defaultCity}, ${defaultAddress}, ${defaultApartment}, <fmt:message key="order.label.postal_code"/>: ${defaultPostalCode}
+                    <c:choose>
+                        <c:when test="${defaultFullAddress == null}">
+                        </c:when>
+                        <c:otherwise>
+                            <fmt:message key="country.${defaultCountry}"/> ${defaultCity}, ${defaultAddress}, ${defaultApartment} <fmt:message key="order.label.postal_code"/>: ${defaultPostalCode}
+                        </c:otherwise>
+                    </c:choose>
                 </td>
                 <td class="p-3">
                     <a class="link" data-bs-toggle="modal" href="#modalAddress" aria-expanded="false" aria-controls="modalAddress">
@@ -372,8 +378,7 @@
         </tbody>
     </table>
     </div>
-
-    <div class="text-center">
+    <div class="text-center py-3">
         <ctg:custom-footer/>
     </div>
 </div>
@@ -417,7 +422,7 @@
     var invalidAddress = '${invalid_address}';
     var invalidApartment = '${invalid_apartment}';
     var invalidPostalCode = '${invalid_postal_code}';
-    if(invalidCountry.length !== 0 || invalidCity !== 0 || invalidAddress.length !== 0 || invalidApartment.length !== 0 ||
+    if(invalidCountry.length !== 0 || invalidCity.length !== 0 || invalidAddress.length !== 0 || invalidApartment.length !== 0 ||
         invalidPostalCode.length !== 0) {
         var addressModal = new bootstrap.Modal(document.getElementById('modalAddress'), {
             keyboard: false

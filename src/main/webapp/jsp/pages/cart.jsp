@@ -15,9 +15,10 @@
     <c:when test="${empty language}"> <fmt:setLocale value="${language = 'ru_RU'}" scope="session"/></c:when>
 </c:choose>
 <fmt:setBundle basename="language.language"/>
+<fmt:message key="menu.product_money" var="money"/>
 <html>
 <head>
-    <title>CART</title>
+    <title><fmt:message key="title.cart"/></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -86,7 +87,7 @@
                     </td>
                     <td class="text-center">
                         <strong>
-                            <fmt:message key="menu.product_money"/>${component.item.price}
+                                ${money}${component.item.price}
                         </strong>
                     </td>
                     <td class="text-center">
@@ -110,7 +111,7 @@
                     </td>
                     <td class="text-center">
                         <strong>
-                            <fmt:message key="menu.product_money"/>${component.item.price.multiply(component.amount)}
+                                ${money}${component.item.price.multiply(component.amount)}
                         </strong>
                     </td>
                 </tr>
@@ -120,7 +121,7 @@
         <div class="container">
             <div class="row justify-content-end">
                 <div class="col col-auto">
-                    <strong><fmt:message key="cart.subtotal"/> <fmt:message key="menu.product_money"/>${sessionScope.cart_total_price}</strong>
+                    <strong><fmt:message key="cart.subtotal"/> ${money}${sessionScope.cart_total_price}</strong>
                 </div>
             </div>
             <div class="invalid-feedback-backend row mt-2 justify-content-end" style="color: red">
@@ -140,7 +141,7 @@
             </div>
         </div>
     </c:if>
-    <div class="text-center">
+    <div class="text-center py-3">
         <ctg:custom-footer/>
     </div>
 </div>

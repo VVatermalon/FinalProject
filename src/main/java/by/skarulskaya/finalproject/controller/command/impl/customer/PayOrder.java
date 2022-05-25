@@ -51,7 +51,7 @@ public class PayOrder implements Command {
             throw new CommandException(e);
         }
         router.setCurrentType(Router.Type.REDIRECT);
-        router.setCurrentPage(ORDER_SUCCESS_PAGE);
+        router.setCurrentPage(request.getContextPath() + ORDER_SUCCESS_PAGE);
         return router;
     }
 }

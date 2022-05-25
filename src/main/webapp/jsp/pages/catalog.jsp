@@ -79,7 +79,7 @@
             flex-wrap: wrap;
             margin: 0 -30px 45px;
         }
-        .catalog-item:nth-child(n+5) {
+        .catalog-item:nth-child(n+4) {
             margin-top: 20px;
         }
         .catalog-item {
@@ -427,7 +427,7 @@
                 <div class="product_title"><fmt:message key="catalog.no_items"/></div>
             </c:when>
             <c:otherwise>
-                <div class="catalog">
+                <div class="catalog justify-content-center">
                     <c:forEach items="${item_list}" var="item">
                         <div class="catalog-item">
                             <div class="product">
@@ -533,7 +533,7 @@
             </c:otherwise>
         </c:choose>
     </div>
-    <div class="text-center">
+    <div class="text-center py-3">
         <ctg:custom-footer/>
     </div>
 </div>

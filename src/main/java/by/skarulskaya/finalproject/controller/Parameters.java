@@ -70,6 +70,7 @@ public final class Parameters {
     public static final String SETTING_PHONE_NUMBER = "phone_number";
     public static final String SETTING_PASSWORD = "password";
     public static final String UPDATE_ADDRESS = "update_address";
+    public static final String ORDERS = "orders";
 
     private Parameters(){}
 }

@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class OrderComponentDaoImpl extends OrderComponentDao {
-    private static final String SQL_FIND_ALL_CART_COMPONENTS = """
+    private static final String SQL_FIND_ALL_ORDER_COMPONENTS = """
         SELECT order_id, item_id, item_size_id, amount
         FROM orders_items WHERE order_id = ?""";
     private static final String SQL_CREATE_ORDER_COMPONENT = """
@@ -87,13 +87,12 @@ public class OrderComponentDaoImpl extends OrderComponentDao {
     }
 
     @Override
-    public HashMap<OrderComponent.OrderComponentKey, Integer> findAllCartComponents(int cartOrderId) throws DaoException {
+    public HashMap<OrderComponent.OrderComponentKey, Integer> findAllOrderComponents(int orderId) throws DaoException {
         HashMap<OrderComponent.OrderComponentKey, Integer> cart = new HashMap<>();
-        try(PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_CART_COMPONENTS)) {
-            statement.setInt(1, cartOrderId);
+        try(PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_ORDER_COMPONENTS)) {
+            statement.setInt(1, orderId);
             try(ResultSet resultSet = statement.executeQuery()) {
                 while(resultSet.next()) {
-                    int orderId = resultSet.getInt(1);
                     int itemId = resultSet.getInt(2);
                     int sizeId = resultSet.getInt(3);
                     int amount = resultSet.getInt(4);
