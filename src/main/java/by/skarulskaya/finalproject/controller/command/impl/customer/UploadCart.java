@@ -38,7 +38,7 @@ public class UploadCart implements Command {
             if (orderComponentService.uploadCart(cartOrderId, uploadedCart)) {
                 request.setAttribute(ERROR_CART, ERROR_CART_WAS_CHANGED_MESSAGE);
             }
-            uploadedCart.sort(Comparator.comparing(component -> component.getItem().getName()));
+            uploadedCart.sort(null);
             request.setAttribute(UPLOADED_CART, uploadedCart);
             int itemsInCartCount = uploadedCart.stream().mapToInt(OrderComponent::getAmount).sum();
             session.setAttribute(ITEMS_IN_CART_COUNT, itemsInCartCount);

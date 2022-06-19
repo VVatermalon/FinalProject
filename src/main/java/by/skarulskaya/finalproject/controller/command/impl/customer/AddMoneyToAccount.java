@@ -6,6 +6,7 @@ import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.Customer;
 import by.skarulskaya.finalproject.model.service.impl.CustomerService;
+import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -22,7 +23,11 @@ public class AddMoneyToAccount implements Command {
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         Router router = new Router();
         HttpSession session = request.getSession();
+        String currentPage = (String) session.getAttribute(CURRENT_PAGE);
         String moneyParameter = request.getParameter(MONEY);
+        if(!BaseValidatorImpl.INSTANCE.validateMoney(moneyParameter)) {
+            throw new CommandException("Invalid money parameter, money = " + moneyParameter);
+        }
         double money = Double.parseDouble(moneyParameter);
         Customer customer = (Customer) session.getAttribute(CUSTOMER);
         try {
@@ -35,7 +40,7 @@ public class AddMoneyToAccount implements Command {
         } catch (ServiceException e) {
             throw new CommandException(e);
         }
-        router.setCurrentPage(BANK_ACCOUNT_PAGE);
+        router.setCurrentPage(currentPage);
         return router;
     }
 }

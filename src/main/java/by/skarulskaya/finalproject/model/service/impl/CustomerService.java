@@ -36,9 +36,9 @@ public class CustomerService {
         }
     }
 
-    public int registerCustomer(Map<String, String> mapData) throws ServiceException {
+    public boolean registerCustomer(Map<String, String> mapData) throws ServiceException {
         if(!BaseValidatorImpl.INSTANCE.validateRegistration(mapData)) {
-            return -1;
+            return false;
         }
         String email = mapData.get(USER_EMAIL);
         String password = mapData.get(USER_PASSWORD);
@@ -52,24 +52,25 @@ public class CustomerService {
             transaction.beginTransaction(userDao, customerDao);
             if(userDao.findUserByEmail(email)) {
                 mapData.put(USER_EMAIL, NOT_UNIQUE_EMAIL);
-                return -1;
+                return false;
             }
             if(customerDao.findCustomerByPhone(phoneNumber)) {
                 mapData.put(USER_PHONE_NUMBER, NOT_UNIQUE_PHONE);
-                return -1;
+                return false;
             }
             try {
                 sendMessageRegistration(email);
             } catch(ServiceException e) {
                 mapData.put(USER_EMAIL, WRONG_EMAIL); //todo подтверждение почты через ввод сгенерированной последовательности, храним их в бд и периодически чистим
-                return -1;
+                return false;
             }
             Customer customer = new Customer(BigDecimal.ZERO, phoneNumber, Optional.empty(), email, encryptedPassword, name, surname, User.Role.CUSTOMER, User.Status.IN_REGISTRATION_PROCESS);
             //todo после отправки письма статус другой
             userDao.create(customer);
             customerDao.create(customer);
             transaction.commit();
-            return customer.getId();
+            mapData.put(USER_ID, String.valueOf(customer.getId()));
+            return true;
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
@@ -86,25 +87,48 @@ public class CustomerService {
             customer.setBankAccount(newBankAccount);
             return true;
         }
-        return false;
+        throw new ServiceException("Can't add money to account");
     }
 
-    public boolean updatePhoneNumber(int userId, String phoneNumber) throws ServiceException {
-        if(!BaseValidatorImpl.INSTANCE.validatePhoneNumber(phoneNumber)) {
+    public boolean updatePhoneNumber(Map<String, String> mapData) throws ServiceException {
+        String phoneNumber = mapData.get(USER_PHONE_NUMBER);
+        int userId = Integer.parseInt(mapData.get(USER_ID));
+        if (!BaseValidatorImpl.INSTANCE.validatePhoneNumber(phoneNumber)) {
+            mapData.put(USER_PHONE_NUMBER, INVALID_PHONE_NUMBER);
             return false;
         }
         CustomerDao customerDao = new CustomerDaoImpl();
-        try(EntityTransaction transaction = new EntityTransaction()) {
-            transaction.init(customerDao);
-            return customerDao.updatePhoneNumber(userId, phoneNumber);
+        UserDao userDao = new UserDaoImpl();
+        try (EntityTransaction transaction = new EntityTransaction()) {
+            transaction.beginTransaction(customerDao, userDao);
+            if (customerDao.findCustomerByPhone(phoneNumber)) {
+                mapData.put(USER_PHONE_NUMBER, NOT_UNIQUE_PHONE);
+                return false;
+            }
+            if (customerDao.updatePhoneNumber(userId, phoneNumber)) {
+                String email = userDao.findUserEmail(userId);
+                sendMessageSettingsChanged(email);
+                transaction.commit();
+                return true;
+            }
+            transaction.rollback();
+            throw new ServiceException("Can't update phone number, user id = " + userId);
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
     }
 
-    public void sendMessageRegistration(String email) throws ServiceException {
+    private void sendMessageRegistration(String email) throws ServiceException {
         try {
             MailSender.INSTANCE.send(email, "Registration in system", "Welcome! Registration was successful"); //todo сделать тут локализацию
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    private void sendMessageSettingsChanged(String email) throws ServiceException {
+        try {
+            MailSender.INSTANCE.send(email, "Settings have changed", "Dear Customer! Your settings have changed. You can find more information in your profile :)");//todo сделать тут локализацию
         } catch (Exception e) {
             throw new ServiceException(e);
         }

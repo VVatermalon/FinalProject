@@ -6,6 +6,7 @@ import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.service.impl.ItemService;
+import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
@@ -25,10 +26,15 @@ public class OpenItemPage implements Command {
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         Router router = new Router();
-        int id = Integer.parseInt(request.getParameter(ID));
-        logger.info("Find item id = "+id);
         Optional<Item> itemOptional;
+        int id;
         try {
+            String itemIdParameter = request.getParameter(ITEM_ID);
+            if(!BaseValidatorImpl.INSTANCE.validateIntParameter(itemIdParameter)) {
+                router.setCurrentPage(ERROR_404);
+                return router;
+            }
+            id = Integer.parseInt(itemIdParameter);
             itemOptional = itemService.findItemById(id);
         } catch (ServiceException e) {
             throw new CommandException(e);
@@ -37,7 +43,8 @@ public class OpenItemPage implements Command {
             request.setAttribute(ITEM, itemOptional.get());
             router.setCurrentPage(ITEM_PAGE);
         } else {
-            throw new CommandException("Cannot find item by id: " + id);
+            logger.error("Can't find item by id, id = {}", id);
+            router.setCurrentPage(ERROR_500);
         }
         return router;
     }

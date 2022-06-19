@@ -119,4 +119,31 @@ public class SizeDaoImpl extends SizeDao {
             throw new DaoException(e);
         }
     }
+
+    @Override
+    public boolean changeBackAmountInStockForAllOrderItems(int orderId) throws DaoException {
+        try (PreparedStatement selectStatement = connection.prepareStatement(SQL_SELECT_ALL_BY_ORDER_ID, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+             PreparedStatement updateStatement = connection.prepareStatement(SQL_UPDATE_AMOUNT_IN_STOCK)) {
+            selectStatement.setInt(1, orderId);
+            try (ResultSet resultSet = selectStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int itemId = resultSet.getInt(1);
+                    int itemSizeId = resultSet.getInt(2);
+                    int amount = resultSet.getInt(3);
+                    int amountInStock = resultSet.getInt(4);
+                    int newAmount = amountInStock + amount;
+                    updateStatement.setInt(1, newAmount);
+                    updateStatement.setInt(2, itemId);
+                    updateStatement.setInt(3, itemSizeId);
+                    if (updateStatement.executeUpdate() <= 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } catch (SQLException e) {
+            logger.info("from sizeDao");
+            throw new DaoException(e);
+        }
+    }
 }

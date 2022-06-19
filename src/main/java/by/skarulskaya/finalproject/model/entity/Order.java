@@ -5,9 +5,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Order extends CustomEntity {
+public class Order extends CustomEntity implements Comparable<Order> {
+    @Override
+    public int compareTo(Order o) {
+        if(o == null) {
+            return -1;
+        }
+        int dateComparing = this.getDateOrdered().compareTo(o.getDateOrdered());
+        if (dateComparing == 0) {
+            return -Integer.compare(this.getId(), o.getId());
+        }
+        return -dateComparing;
+    }
+
     public enum OrderStatus {
-        IN_PROCESS, NEED_CONFIRMATION, CONFIRMED;
+        IN_PROCESS, NEED_CONFIRMATION, CONFIRMED, CANCELLED;
 
         @Override
         public String toString() {
@@ -15,16 +27,12 @@ public class Order extends CustomEntity {
         }
     }
     private OrderStatus status;
+    private Customer customer;
     private Date dateOrdered;
     private Address address;
     private String giftCard;
     private BigDecimal totalPrice;
     private List<OrderComponent> components;
-
-    public Order() {
-        status = OrderStatus.IN_PROCESS;
-        components = new ArrayList<>();
-    }
 
     public Order(OrderStatus status, Date dateOrdered, Address address, String giftCard, BigDecimal totalPrice, List<OrderComponent> components) {
         this.status = status;
@@ -59,6 +67,14 @@ public class Order extends CustomEntity {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public Date getDateOrdered() {

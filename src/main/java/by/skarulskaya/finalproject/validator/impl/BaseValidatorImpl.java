@@ -1,6 +1,8 @@
 package by.skarulskaya.finalproject.validator.impl;
 
+import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.Address;
+import by.skarulskaya.finalproject.model.entity.OrderComponent;
 import by.skarulskaya.finalproject.validator.BaseValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +23,8 @@ public enum BaseValidatorImpl implements BaseValidator {
     private static final String ADDRESS_ADDRESS_PATTERN = "^[\\wА-Яа-я\\h\\.,/]{5,50}$";
     private static final String ADDRESS_APARTMENT_PATTERN = "^(\\d{1,5}|\\d{1,4}[A-Za-zА-Яа-я])$";
     private static final String ADDRESS_POSTAL_CODE_PATTERN = "^[\\dA-Za-z]{3,10}$";
+    private static final Double MONEY_MIN_VALUE = 0.01;
+    private static final Double MONEY_MAX_VALUE = 999.99;
 
     @Override
     public boolean validateEmail(String email) {
@@ -146,5 +150,61 @@ public enum BaseValidatorImpl implements BaseValidator {
             result = false;
         }
         return result;
+    }
+
+    @Override
+    public boolean validatePage(String page) {
+        if(page == null) {
+            return false;
+        }
+        try {
+            return Integer.parseInt(page) >= 1;
+        }
+        catch(NumberFormatException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean validateMoney(String money) {
+        if(money == null) {
+            return false;
+        }
+        try {
+            return Double.parseDouble(money) >= MONEY_MIN_VALUE && Double.parseDouble(money) <= MONEY_MAX_VALUE;
+        }
+        catch(NumberFormatException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean validateAddItemToCart(Map<String, String> mapData) {
+        String itemIdParameter = mapData.get(ITEM_ID);
+        if(!validateIntParameter(itemIdParameter)) {
+            return false;
+        }
+        String amountParameter = mapData.get(AMOUNT);
+        if(!validateIntParameter(amountParameter)) {
+            return false;
+        }
+        String sizeParameter = mapData.get(SIZE_ID);
+        if(sizeParameter != null) {
+            return validateIntParameter(sizeParameter);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean validateIntParameter(String parameter) {
+        if (parameter == null) {
+            return false;
+        }
+        try {
+            Integer.parseInt(parameter);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

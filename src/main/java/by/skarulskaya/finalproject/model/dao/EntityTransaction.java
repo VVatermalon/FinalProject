@@ -15,7 +15,7 @@ public class EntityTransaction implements AutoCloseable {
     private Connection connection;
 
     public EntityTransaction() {
-        connection = CustomConnectionPool.INSTANCE.getConnection();
+        connection = CustomConnectionPool.getInstance().getConnection();
     }
 
     public void beginTransaction(AbstractDao... daos) throws DaoException {
@@ -55,7 +55,7 @@ public class EntityTransaction implements AutoCloseable {
                 rollback();
                 connection.setAutoCommit(true);
             }
-            CustomConnectionPool.INSTANCE.releaseConnection(connection);
+            CustomConnectionPool.getInstance().releaseConnection(connection);
         } catch (SQLException | ConnectionPoolException e) {
             logger.error(e);
             throw new DaoException(e);

@@ -13,7 +13,8 @@ public final class ParametersMessages {
     public static final String NOT_UNIQUE_PHONE_MESSAGE = "registration.not_unique_phone";
     public static final String WRONG_EMAIL_MESSAGE = "registration.wrong_email";
     public static final String USER_BLOCKED_MESSAGE = "form.user_status_blocked";
-    public static final String ERROR_CANNOT_ADD_ITEM_TO_CART_NOT_ENOUGH_AMOUNT_MESSAGE = "cart.cannot_add_more_items";
+    public static final String ERROR_NOT_ENOUGH_ITEMS_IN_STOCK = "cart.cannot_add_more_items";
+    public static final String ERROR_CANNOT_ADD_MORE_LIMIT = "cart.cannot_add_more_limit";
     public static final String ERROR_CART_WAS_CHANGED_MESSAGE = "cart.cart_changed";
     public static final String ERROR_CANNOT_ADD_MONEY_OVER_LIMIT = "bank_account.money_limit";
     public static final String ERROR_NOT_ENOUGH_MONEY = "payment.not_enough_money";
@@ -22,5 +23,6 @@ public final class ParametersMessages {
     public static final String INVALID_ADDRESS_MESSAGE = "order.invalid_address";
     public static final String INVALID_APARTMENT_MESSAGE = "order.invalid_apartment";
     public static final String INVALID_POSTAL_CODE_MESSAGE = "order.invalid_postal_code";
+
     private ParametersMessages(){}
 }

@@ -54,7 +54,7 @@
 </head>
 <body>
 <div class="page">
-    <header>
+    <header class="sticky-top">
         <%@include file="header/headerCommon.jsp"%>
     </header>
     <div class="items">

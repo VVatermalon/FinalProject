@@ -20,6 +20,8 @@ import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
 
 public class PayOrder implements Command {
     private static final Logger logger = LogManager.getLogger();
+    private static final String UPLOAD_CART_COMMAND = "/controller?command=upload_cart";
+    private static final int ZERO_ITEMS_IN_CART = 0;
     private static final OrderService orderService = OrderService.getInstance();
 
     @Override
@@ -39,13 +41,13 @@ public class PayOrder implements Command {
         }
         try {
             if (!orderService.registerOrder(customer, cartOrderId, addressId, cartTotalPrice)) {
-                router.setCurrentType(Router.Type.REDIRECT);
-                router.setCurrentPage(request.getContextPath() + "/controller?command=upload_cart&error_cart=" + ERROR_CART_WAS_CHANGED_MESSAGE);
+                request.setAttribute(ERROR_CART, ERROR_CART_WAS_CHANGED_MESSAGE);
+                router.setCurrentPage(UPLOAD_CART_COMMAND);
                 return router;
             }
             int newCartOrderId = orderService.createCart(customer.getId());
             session.setAttribute(CART_ORDER_ID, newCartOrderId);
-            session.setAttribute(ITEMS_IN_CART_COUNT, 0);
+            session.setAttribute(ITEMS_IN_CART_COUNT, ZERO_ITEMS_IN_CART);
             session.setAttribute(CUSTOMER, customer);
         } catch (ServiceException e) {
             throw new CommandException(e);

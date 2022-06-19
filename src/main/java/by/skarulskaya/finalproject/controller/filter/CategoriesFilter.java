@@ -20,7 +20,6 @@ import java.util.List;
 
 import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_404;
 import static by.skarulskaya.finalproject.controller.Parameters.CATEGORY_LIST;
-import static by.skarulskaya.finalproject.controller.Parameters.ITEMS_SORT_LIST;
 
 @WebFilter(filterName = "categoriesFilter", urlPatterns = "/*")
 public class CategoriesFilter implements Filter {

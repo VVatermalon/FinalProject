@@ -15,7 +15,7 @@
     <c:when test="${empty language}"> <fmt:setLocale value="${language = 'ru_RU'}" scope="session"/></c:when>
 </c:choose>
 <fmt:setBundle basename="language.language"/>
-<fmt:message key="menu.product_money" var="money"/>
+<fmt:message key="currency" var="currency"/>
 <html>
 <head>
     <title><fmt:message key="title.cart"/></title>
@@ -48,7 +48,7 @@
 </head>
 <body>
     <div class="page">
-    <header>
+    <header class="sticky-top">
         <%@include file="header/headerCommon.jsp"%>
     </header>
     <div class="back">
@@ -71,12 +71,12 @@
             <c:forEach items="${uploaded_cart}" var="component">
                 <tr style="border-top: 1px solid grey">
                     <td colspan="3" class="text-center">
-                        <a href="${absolutePath}/controller?command=open_item_page&id=${component.item.id}" class="cart_image">
+                        <a href="${absolutePath}/controller?command=open_item_page&item_id=${component.item.id}" class="cart_image">
                             <img src="${absolutePath}/images/${component.item.imagePath}" alt="${component.item.name}">
                         </a>
                     </td>
                     <td colspan="2" class="text-center">
-                        <a href="${absolutePath}/controller?command=open_item_page&id=${component.item.id}">
+                        <a href="${absolutePath}/controller?command=open_item_page&item_id=${component.item.id}">
                             <strong class="product_title row">${component.item.name}</strong>
                         </a>
                         <p class="row">
@@ -87,7 +87,7 @@
                     </td>
                     <td class="text-center">
                         <strong>
-                                ${money}${component.item.price}
+                                ${currency}${component.item.price}
                         </strong>
                     </td>
                     <td class="text-center">
@@ -96,13 +96,13 @@
                                 <div>-</div>
                             </c:when>
                             <c:otherwise>
-                                <a href="${absolutePath}/controller?command=change_item_amount_in_cart&item_id=${component.item.id}&size_id=${component.itemSize.id}&amount=${component.amount - 1}">
+                                <a href="${absolutePath}/controller?command=add_item_to_cart&item_id=${component.item.id}&size_id=${component.itemSize.id}&amount=-1&change_from_cart=true">
                                     <div class="counter_btn counter_btn_minus btn-secondary">-</div>
                                 </a>
                             </c:otherwise>
                         </c:choose>
                         <span>${component.amount}</span>
-                        <a href="${absolutePath}/controller?command=change_item_amount_in_cart&item_id=${component.item.id}&size_id=${component.itemSize.id}&amount=${component.amount + 1}">
+                        <a href="${absolutePath}/controller?command=add_item_to_cart&item_id=${component.item.id}&size_id=${component.itemSize.id}&amount=1">
                             <div class="counter_btn counter_btn_plus btn-secondary">+</div>
                         </a>
                     </td>
@@ -111,7 +111,7 @@
                     </td>
                     <td class="text-center">
                         <strong>
-                                ${money}${component.item.price.multiply(component.amount)}
+                                ${currency}${component.item.price.multiply(component.amount)}
                         </strong>
                     </td>
                 </tr>
@@ -121,7 +121,7 @@
         <div class="container">
             <div class="row justify-content-end">
                 <div class="col col-auto">
-                    <strong><fmt:message key="cart.subtotal"/> ${money}${sessionScope.cart_total_price}</strong>
+                    <strong><fmt:message key="cart.subtotal"/> ${currency}${sessionScope.cart_total_price}</strong>
                 </div>
             </div>
             <div class="invalid-feedback-backend row mt-2 justify-content-end" style="color: red">
@@ -129,8 +129,8 @@
                     <c:if test="${!empty error_cart}">
                         <fmt:message key="${error_cart}"/>
                     </c:if>
-                    <c:if test="${!empty param.error_cart}">
-                        <fmt:message key="${param.error_cart}"/>
+                    <c:if test="${!empty error_add_item_to_cart}">
+                        <fmt:message key="${error_add_item_to_cart}"/>
                     </c:if>
                 </div>
             </div>
@@ -162,12 +162,12 @@
 <%--                <hr>--%>
 <%--                <div class="row align-items-center">--%>
 <%--                    <div class="col-4 text-center offset-md-1">--%>
-<%--                        <a href="${absolutePath}/controller?command=open_item_page&id=${component.item.id}" class="cart_image">--%>
+<%--                        <a href="${absolutePath}/controller?command=open_item_page&item_id=${component.item.id}" class="cart_image">--%>
 <%--                            <img src="${absolutePath}/images/${component.item.imagePath}" alt="${component.item.name}">--%>
 <%--                        </a>--%>
 <%--                    </div>--%>
 <%--                    <div class="col-2 text-center">--%>
-<%--                        <a href="${absolutePath}/controller?command=open_item_page&id=${component.item.id}">--%>
+<%--                        <a href="${absolutePath}/controller?command=open_item_page&item_id=${component.item.id}">--%>
 <%--                            <strong class="product_title row">${component.item.name}</strong>--%>
 <%--                        </a>--%>
 <%--                        <p class="row">--%>

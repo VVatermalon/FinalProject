@@ -12,5 +12,4 @@ public interface BaseService {
     Optional<User> findUserById(int id) throws ServiceException;
 
     //boolean registerUser(Map<String, String> mapData) throws ServiceException;
-    void sendMessageRegistration(String email) throws ServiceException;
 }

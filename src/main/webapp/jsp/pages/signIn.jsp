@@ -12,7 +12,6 @@
 <%@ taglib prefix="fmr" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <c:set var="absolutePath">${pageContext.request.contextPath}</c:set>
-<c:set var="current_page" value="${pageContext.request.requestURI}" scope="session"/>
 <c:choose>
     <c:when test="${not empty language}"> <fmt:setLocale value="${language}" scope="session"/></c:when>
     <c:when test="${empty language}"> <fmt:setLocale value="${language = 'ru_RU'}" scope="session"/></c:when>

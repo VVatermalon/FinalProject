@@ -16,6 +16,7 @@
 </c:choose>
 <fmt:setBundle basename="language.language"/>
 <fmt:message key="input.placeholder.money_amount" var="e_money"/>
+<fmt:message key="currency" var="currency"/>
 <html>
 <head>
     <title><fmt:message key="title.ordering"/></title>
@@ -35,7 +36,7 @@
 </head>
 <body>
 <div class="page">
-    <header>
+    <header class="sticky-top">
         <%@include file="header/headerCommon.jsp"%>
     </header>
     <div class="back">
@@ -43,9 +44,14 @@
     </div>
     <div class="container justify-content-center col-12 col-sm-6 mt-3">
         <h3 class="text-center p-3"><fmt:message key="payment.name"/></h3>
-        <div><fmt:message key="payment.price"/>: ${sessionScope.cart_total_price}$</div>
+        <div><fmt:message key="payment.price"/>: ${sessionScope.cart_total_price}${currency}</div>
         <br/>
-        <a href="${absolutePath}/controller?command=pay_order" role="button" class="btn btn-info"><fmt:message key="payment.pay"/></a>
+        <form role="form" action="${absolutePath}/controller" method="post" novalidate>
+            <input type="hidden" name="command" value="pay_order"/>
+            <div class="text-center mb-3">
+                <button type="submit" class="btn btn-info"><fmt:message key="payment.pay"/></button>
+            </div>
+        </form>
         <c:if test="${!empty error_pay_order}">
             <div class="invalid-feedback-backend" style="color: red">
                 <fmt:message key="${error_pay_order}"/>

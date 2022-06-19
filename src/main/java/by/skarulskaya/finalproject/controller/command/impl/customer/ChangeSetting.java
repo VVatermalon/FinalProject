@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 import static by.skarulskaya.finalproject.controller.PagesPaths.*;
@@ -34,6 +35,10 @@ public class ChangeSetting implements Command {
         HttpSession session = request.getSession();
         Customer customer = (Customer) session.getAttribute(CUSTOMER);
         String settingName = request.getParameter(SETTING);
+        if(settingName == null) {
+            router.setCurrentPage(ERROR_404);
+            return router;
+        }
         try {
             switch (settingName) {
                 case SETTING_FIRST_NAME -> {
@@ -61,14 +66,23 @@ public class ChangeSetting implements Command {
                     return router;
                 }
                 case SETTING_PHONE_NUMBER -> {
+                    HashMap<String, String> mapData = new HashMap<>();
                     String userPhone = request.getParameter(USER_PHONE_NUMBER);
-                    if (customerService.updatePhoneNumber(customer.getId(), userPhone)) {
+                    mapData.put(USER_PHONE_NUMBER, userPhone);
+                    mapData.put(USER_ID, String.valueOf(customer.getId()));
+                    if (customerService.updatePhoneNumber(mapData)) {
                         customer.setPhoneNumber(userPhone);
                         router.setCurrentType(Router.Type.REDIRECT);
                         router.setCurrentPage(request.getContextPath() + SETTINGS_PAGE);
                         return router;
                     }
-                    request.setAttribute(INVALID_PHONE_NUMBER, INVALID_PHONE_NUMBER_MESSAGE);
+                    for (String key : mapData.keySet()) {
+                        String message = mapData.get(key);
+                        switch (message) {
+                            case INVALID_PHONE_NUMBER -> request.setAttribute(INVALID_PHONE_NUMBER, INVALID_PHONE_NUMBER_MESSAGE);
+                            case NOT_UNIQUE_PHONE -> request.setAttribute(INVALID_PHONE_NUMBER, NOT_UNIQUE_PHONE_MESSAGE);
+                        }
+                    }
                     router.setCurrentPage(SETTINGS_PAGE);
                     return router;
                 }

@@ -1,5 +1,6 @@
 package by.skarulskaya.finalproject.model.service.impl;
 
+import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.dao.EntityTransaction;
@@ -9,14 +10,22 @@ import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.entity.ItemSize;
 import by.skarulskaya.finalproject.model.entity.OrderComponent;
 import by.skarulskaya.finalproject.model.service.BaseService;
+import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.*;
 
+import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_404;
+import static by.skarulskaya.finalproject.controller.Parameters.*;
+import static by.skarulskaya.finalproject.controller.ParametersMessages.ERROR_CANNOT_ADD_MORE_LIMIT;
+import static by.skarulskaya.finalproject.controller.ParametersMessages.ERROR_NOT_ENOUGH_ITEMS_IN_STOCK;
+
 public class OrderComponentService {
     private static final Logger logger = LogManager.getLogger();
+    private static final int ITEM_IN_CART_AMOUNT_LIMIT = 50;
+    private static final int DEFAULT_SIZE_ID = 1;
     private static final OrderComponentService INSTANCE = new OrderComponentService();
     private final ItemService itemService = ItemService.getInstance();
 
@@ -29,37 +38,34 @@ public class OrderComponentService {
 
     public boolean uploadCart(int cartOrderId, List<OrderComponent> uploadedCart) throws ServiceException {
         OrderComponentDao orderComponentDao = new OrderComponentDaoImpl();
-        boolean result = false;
+        boolean cartWasChanged = false;
         try (EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(orderComponentDao);
             HashMap<OrderComponent.OrderComponentKey, Integer> cart = orderComponentDao.findAllOrderComponents(cartOrderId);
             for (OrderComponent.OrderComponentKey key : cart.keySet()) {
                 Item item = itemService.findItemById(key.getItemId()).get();
-                Optional<ItemSize> sizeOpt = item.getSizes().stream()
+                ItemSize itemSize = item.getSizes().stream()
                         .filter(s -> s.getId() == key.getItemSizeId())
-                        .findFirst();
-                if (sizeOpt.isEmpty()) {
-                    throw new ServiceException("Can't find item size"); //todo better remove this item from cart
-                }
-                ItemSize itemSize = sizeOpt.get();
+                        .findFirst()
+                        .get();
                 int amountInStock = itemSize.getAmountInStock();
                 if (amountInStock == 0) {
                     cart.remove(key);
                     removeItemFromCart(key);
-                    result = true;
+                    cartWasChanged = true;
                     continue;
                 }
                 int amountInCart = cart.get(key);
                 if (amountInStock < amountInCart) {
                     amountInCart = amountInStock;
-                    changeItemAmountInCart(key, amountInCart);
-                    result = true;
+                    changeAmountInOrderComponent(key, amountInCart);
+                    cartWasChanged = true;
                 }
                 OrderComponent component = new OrderComponent(item, amountInCart, itemSize);
                 uploadedCart.add(component);
             }
-            return result;
-        } catch (DaoException e) {
+            return cartWasChanged;
+        } catch (DaoException | NoSuchElementException e) {
             logger.error(e);
             throw new ServiceException(e);
         }
@@ -88,67 +94,77 @@ public class OrderComponentService {
         }
     }
 
-    public int addItemToCart(OrderComponent.OrderComponentKey key, int amount) throws ServiceException {
-        if (amount < 1) {
-            return 0;
+    public boolean addItemToCart(Map<String, String> mapData) throws ServiceException {
+        if (!BaseValidatorImpl.INSTANCE.validateAddItemToCart(mapData)) {
+            throw new ServiceException("Invalid parameter");
         }
-        Item item = itemService.findItemById(key.getItemId()).get();
+        int cartOrderId = Integer.parseInt(mapData.get(CART_ORDER_ID));
+        int itemId = Integer.parseInt(mapData.get(ITEM_ID));
+        int amount = Integer.parseInt(mapData.get(AMOUNT));
+        String sizeParameter = mapData.get(SIZE_ID);
+        int sizeId = sizeParameter == null ? DEFAULT_SIZE_ID : Integer.parseInt(sizeParameter);
+        OrderComponent.OrderComponentKey key = new OrderComponent.OrderComponentKey(cartOrderId, itemId, sizeId);
+        if (amount < 1 && (mapData.get(CHANGE_FROM_CART) == null || amount != -1)) {
+            throw new ServiceException("Invalid amount = " + amount);
+        }
+        Optional<Item> itemOptional = itemService.findItemById(itemId);
+        if (itemOptional.isEmpty()) {
+            mapData.put(ITEM_ID, INVALID_ITEM_ID);
+            return false;
+        }
+        itemService.updatePopularity(itemId);
+        Item item = itemOptional.get();
         Optional<ItemSize> sizeOpt = item.getSizes().stream()
-                .filter(s -> s.getId() == key.getItemSizeId())
+                .filter(s -> s.getId() == sizeId)
                 .findFirst();
         if (sizeOpt.isEmpty()) {
-            throw new ServiceException("Can't find item size"); //todo better remove this item from cart
+            mapData.put(SIZE_ID, INVALID_SIZE_ID);
+            return false;
         }
         ItemSize itemSize = sizeOpt.get();
         int amountInStock = itemSize.getAmountInStock();
-        if (amountInStock <= 0) {
-            return 0;
-        }
-        int newAmount = Math.min(50, amount);
         int itemAmountInCart = itemAmountInCart(key);
+        int newAmount = itemAmountInCart + amount;
+        boolean errorFlag = true;
+        if (newAmount > amountInStock) {
+            newAmount = amountInStock;
+            mapData.put(AMOUNT, ERROR_NOT_ENOUGH_ITEMS_IN_STOCK);
+            errorFlag = false;
+        }
+        if (newAmount > ITEM_IN_CART_AMOUNT_LIMIT) {
+            newAmount = ITEM_IN_CART_AMOUNT_LIMIT;
+            mapData.put(AMOUNT, ERROR_CANNOT_ADD_MORE_LIMIT);
+            errorFlag = false;
+        }
         if (itemAmountInCart > 0) {
-            newAmount = itemAmountInCart + newAmount;
-            newAmount = Math.min(amountInStock, newAmount);
             if (!changeAmountInOrderComponent(key, newAmount)) {
-                return 0;
+                mapData.put(CART_ORDER_ID, ERROR_ADD_ITEM_TO_CART);
+                return false;
             }
         } else {
-            newAmount = Math.min(amountInStock, newAmount);
             if (!createOrderComponent(key, newAmount)) {
-                return 0;
+                mapData.put(CART_ORDER_ID, ERROR_ADD_ITEM_TO_CART);
+                return false;
             }
         }
-        return newAmount - itemAmountInCart;
+        return errorFlag;
     }
 
-    public boolean removeItemFromCart(OrderComponent.OrderComponentKey key) throws ServiceException {
-        OrderComponentDao orderComponentDao = new OrderComponentDaoImpl();
-        try (EntityTransaction transaction = new EntityTransaction()) {
-            transaction.init(orderComponentDao);
-            return orderComponentDao.delete(key);
-        } catch (DaoException e) {
-            logger.error(e);
+    public boolean removeItemFromCart(Map<String, String> mapData) throws ServiceException {
+        try {
+            int cartOrderId = Integer.parseInt(mapData.get(CART_ORDER_ID));
+            String itemIdParameter = mapData.get(ITEM_ID);
+            if (!BaseValidatorImpl.INSTANCE.validateIntParameter(itemIdParameter)) {
+                throw new ServiceException("Invalid item id " + itemIdParameter);
+            }
+            int itemId = Integer.parseInt(mapData.get(ITEM_ID));
+            String sizeParameter = mapData.get(SIZE_ID);
+            int sizeId = sizeParameter == null ? DEFAULT_SIZE_ID : Integer.parseInt(sizeParameter);
+            OrderComponent.OrderComponentKey key = new OrderComponent.OrderComponentKey(cartOrderId, itemId, sizeId);
+            return removeItemFromCart(key);
+        } catch (NumberFormatException e) {
             throw new ServiceException(e);
         }
-    }
-
-    public boolean changeItemAmountInCart(OrderComponent.OrderComponentKey key, int amount) throws ServiceException {
-        if (amount < 1) {
-            return false;
-        }
-        Item item = itemService.findItemById(key.getItemId()).get();
-        Optional<ItemSize> sizeOpt = item.getSizes().stream()
-                .filter(s -> s.getId() == key.getItemSizeId())
-                .findFirst();
-        if (sizeOpt.isEmpty()) {
-            throw new ServiceException("Can't find item size"); //todo better remove this item from cart
-        }
-        ItemSize itemSize = sizeOpt.get();
-        int amountInStock = itemSize.getAmountInStock();
-        if (amountInStock < amount || amount > 50) {
-            return false;
-        }
-        return changeAmountInOrderComponent(key, amount);
     }
 
     public int countItemsInCart(int cartOrderId) throws ServiceException {
@@ -173,11 +189,11 @@ public class OrderComponentService {
         }
     }
 
-    public boolean checkCartBeforePayment(int cartOrderId) throws ServiceException {
+    private boolean removeItemFromCart(OrderComponent.OrderComponentKey key) throws ServiceException {
         OrderComponentDao orderComponentDao = new OrderComponentDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(orderComponentDao);
-            return orderComponentDao.findNotEnoughInStockItemsInOrder(cartOrderId);
+            return orderComponentDao.delete(key);
         } catch (DaoException e) {
             logger.error(e);
             throw new ServiceException(e);

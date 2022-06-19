@@ -2,10 +2,8 @@ package by.skarulskaya.finalproject.model.dao.impl;
 
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.model.dao.OrderDao;
-import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.entity.Order;
 import by.skarulskaya.finalproject.model.mapper.EntityMapper;
-import by.skarulskaya.finalproject.model.mapper.impl.ItemMapper;
 import by.skarulskaya.finalproject.model.mapper.impl.OrderMapper;
 
 import java.math.BigDecimal;
@@ -19,22 +17,85 @@ public class OrderDaoImpl extends OrderDao {
         INSERT INTO orders(customer_id, status) VALUES(?,?)""";
     private static final String SQL_REGISTER_ORDER = """
         UPDATE orders SET status = ?, date_ordered = ?, shipping_address = ?, total_price = ? WHERE order_id = ?""";
+    private static final String SQL_UPDATE_ORDER_STATUS = """
+        UPDATE orders SET status = ? WHERE order_id = ?""";
     private static final String SQL_FIND_CART_ORDER_ID = """
         SELECT order_id FROM orders
         WHERE customer_id = ? AND status = 'IN_PROCESS'""";
-    private static final String SQL_FIND_ALL_REGISTERED_ORDERS = """
-        SELECT order_id, status, date_ordered, gift_card, total_price FROM orders
+    private static final String SQL_FIND_ALL_CUSTOMER_REGISTERED_ORDERS = """
+        SELECT O.order_id, NULL AS customer_id, O.status AS order_status, 
+        O.date_ordered, O.shipping_address, O.gift_card, O.total_price,
+        A.address_id, A.country, A.city, A.address, A.apartment, A.postal_code
+        FROM orders O JOIN addresses A ON O.shipping_address = A.address_id
         WHERE customer_id = ? AND status <> 'IN_PROCESS'""";
+    private static final String SQL_FIND_ALL_REGISTERED_ORDERS = """
+        SELECT O.order_id, O.customer_id, O.status AS order_status, O.date_ordered, O.shipping_address, 
+        O.gift_card, O.total_price, C.bank_account, C.phone_number, NULL AS default_address_id, 
+        U.email, U.password, U.name, U.surname, U.role, U.status, 
+        A.address_id, A.country, A.city, A.address, A.apartment, A.postal_code
+        FROM orders O JOIN customers C ON O.customer_id = C.customer_id
+        JOIN users U ON C.customer_id = U.user_id
+        JOIN addresses A ON O.shipping_address = A.address_id
+        WHERE O.status <> 'IN_PROCESS'""";
+    private static final String SQL_FIND_ALL_REGISTERED_ORDERS_LIMIT = """
+        SELECT O.order_id, O.customer_id, O.status AS order_status, O.date_ordered, O.shipping_address, 
+        O.gift_card, O.total_price, C.bank_account, C.phone_number, NULL AS default_address_id, 
+        U.email, U.password, U.name, U.surname, U.role, U.status, 
+        A.address_id, A.country, A.city, A.address, A.apartment, A.postal_code
+        FROM orders O JOIN customers C ON O.customer_id = C.customer_id
+        JOIN users U ON C.customer_id = U.user_id
+        JOIN addresses A ON O.shipping_address = A.address_id
+        WHERE O.status <> 'IN_PROCESS'
+        ORDER BY O.order_id DESC
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_FIND_ORDER_CUSTOMER_EMAIL = """
+        SELECT U.email
+        FROM orders O JOIN users U ON O.customer_id = U.user_id
+        WHERE O.order_id = ?""";
+    private static final String SQL_ADD_MONEY_TO_ORDER_CUSTOMER_ACCOUNT = """
+        UPDATE customers SET bank_account = bank_account + (
+        SELECT total_price FROM orders WHERE order_id = ?) 
+        WHERE customer_id = (SELECT customer_id FROM orders WHERE order_id = ?);""";
     private static final EntityMapper<Order> mapper = new OrderMapper();
     @Override
     public List<Order> findAll() throws DaoException {
-        throw new UnsupportedOperationException();
+        List<Order> orders = new ArrayList<>();
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(SQL_FIND_ALL_REGISTERED_ORDERS)) {
+            while (resultSet.next()) {
+                Order order = mapper.map(resultSet);
+                orders.add(order);
+            }
+            return orders;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
     }
 
     @Override
-    public List<Order> findAllRegisteredOrders(int customerId) throws DaoException {
+    public List<Order> findAllByPage(int count, int offset) throws DaoException {
         List<Order> orders = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_REGISTERED_ORDERS)) {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_REGISTERED_ORDERS_LIMIT)) {
+            statement.setInt(1, count);
+            statement.setInt(2, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Order order = mapper.map(resultSet);
+                    orders.add(order);
+                }
+            }
+            return orders;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Order> findAllCustomerRegisteredOrders(int customerId) throws DaoException {
+        List<Order> orders = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_CUSTOMER_REGISTERED_ORDERS)) {
             statement.setInt(1, customerId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
@@ -119,6 +180,45 @@ public class OrderDaoImpl extends OrderDao {
             }
         } catch (SQLException e) {
             logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public String findOrderCustomerEmail(int orderId) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ORDER_CUSTOMER_EMAIL)) {
+            statement.setInt(1, orderId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString(1);
+                }
+                throw new DaoException("Can't find customer's email, orderId = " + orderId);
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean addMoneyToOrderCustomerAccount(int orderId) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_ADD_MONEY_TO_ORDER_CUSTOMER_ACCOUNT)) {
+            statement.setInt(1, orderId);
+            statement.setInt(2, orderId);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean changeOrderStatus(int orderId, Order.OrderStatus newStatus) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_ORDER_STATUS)) {
+            statement.setString(1, newStatus.name());
+            statement.setInt(2, orderId);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
             throw new DaoException(e);
         }
     }

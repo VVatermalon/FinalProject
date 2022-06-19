@@ -1,6 +1,20 @@
 package by.skarulskaya.finalproject.model.entity;
 
-public class OrderComponent extends CustomEntity {
+import org.apache.logging.log4j.LogManager;
+
+public class OrderComponent extends CustomEntity implements Comparable<OrderComponent> {
+    @Override
+    public int compareTo(OrderComponent o) {
+        if(o == null) {
+            return -1;
+        }
+        int idComparing = Integer.compare(this.getItem().getId(), o.getItem().getId());
+        if(idComparing == 0) {
+            return Integer.compare(this.getItemSize().getId(), o.getItemSize().getId());
+        }
+        return idComparing;
+    }
+
     public static class OrderComponentKey {
         private int orderId;
         private int itemId;
@@ -79,4 +93,6 @@ public class OrderComponent extends CustomEntity {
         this.itemSize = itemSize;
     }
     //todo tosstring, equals...
+
+
 }

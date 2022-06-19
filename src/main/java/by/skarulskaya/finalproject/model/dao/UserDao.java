@@ -8,6 +8,9 @@ import java.util.Optional;
 public abstract class UserDao extends AbstractDao<Integer, User> {
     public abstract Optional<User> findUserByEmailAndPassword(String email, String password) throws DaoException;
     public abstract boolean findUserByEmail(String email) throws DaoException;
+
+    public abstract String findUserEmail(int userId) throws DaoException;
+
     public abstract boolean checkCorrectPassword(int id, String password) throws DaoException;
     public abstract boolean updateName(int id, String name) throws DaoException;
     public abstract boolean updateSurname(int id, String surname) throws DaoException;

@@ -24,7 +24,6 @@
 <fmt:message key="header.the_album" var="TheAlbum"/>
 <fmt:message key="header.figures" var="figures"/>
 <fmt:message key="header.language" var="lang"/>
-<fmt:message key="header.basket" var="basket"/>
 <fmt:message key="header.profile" var="profile"/>
 <fmt:message key="header.sign_in" var="sign_in"/>
 <fmt:message key="header.sign_out" var="sign_out"/>
@@ -50,10 +49,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="height: 100px">
     <div class="container-fluid" style="height: 100px">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+        <div class="col-4">
             <ul class="navbar-nav">
                 <li class="nav-item"><a class="nav-link" href="${absolutePath}/controller?command=find_by_category_items&category_id=1">${music}</a></li>
                 <li class="nav-item dropdown">
@@ -84,13 +80,13 @@
                 </c:choose>
             </ul>
         </div>
-        <div>
-            <a class="navbar-brand navbar-center" href="${absolutePath}/controller?command=find_all_items">
+        <div class="col-4 d-flex justify-content-center">
+            <a class="navbar-brand m-3" href="${absolutePath}/controller?command=find_all_items">
                 <img src="${absolutePath}/images/logo.png" alt="${alt_catalog}" height="90">
             </a>
         </div>
-        <div>
-            <ul class="nav navbar-nav navbar-right">
+        <div class="col-4 d-flex flex-row-reverse">
+            <ul class="nav navbar-nav">
                 <c:choose>
                     <c:when test="${user.role eq 'ADMIN'}"><%@include file="component/admin_header.jspf" %></c:when>
                     <c:otherwise><%@include file="component/client_header.jspf" %></c:otherwise>

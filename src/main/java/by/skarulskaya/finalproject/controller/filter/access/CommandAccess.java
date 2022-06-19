@@ -9,24 +9,28 @@ public enum CommandAccess {
             CommandType.REGISTRATION.name(),
             CommandType.ADD_ITEM_TO_CART.name(),
             CommandType.REMOVE_ITEM_FROM_CART.name(),
-            CommandType.CHANGE_ITEM_AMOUNT_IN_CART.name(),
             CommandType.UPLOAD_CART.name(),
             CommandType.ADD_MONEY_TO_ACCOUNT.name(),
             CommandType.ADD_SHIPPING_ADDRESS.name(),
             CommandType.PAY_ORDER.name(),
             CommandType.UPLOAD_ORDER_HISTORY.name())),
     CUSTOMER(Set.of(CommandType.SIGN_IN.name(),
-            CommandType.REGISTRATION.name())),
+            CommandType.REGISTRATION.name(),
+            CommandType.UPLOAD_ORDERS.name(),
+            CommandType.CONFIRM_ORDER.name(),
+            CommandType.CANCEL_ORDER.name())),
     GUEST(Set.of(CommandType.SIGN_OUT.name(),
             CommandType.ADD_ITEM_TO_CART.name(),
             CommandType.REMOVE_ITEM_FROM_CART.name(),
-            CommandType.CHANGE_ITEM_AMOUNT_IN_CART.name(),
             CommandType.UPLOAD_CART.name(),
             CommandType.ADD_MONEY_TO_ACCOUNT.name(),
             CommandType.ADD_SHIPPING_ADDRESS.name(),
             CommandType.PAY_ORDER.name(),
             CommandType.CHANGE_SETTING.name(),
-            CommandType.UPLOAD_ORDER_HISTORY.name()));
+            CommandType.UPLOAD_ORDER_HISTORY.name(),
+            CommandType.UPLOAD_ORDERS.name(),
+            CommandType.CONFIRM_ORDER.name(),
+            CommandType.CANCEL_ORDER.name()));
     private final Set<String> commands;
 
     CommandAccess(Set<String> commands){

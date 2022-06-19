@@ -63,7 +63,12 @@ public class UserService implements BaseService {
         UserDao userDao = new UserDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(userDao);
-            return userDao.updateName(userId, newName);
+            if(userDao.updateName(userId, newName)) {
+                String email = userDao.findUserEmail(userId);
+                sendMessageSettingsChanged(email);
+                return true;
+            }
+            throw new ServiceException("Can't update name, user id = " + userId);
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
@@ -76,13 +81,21 @@ public class UserService implements BaseService {
         UserDao userDao = new UserDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(userDao);
-            return userDao.updateSurname(userId, newSurname);
+            if(userDao.updateSurname(userId, newSurname)) {
+                String email = userDao.findUserEmail(userId);
+                sendMessageSettingsChanged(email);
+                return true;
+            }
+            throw new ServiceException("Can't update surname, user id = " + userId);
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
     }
 
     public boolean checkCorrectPassword(int userId, String oldPassword) throws ServiceException {
+        if(!BaseValidatorImpl.INSTANCE.validatePassword(oldPassword)) {
+            return false;
+        }
         UserDao userDao = new UserDaoImpl();
         String encryptedPassword = PasswordEncryptor.encrypt(oldPassword);
         try (EntityTransaction transaction = new EntityTransaction()) {
@@ -101,56 +114,20 @@ public class UserService implements BaseService {
         String encryptedPassword = PasswordEncryptor.encrypt(newPassword);
         try(EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(userDao);
-            return userDao.updatePassword(userId, encryptedPassword);
+            if(userDao.updatePassword(userId, encryptedPassword)) {
+                String email = userDao.findUserEmail(userId);
+                sendMessageSettingsChanged(email);
+                return true;
+            }
+            throw new ServiceException("Can't update password, user id = " + userId);
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
     }
 
-//    @Override
-//    public boolean registerUser(Map<String, String> mapData) throws ServiceException {
-//        if(!BaseValidatorImpl.INSTANCE.validateRegistration(mapData)) {
-//            return false;
-//        }
-//        String email = mapData.get(USER_EMAIL);
-//        String password = mapData.get(USER_PASSWORD);
-//        password = PasswordEncryptor.encrypt(password);
-//        String name = mapData.get(USER_NAME);
-//        String surname = mapData.get(USER_SURNAME);
-//        String phoneNumber = mapData.get(USER_PHONE_NUMBER);
-//        UserDaoImpl userDao = new UserDaoImpl();
-//        CustomerDaoImpl customerDao = new CustomerDaoImpl();
-//        try(EntityTransaction transaction = new EntityTransaction()) {
-//            transaction.beginTransaction(userDao, customerDao);
-//            if(userDao.findUserByEmail(email)) {
-//                mapData.put(USER_EMAIL, NOT_UNIQUE_EMAIL);
-//                return false;
-//            }
-//            if(customerDao.findCustomerByPhone(phoneNumber)) {
-//                mapData.put(USER_PHONE_NUMBER, NOT_UNIQUE_PHONE);
-//                return false;
-//            }
-//            try {
-//                sendMessageRegistration(email);
-//            } catch(ServiceException e) {
-//                mapData.put(USER_EMAIL, WRONG_EMAIL); //todo подтверждение почти через ввод числа
-//                return false;
-//            }
-//            User user = new User(email, password, name, surname, User.Role.CUSTOMER, User.Status.IN_REGISTRATION_PROCESS); //todo после отправки письма статус другой
-//            userDao.create(user);
-//            Customer customer = new Customer(BigDecimal.ZERO, phoneNumber, user, Optional.empty());
-//            customerDao.create(customer);
-//            transaction.commit();
-//            return true;
-//        } catch (DaoException e) {
-//            throw new ServiceException(e);
-//        }
-//    }
-
-    @Override
-    public void sendMessageRegistration(String email) throws ServiceException {
+    private void sendMessageSettingsChanged(String email) throws ServiceException {
         try {
-            MailSender.INSTANCE.send(email, "Registration in system", "Welcome! Registration was successful"); //todo сделать тут локализацию
+            MailSender.INSTANCE.send(email, "Settings have changed", "Dear Customer! Your settings have changed. You can find more information in your profile :)");//todo сделать тут локализацию
         } catch (Exception e) {
             throw new ServiceException(e);
         }

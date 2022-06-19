@@ -48,12 +48,12 @@ public class CommonController extends HttpServlet {
             }
         } catch (CommandException e) { //todo добавить описание ошибки, плюс еще какие ошибки могут быть
             logger.error(e);
-            resp.sendRedirect(ERROR_500);
+            resp.sendRedirect(req.getContextPath() + ERROR_500);
         }
     }
 
     @Override
     public void destroy() {
-        CustomConnectionPool.INSTANCE.destroyPool();
+        CustomConnectionPool.getInstance().destroyPool();
     }
 }

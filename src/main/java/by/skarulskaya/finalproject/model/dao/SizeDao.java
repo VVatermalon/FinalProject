@@ -8,4 +8,6 @@ import java.util.List;
 public abstract class SizeDao extends AbstractDao<Integer, ItemSize> {
     public abstract List<ItemSize> findAllSizesForItem(int itemId) throws DaoException;
     public abstract boolean changeAmountInStockForAllOrderItems(int orderId) throws DaoException;
+
+    public abstract boolean changeBackAmountInStockForAllOrderItems(int orderId) throws DaoException;
 }

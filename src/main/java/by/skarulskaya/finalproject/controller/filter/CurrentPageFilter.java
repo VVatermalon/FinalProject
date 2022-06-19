@@ -13,43 +13,31 @@ import java.util.*;
 
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 
-@WebFilter(filterName = "currentPageFilter", urlPatterns = "/*", initParams = @WebInitParam(name = "excludedURLs", value = "/js/;/images/;/css/"))
+@WebFilter(filterName = "currentPageFilter", urlPatterns = "*.jsp", dispatcherTypes = {DispatcherType.FORWARD, DispatcherType.REQUEST})
 public class CurrentPageFilter implements Filter {
     private static final Logger logger = LogManager.getLogger();
-    private static final String EXCLUDED_URLS_PARAMETER = "excludedURLs";
-    private static final String SPLITTER = ";";
-    private static final String CONTROLLER_PATTERN = "/controller?";
-    private List<String> excludedURLs;
+    private static final String CONTROLLER = "/controller?";
+    private static final String QUESTION = "?";
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        String[] excluded = filterConfig.getInitParameter(EXCLUDED_URLS_PARAMETER).split(SPLITTER);
-        excludedURLs = new ArrayList<>();
-        Collections.addAll(excludedURLs, excluded);
-    }
-
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws ServletException, IOException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpSession session = request.getSession();
-
-        String requestURI = request.getRequestURI();
-        if(excludedURLs.stream().anyMatch(requestURI::contains)) {
-            filterChain.doFilter(request, servletResponse);
-            return;
-        }
-
-        if (!request.getMethod().equals("GET") ||
-                (request.getQueryString() != null && request.getQueryString().contains("command=change_language"))) {
-            filterChain.doFilter(servletRequest, servletResponse);
-            return;
-        }
-        String query = request.getQueryString();
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws ServletException, IOException {
+        HttpServletRequest servletRequest = (HttpServletRequest) request;
+        HttpSession session = servletRequest.getSession();
+        String currentPage;
+        String query = servletRequest.getQueryString();
         if (query != null) {
-            requestURI = request.getContextPath() + CONTROLLER_PATTERN + query;
+            if (servletRequest.getParameter(COMMAND) != null) {
+                currentPage = CONTROLLER + query;
+            } else {
+                currentPage = servletRequest.getContextPath() + servletRequest.getServletPath() + QUESTION + query;
+            }
         }
-        session.setAttribute(PAGE, requestURI);
-        logger.debug("Current page " + requestURI);
-        filterChain.doFilter(servletRequest, servletResponse);
+        else {
+            currentPage = servletRequest.getServletPath();
+        }
+        logger.info(query);
+        session.setAttribute(CURRENT_PAGE, currentPage);
+        logger.info("final result" + currentPage);
+        chain.doFilter(request, response);
     }
 }

@@ -58,18 +58,17 @@ public class ProxyConnection implements Connection {
     @Override
     public void close() {
         try {
-            CustomConnectionPool.INSTANCE.releaseConnection(this);
+            CustomConnectionPool.getInstance().releaseConnection(this);
         } catch (ConnectionPoolException e) {
             LogManager.getLogger().error(e);
         }
     }
 
-    void closeConnection() throws ConnectionPoolException {
+    void closeConnection(){
         try {
             connection.close();
         } catch (SQLException e) {
             LogManager.getLogger().error(e);
-            throw new ConnectionPoolException(e);
         }
     }
 

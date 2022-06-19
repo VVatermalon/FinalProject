@@ -15,4 +15,12 @@ public interface BaseValidator {
     boolean validateApartment(String apartment);
     boolean validatePostalCode(String postalCode);
     boolean validateAddress(Map<String, String> map);
+
+    boolean validatePage(String page);
+
+    boolean validateMoney(String money);
+
+    boolean validateAddItemToCart(Map<String, String> mapData);
+
+    boolean validateIntParameter(String parameter);
 }

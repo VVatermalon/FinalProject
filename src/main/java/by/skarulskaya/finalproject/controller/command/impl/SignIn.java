@@ -60,11 +60,9 @@ public class SignIn implements Command {
         switch(user.getRole()) {
             case ADMIN -> {
                 session.setAttribute(USER, user);
-
                 addCookie(USER_PASSWORD, user.getPassword(), response);
                 addCookie(USER_EMAIL, user.getEmail(), response);
-
-                router.setCurrentPage(ADMIN_PAGE);
+                router.setCurrentPage(START_PAGE);
             }
             case CUSTOMER -> {
                 if (user.getStatus() == User.Status.BLOCKED) {

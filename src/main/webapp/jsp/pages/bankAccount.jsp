@@ -16,6 +16,7 @@
 </c:choose>
 <fmt:setBundle basename="language.language"/>
 <fmt:message key="input.placeholder.money_amount" var="e_money"/>
+<fmt:message key="currency" var="currency"/>
 <html>
 <head>
     <title><fmt:message key="title.bank_account"/></title>
@@ -35,7 +36,7 @@
 </head>
 <body>
 <div class="page">
-    <header>
+    <header class="sticky-top">
         <%@include file="header/headerCommon.jsp"%>
     </header>
     <div class="back">
@@ -43,7 +44,7 @@
     </div>
     <div class="container justify-content-center col-12 col-sm-6 mt-3">
         <h3 class="text-center p-3"><fmt:message key="bank_account.name"/></h3>
-        <div><fmt:message key="bank_account.money_amount"/>: ${customer.bankAccount}$</div>
+        <div><fmt:message key="bank_account.money_amount"/>: ${customer.bankAccount}${currency}</div>
         <br/>
         <form role="form" action="${absolutePath}/controller" method="post" class="needs-validation" novalidate>
             <input type="hidden" name="command" value="add_money_to_account"/>

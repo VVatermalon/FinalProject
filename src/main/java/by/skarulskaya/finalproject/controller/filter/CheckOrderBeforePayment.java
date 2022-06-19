@@ -40,7 +40,7 @@ public class CheckOrderBeforePayment implements Filter {
             session.setAttribute(CART_TOTAL_PRICE, totalPrice);
             if (totalPrice.compareTo(BigDecimal.ZERO) == 0) {
                 logger.error("Can't pay order: total price equals 0");
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
             if (session.getAttribute(ADDRESS_ID) == null) {

@@ -24,8 +24,8 @@ class ConnectionFactory {
         InputStream resourceStream = loader.getResourceAsStream(DATABASE_PROPERTIES_PATH);
         try {
             connectionProperties.load(resourceStream);
-            String DRIVER_NAME = connectionProperties.getProperty(DRIVER_NAME_PROPERTY_NAME);
-            Class.forName(DRIVER_NAME);
+            String driverName = connectionProperties.getProperty(DRIVER_NAME_PROPERTY_NAME);
+            Class.forName(driverName);
         } catch (IOException | ClassNotFoundException e) {
             logger.fatal("Error during initializing", e);
             throw new RuntimeException(e);

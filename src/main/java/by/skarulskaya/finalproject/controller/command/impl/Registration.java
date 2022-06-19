@@ -34,8 +34,8 @@ public class Registration implements Command {
         mapData.put(USER_PHONE_NUMBER, request.getParameter(USER_PHONE_NUMBER));
         Router router = new Router();
         try {
-            int createdCustomerId = customerService.registerCustomer(mapData);
-            if (createdCustomerId >= 0) {
+            if (customerService.registerCustomer(mapData)) {
+                int createdCustomerId = Integer.parseInt(mapData.get(USER_ID));
                 orderService.createCart(createdCustomerId);
                 router.setCurrentType(Router.Type.REDIRECT);
                 router.setCurrentPage(request.getContextPath() + SIGN_IN_PAGE);

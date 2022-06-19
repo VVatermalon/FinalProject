@@ -15,6 +15,7 @@
     <c:when test="${empty language}"> <fmt:setLocale value="${language = 'ru_RU'}" scope="session"/></c:when>
 </c:choose>
 <fmt:setBundle basename="language.language"/>
+<fmt:message key="currency" var="currency"/>
 <html>
 <head>
     <title><fmt:message key="title"/>${item.name}</title>
@@ -363,9 +364,25 @@
 </head>
 <body>
 <div class="page">
-    <header>
+    <header class="sticky-top">
         <%@include file="header/headerCommon.jsp"%>
     </header>
+    <div id="toastSuccess" class="toast align-items-center text-white bg-success position-fixed bottom-0 end-0 m-3" style="z-index: 11" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <fmt:message key="action.success_add_item"/>
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+            </div>
+        </div>
+    <div id="toastError" class="toast align-items-center text-white bg-danger position-fixed bottom-0 end-0 m-3" style="z-index: 11" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <fmt:message key="${error_add_item_to_cart}"/>
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+            </div>
+        </div>
     <div class="back">
         <a href="${absolutePath}/controller?command=find_all_items"><-<fmt:message key="back.shop"/></a>
     </div>
@@ -379,7 +396,7 @@
                     <div class="product_header">
                         <div class="product_title">${item.name}</div>
                     </div>
-                    <div class="product_price"><strong id="price"> <fmt:message key="menu.product_money"/> ${item.price}</strong> </div>
+                    <div class="product_price"><strong id="price">${currency}${item.price}</strong> </div>
                     <c:if test="${user.role ne 'ADMIN'}">
                         <form action="${absolutePath}/controller" method="post">
                             <input type="hidden" name="command" value="add_item_to_cart">
@@ -434,11 +451,6 @@
                                     </c:otherwise>
                                 </c:choose>
                             </div>
-                            <c:if test="${!empty param.error_cannot_add_item_to_cart}">
-                                <div class="invalid-feedback-backend" style="color: red">
-                                    <fmt:message key="${param.error_cannot_add_item_to_cart}"/>
-                                </div>
-                            </c:if>
                         </form>
                     </c:if>
                     <%--                            <c:if test="${user.role eq 'ADMIN'}">--%>
@@ -462,6 +474,18 @@
         <ctg:custom-footer/>
     </div>
 </div>
+<script>
+    var success = '${success}';
+    var error = '${error_add_item_to_cart}';
+    if(success.length !== 0) {
+        var toastSuccess = bootstrap.Toast.getOrCreateInstance(document.getElementById('toastSuccess'));
+        toastSuccess.show();
+    }
+    if(error.length !== 0) {
+        var toastError = bootstrap.Toast.getOrCreateInstance(document.getElementById('toastError'));
+        toastError.show();
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </body>

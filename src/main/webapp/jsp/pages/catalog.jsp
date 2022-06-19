@@ -10,7 +10,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="absolutePath">${pageContext.request.contextPath}</c:set>
-<%--<c:set var="current_page" value="${pageContext.request.requestURI}" scope="session"/>--%>
 <c:choose>
     <c:when test="${not empty language}"> <fmt:setLocale value="${language}" scope="session"/></c:when>
     <c:when test="${empty language}"> <fmt:setLocale value="${language = 'ru_RU'}" scope="session"/></c:when>
@@ -19,6 +18,8 @@
 <fmt:message key="action.page_navigation" var="page_navigation"/>
 <fmt:message key="action.previous" var="previous"/>
 <fmt:message key="action.next" var="next"/>
+<fmt:message key="currency" var="currency"/>
+<fmt:message key="alt.new_item" var="alt_new_item"/>
 <html>
 <head>
     <title><fmt:message key="title.shop"/> </title>
@@ -117,6 +118,13 @@
             text-align: center;
             background-color: #fff;
             overflow: hidden;
+        }
+        #add_item {
+            margin-bottom: 26px;
+            padding: 100px;
+        }
+        #add_item:hover {
+            padding: 105px;
         }
         .product_figure:after {
             content: "";
@@ -353,7 +361,7 @@
 </head>
 <body>
 <div class="page">
-    <header>
+    <header class="sticky-top">
         <%@include file="header/headerCommon.jsp"%>
     </header>
     <div class="container">
@@ -428,21 +436,37 @@
             </c:when>
             <c:otherwise>
                 <div class="catalog justify-content-center">
+                    <c:if test="${user.role eq 'ADMIN'}">
+                        <div class="catalog-item">
+                            <div class="product">
+                                <div class="product_header">
+                                    <a href="${absolutePath}/controller?command=">
+                                        <div class="product_title"><fmt:message key="item.new"/></div>
+                                    </a>
+                                </div>
+                                <a href="${absolutePath}/controller?command=">
+                                    <div class="product_figure" id="add_item">
+                                        <img src="${absolutePath}/images/createItem.png" alt="${alt_new_item}" class="product_img">
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </c:if>
                     <c:forEach items="${item_list}" var="item">
                         <div class="catalog-item">
                             <div class="product">
                                 <div class="product_header">
-                                    <a href="${absolutePath}/controller?command=open_item_page&id=${item.id}">
+                                    <a href="${absolutePath}/controller?command=open_item_page&item_id=${item.id}">
                                         <div class="product_title">${item.name}</div>
                                     </a>
                                 </div>
-                                <a href="${absolutePath}/controller?command=open_item_page&id=${item.id}">
+                                <a href="${absolutePath}/controller?command=open_item_page&item_id=${item.id}">
                                     <div class="product_figure">
                                         <img src="${absolutePath}/images/${item.imagePath}" alt="${item.name}" class="product_img">
                                     </div>
                                 </a>
                                 <div class="">
-                                    <div class="product_price"><strong id="price"> <fmt:message key="menu.product_money"/>${item.price}</strong> </div>
+                                    <div class="product_price"><strong id="price">${currency}${item.price}</strong> </div>
                                     <c:if test="${item.amountInStock == 0}">
                                         <div style="color: red"><fmt:message key="catalog.sold_out"/></div>
                                     </c:if>

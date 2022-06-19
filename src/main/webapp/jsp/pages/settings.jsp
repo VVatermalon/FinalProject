@@ -62,7 +62,7 @@
 </head>
 <body>
 <div class="page">
-    <header>
+    <header class="sticky-top">
         <%@include file="header/headerCommon.jsp"%>
     </header>
     <div class="modal fade" id="modalFirstName" tabindex="-1" aria-labelledby="modalFirstNameLabel" aria-hidden="true">
@@ -385,25 +385,19 @@
 <script>
     var invalidName = '${invalid_name}';
     if(invalidName.length !== 0) {
-        var firstNameModal = new bootstrap.Modal(document.getElementById('modalFirstName'), {
-            keyboard: false
-        });
+        var firstNameModal = new bootstrap.Modal(document.getElementById('modalFirstName'));
         firstNameModal.show();
     }
 
     var invalidSurname = '${invalid_surname}';
     if(invalidSurname.length !== 0) {
-        var surnameModal = new bootstrap.Modal(document.getElementById('modalLastName'), {
-            keyboard: false
-        });
+        var surnameModal = new bootstrap.Modal(document.getElementById('modalLastName'));
         surnameModal.show();
     }
 
     var invalidPhone = '${invalid_phone_number}';
     if(invalidPhone.length !== 0) {
-        var phoneModal = new bootstrap.Modal(document.getElementById('modalPhone'), {
-            keyboard: false
-        });
+        var phoneModal = new bootstrap.Modal(document.getElementById('modalPhone'));
         phoneModal.show();
     }
 
@@ -411,9 +405,7 @@
     var invalidOldPassword = '${invalid_old_password}';
     var invalidPassword = '${invalid_password}';
     if(invalidRepeatPassword.length !== 0 || invalidOldPassword.length !== 0 || invalidPassword.length !== 0){
-        var passwordModal = new bootstrap.Modal(document.getElementById('modalPassword'), {
-            keyboard: false
-        });
+        var passwordModal = new bootstrap.Modal(document.getElementById('modalPassword'));
         passwordModal.show();
     }
 
@@ -424,9 +416,7 @@
     var invalidPostalCode = '${invalid_postal_code}';
     if(invalidCountry.length !== 0 || invalidCity.length !== 0 || invalidAddress.length !== 0 || invalidApartment.length !== 0 ||
         invalidPostalCode.length !== 0) {
-        var addressModal = new bootstrap.Modal(document.getElementById('modalAddress'), {
-            keyboard: false
-        });
+        var addressModal = new bootstrap.Modal(document.getElementById('modalAddress'));
         addressModal.show();
     }
 

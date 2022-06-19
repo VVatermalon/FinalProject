@@ -19,6 +19,8 @@ public class UserDaoImpl extends UserDao {
         FROM users WHERE user_id = ?""";
     private static final String SQL_FIND_USER_BY_EMAIL = """
         SELECT user_id FROM users WHERE email = ?""";
+    private static final String SQL_FIND_USER_EMAIL = """
+        SELECT email FROM users WHERE user_id = ?""";
     private static final String SQL_FIND_USER_BY_EMAIL_AND_PASSWORD = """
         SELECT user_id, email, password, name, surname,role, status
         FROM users WHERE email = ? and password = ?""";
@@ -97,16 +99,30 @@ public class UserDaoImpl extends UserDao {
 
     @Override
     public boolean findUserByEmail(String email) throws DaoException {
-        ResultSet resultSet = null;
         try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_BY_EMAIL)) {
             statement.setString(1, email);
-            resultSet = statement.executeQuery();
-            return resultSet.next();
+            try(ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
         } catch (SQLException e) {
             logger.error(e);
             throw new DaoException(e);
-        } finally {
-            close(resultSet);
+        }
+    }
+
+    @Override
+    public String findUserEmail(int userId) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_EMAIL)) {
+            statement.setInt(1, userId);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                if(resultSet.next()) {
+                    return resultSet.getString(1);
+                }
+                throw new DaoException("Can't find user's email, orderId = " + userId);
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
         }
     }
 

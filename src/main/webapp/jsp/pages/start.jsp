@@ -92,14 +92,16 @@
     </div>
 </nav>
 <div class="container-fluid text-center">
-    <c:choose>
-        <c:when test="${!empty customer or user.role eq 'ADMIN'}">
-            <a class="btn btn-info" role="button" href="${absolutePath}/controller?command=find_all_items">${continue_customer}</a>
-        </c:when>
-        <c:otherwise>
-            <a class="btn btn-info" role="button" href="${absolutePath}/controller?command=find_all_items">${continue_guest}</a>
-        </c:otherwise>
-    </c:choose>
+    <a class="btn btn-info" role="button" href="${absolutePath}/controller?command=find_all_items">
+        <c:choose>
+            <c:when test="${!empty customer or user.role eq 'ADMIN'}">
+                ${continue_customer}
+            </c:when>
+            <c:otherwise>
+                ${continue_guest}
+            </c:otherwise>
+        </c:choose>
+    </a>
 </div>
 <div class="text-center">
     <img src="${absolutePath}/images/main.jpg" alt="${alt_the_album}" height="1000"/>

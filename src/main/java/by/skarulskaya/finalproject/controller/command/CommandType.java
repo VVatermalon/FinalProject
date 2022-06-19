@@ -1,6 +1,9 @@
 package by.skarulskaya.finalproject.controller.command;
 
 import by.skarulskaya.finalproject.controller.command.impl.*;
+import by.skarulskaya.finalproject.controller.command.impl.admin.CancelOrder;
+import by.skarulskaya.finalproject.controller.command.impl.admin.ConfirmOrder;
+import by.skarulskaya.finalproject.controller.command.impl.admin.UploadOrders;
 import by.skarulskaya.finalproject.controller.command.impl.common.*;
 import by.skarulskaya.finalproject.controller.command.impl.customer.*;
 import by.skarulskaya.finalproject.exception.CommandException;
@@ -15,14 +18,16 @@ public enum CommandType {
     OPEN_ITEM_PAGE(new OpenItemPage()),
     ADD_ITEM_TO_CART(new AddItemToCart()),
     REMOVE_ITEM_FROM_CART(new RemoveItemFromCart()),
-    CHANGE_ITEM_AMOUNT_IN_CART(new ChangeItemAmountInCart()),
     UPLOAD_CART(new UploadCart()),
     ADD_MONEY_TO_ACCOUNT(new AddMoneyToAccount()),
     PAY_ORDER(new PayOrder()),
     ADD_SHIPPING_ADDRESS(new AddShippingAddress()),
     CHANGE_LANGUAGE(new ChangeLanguage()),
     CHANGE_SETTING(new ChangeSetting()),
-    UPLOAD_ORDER_HISTORY(new UploadOrderHistory());
+    UPLOAD_ORDER_HISTORY(new UploadOrderHistory()),
+    UPLOAD_ORDERS(new UploadOrders()),
+    CONFIRM_ORDER(new ConfirmOrder()),
+    CANCEL_ORDER(new CancelOrder());
 
     private final Command command;
 

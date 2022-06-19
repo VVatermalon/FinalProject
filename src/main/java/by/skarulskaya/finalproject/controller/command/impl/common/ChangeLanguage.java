@@ -20,20 +20,18 @@ public class ChangeLanguage implements Command {
     public Router execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         Router router = new Router();
-        String currentPage = (String) session.getAttribute(PAGE);
+        String currentPage = (String) session.getAttribute(CURRENT_PAGE);
         String language = request.getParameter(LANGUAGE);
-        logger.debug("Language parameter is " + language);
         if (language == null || (!language.equals(ENGLISH) && !language.equals(RUSSIAN))) {
             router.setCurrentPage(currentPage);
             return router;
         }
-        logger.debug("Current page is " + currentPage);
         session.setAttribute(LANGUAGE, language);
         Cookie cookie = new Cookie(LANGUAGE, language);
         cookie.setMaxAge(COOKIE_MAX_AGE);
         response.addCookie(cookie);
         router.setCurrentType(Router.Type.REDIRECT);
-        router.setCurrentPage(currentPage);
+        router.setCurrentPage(request.getContextPath() + currentPage);
         return router;
     }
 }
