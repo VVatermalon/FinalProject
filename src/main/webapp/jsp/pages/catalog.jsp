@@ -372,7 +372,7 @@
                 <ul class="dropdown-menu">
                     <li>
                         <form name="sortByPrice" action="${absolutePath}/controller">
-                            <input type="hidden" name="command" value="sort_items">
+                            <input type="hidden" name="command" value="find_all_items">
                             <input type="hidden" name="sort" value="PRICE">
                             <input type="hidden" name="sort_order" value="ASC">
                             <c:if test="${not empty param.category_id}">
@@ -383,7 +383,7 @@
                     </li>
                     <li>
                         <form name="sortByPrice" action="${absolutePath}/controller">
-                            <input type="hidden" name="command" value="sort_items">
+                            <input type="hidden" name="command" value="find_all_items">
                             <input type="hidden" name="sort" value="PRICE">
                             <input type="hidden" name="sort_order" value="DESC">
                             <c:if test="${not empty param.category_id}">
@@ -394,7 +394,7 @@
                     </li>
                     <li>
                         <form name="sortByName" action="${absolutePath}/controller">
-                            <input type="hidden" name="command" value="sort_items">
+                            <input type="hidden" name="command" value="find_all_items">
                             <input type="hidden" name="sort" value="ITEM_NAME">
                             <input type="hidden" name="sort_order" value="ASC">
                             <c:if test="${not empty param.category_id}">
@@ -405,7 +405,7 @@
                     </li>
                     <li>
                        <form name="sortByName" action="${absolutePath}/controller">
-                            <input type="hidden" name="command" value="sort_items">
+                            <input type="hidden" name="command" value="find_all_items">
                             <input type="hidden" name="sort" value="ITEM_NAME">
                             <input type="hidden" name="sort_order" value="DESC">
                             <c:if test="${not empty param.category_id}">
@@ -416,7 +416,7 @@
                     </li>
                     <li>
                         <form name="sortByPopularity" action="${absolutePath}/controller">
-                            <input type="hidden" name="command" value="sort_items">
+                            <input type="hidden" name="command" value="find_all_items">
                             <input type="hidden" name="sort" value="POPULARITY">
                             <input type="hidden" name="sort_order" value="DESC">
                             <c:if test="${not empty param.category_id}">

@@ -9,11 +9,16 @@ import by.skarulskaya.finalproject.model.dao.impl.OrderDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.SizeDaoImpl;
 import by.skarulskaya.finalproject.model.entity.*;
 import by.skarulskaya.finalproject.util.mail.MailSender;
+import by.skarulskaya.finalproject.util.pagination.Pagination;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
+
+import static by.skarulskaya.finalproject.controller.Parameters.ORDER_STATUS_ANY;
 
 public class OrderService {
     private static final Logger logger = LogManager.getLogger();
@@ -73,6 +78,42 @@ public class OrderService {
             }
             return orders;
         } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    public List<Order> findAllRegisteredOrdersByDateByStatusByPage(String date, String status, int count, int offset) throws ServiceException {
+        OrderDao orderDao = new OrderDaoImpl();
+        OrderComponentService orderComponentService = OrderComponentService.getInstance();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(orderDao);
+            List<Order> orders;
+            if (status == null || status.equals(ORDER_STATUS_ANY)) {
+                if(date == null || date.isEmpty()) {
+                    orders = orderDao.findAllByPage(count, offset);
+                }
+                else {
+                    LocalDate orderDate = LocalDate.parse(date);
+                    orders = orderDao.findAllByDateByPage(orderDate, count, offset);
+                }
+            }
+            else {
+                Order.OrderStatus orderStatus = Order.OrderStatus.valueOf(status.toUpperCase());
+                if(date == null || date.isEmpty()) {
+                    orders = orderDao.findAllByStatusByPage(orderStatus, count, offset);
+                }
+                else {
+                    LocalDate orderDate = LocalDate.parse(date);
+                    orders = orderDao.findAllByStatusByDateByPage(orderStatus, orderDate, count, offset);
+                }
+            }
+            for (Order order : orders) {
+                List<OrderComponent> orderComponents = orderComponentService.findAllOrderComponents(order.getId());
+                orderComponents.sort(null);
+                order.setComponents(orderComponents);
+            }
+            return orders;
+        } catch (DaoException | DateTimeParseException | IllegalArgumentException e) {
             throw new ServiceException(e);
         }
     }

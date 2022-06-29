@@ -10,6 +10,7 @@ import by.skarulskaya.finalproject.model.mapper.impl.UserMapper;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,20 @@ public class CustomerDaoImpl extends CustomerDao {
     private static final String SQL_CREATE_CUSTOMER = """
         INSERT INTO customers(customer_id, user_id, bank_account, phone_number, default_address_id) 
         VALUES(?,?,?,?,?)""";
+    private static final String SQL_FIND_ALL_CUSTOMERS = """
+        SELECT C.customer_id, C.bank_account, C.phone_number, C.default_address_id,
+        U.email, U.password, U.name, U.surname, U.role, U.status, A.address_id, 
+        A.country, A.city, A.address, A.apartment, A.postal_code
+        FROM customers C JOIN users U ON C.customer_id=U.user_id 
+        LEFT JOIN addresses A on C.default_address_id = A.address_id""";
+    private static final String SQL_FIND_ALL_CUSTOMERS_BY_PAGE = """
+        SELECT C.customer_id, C.bank_account, C.phone_number, C.default_address_id,
+        U.email, U.password, U.name, U.surname, U.role, U.status, A.address_id, 
+        A.country, A.city, A.address, A.apartment, A.postal_code
+        FROM customers C JOIN users U ON C.customer_id = U.user_id 
+        LEFT JOIN addresses A on C.default_address_id = A.address_id
+        ORDER BY C.customer_id
+        LIMIT ? OFFSET ?""";
     private static final String SQL_FIND_CUSTOMER_BY_PHONE = """
         SELECT customer_id FROM customers WHERE phone_number = ?""";
     private static final String SQL_FIND_CUSTOMER_BY_ID = """
@@ -39,25 +54,53 @@ public class CustomerDaoImpl extends CustomerDao {
 
     @Override
     public List<Customer> findAll() throws DaoException {
-        throw new UnsupportedOperationException();
+        List<Customer> customers = new ArrayList<>();
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(SQL_FIND_ALL_CUSTOMERS)) {
+            while (resultSet.next()) {
+                Customer customer = mapper.map(resultSet);
+                customers.add(customer);
+            }
+            return customers;
+        } catch (SQLException e) {
+            logger.error("Sql exception: ", e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Customer> findAllByPage(int count, int offset) throws DaoException {
+        List<Customer> customers = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_CUSTOMERS_BY_PAGE)) {
+            statement.setInt(1, count);
+            statement.setInt(2, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Customer customer = mapper.map(resultSet);
+                    customers.add(customer);
+                }
+            }
+            return customers;
+        } catch (SQLException e) {
+            logger.error("Sql exception: ", e);
+            throw new DaoException(e);
+        }
     }
 
     @Override
     public Optional<Customer> findEntityById(Integer id) throws DaoException {
-        ResultSet resultSet = null;
         try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_CUSTOMER_BY_ID)) {
             statement.setInt(1, id);
-            resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                Customer customer = mapper.map(resultSet);
-                return Optional.of(customer);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    Customer customer = mapper.map(resultSet);
+                    return Optional.of(customer);
+                }
             }
             return Optional.empty();
         } catch (SQLException e) {
             logger.error(e);
             throw new DaoException(e);
-        } finally {
-            close(resultSet);
         }
     }
 

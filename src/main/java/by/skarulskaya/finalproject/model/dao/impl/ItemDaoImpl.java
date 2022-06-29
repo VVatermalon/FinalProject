@@ -145,7 +145,6 @@ public class ItemDaoImpl extends ItemDao {
             }
             return itemList;
         } catch (SQLException e) {
-            logger.debug("From findAll items");
             throw new DaoException(e);
         }
     }
@@ -194,22 +193,6 @@ public class ItemDaoImpl extends ItemDao {
                 }
             }
             return Optional.empty();
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-    @Override
-    public List<Item> findAllByCategory(int id) throws DaoException {
-        List<Item> itemList = new ArrayList<>();
-        try(PreparedStatement statement = connection.prepareStatement(SQL_SELECT_ITEMS_BY_CATEGORY)) {
-            statement.setInt(1, id);
-            try(ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    Item item = mapper.map(resultSet);
-                    itemList.add(item);
-                }
-            }
-            return itemList;
         } catch (SQLException e) {
             throw new DaoException(e);
         }

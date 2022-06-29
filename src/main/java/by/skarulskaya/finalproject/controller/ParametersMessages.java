@@ -23,6 +23,8 @@ public final class ParametersMessages {
     public static final String INVALID_ADDRESS_MESSAGE = "order.invalid_address";
     public static final String INVALID_APARTMENT_MESSAGE = "order.invalid_apartment";
     public static final String INVALID_POSTAL_CODE_MESSAGE = "order.invalid_postal_code";
+    public static final String CANNOT_DELETE_CURRENT_ADMIN_MESSAGE = "users.cannot_delete_current_admin";
+    public static final String CHANGE_PASSWORD_MESSAGE = "profile.need_password_changing";
 
     private ParametersMessages(){}
 }

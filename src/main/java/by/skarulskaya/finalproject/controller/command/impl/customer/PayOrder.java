@@ -48,7 +48,6 @@ public class PayOrder implements Command {
             int newCartOrderId = orderService.createCart(customer.getId());
             session.setAttribute(CART_ORDER_ID, newCartOrderId);
             session.setAttribute(ITEMS_IN_CART_COUNT, ZERO_ITEMS_IN_CART);
-            session.setAttribute(CUSTOMER, customer);
         } catch (ServiceException e) {
             throw new CommandException(e);
         }

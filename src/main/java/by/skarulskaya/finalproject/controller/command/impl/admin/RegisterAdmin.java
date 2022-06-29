@@ -1,4 +1,4 @@
-package by.skarulskaya.finalproject.controller.command.impl;
+package by.skarulskaya.finalproject.controller.command.impl.admin;
 
 import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
@@ -7,35 +7,35 @@ import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.User;
 import by.skarulskaya.finalproject.model.service.impl.CustomerService;
 import by.skarulskaya.finalproject.model.service.impl.OrderService;
+import by.skarulskaya.finalproject.model.service.impl.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static by.skarulskaya.finalproject.controller.PagesPaths.REGISTRATION_PAGE;
+import static by.skarulskaya.finalproject.controller.PagesPaths.SIGN_IN_PAGE;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
-import static by.skarulskaya.finalproject.controller.PagesPaths.*;
+import static by.skarulskaya.finalproject.controller.ParametersMessages.NOT_UNIQUE_PHONE_MESSAGE;
 
-public class Registration implements Command {
-    private final CustomerService customerService = CustomerService.getInstance();
-    private final OrderService orderService = OrderService.getInstance();
+public class RegisterAdmin implements Command {
+    private final UserService userService = UserService.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         Map<String, String> mapData = new HashMap<>();
+        String currentPage = (String) request.getSession().getAttribute(CURRENT_PAGE);
         mapData.put(USER_EMAIL, request.getParameter(USER_EMAIL));
         mapData.put(USER_PASSWORD, request.getParameter(USER_PASSWORD));
         mapData.put(USER_NAME, request.getParameter(USER_NAME));
         mapData.put(USER_SURNAME, request.getParameter(USER_SURNAME));
-        mapData.put(USER_PHONE_NUMBER, request.getParameter(USER_PHONE_NUMBER));
         Router router = new Router();
         try {
-            if (customerService.registerCustomer(mapData)) {
-                int createdCustomerId = Integer.parseInt(mapData.get(USER_ID));
-                orderService.createCart(createdCustomerId);
+            if (userService.registerAdmin(mapData)) {
                 router.setCurrentType(Router.Type.REDIRECT);
-                router.setCurrentPage(request.getContextPath() + SIGN_IN_PAGE);
+                router.setCurrentPage(request.getContextPath() + currentPage);
                 return router;
             }
             for (String key : mapData.keySet()) {
@@ -61,16 +61,8 @@ public class Registration implements Command {
                         request.setAttribute(INVALID_SURNAME, INVALID_SURNAME_MESSAGE);
                         mapData.put(key, null);
                     }
-                    case INVALID_PHONE_NUMBER -> {
-                        request.setAttribute(INVALID_PHONE_NUMBER, INVALID_PHONE_NUMBER_MESSAGE);
-                        mapData.put(key, null);
-                    }
                     case NOT_UNIQUE_EMAIL -> {
                         request.setAttribute(INVALID_EMAIL, NOT_UNIQUE_EMAIL_MESSAGE);
-                        mapData.put(key, null);
-                    }
-                    case NOT_UNIQUE_PHONE -> {
-                        request.setAttribute(INVALID_PHONE_NUMBER, NOT_UNIQUE_PHONE_MESSAGE);
                         mapData.put(key, null);
                     }
                 }
@@ -83,3 +75,4 @@ public class Registration implements Command {
         }
     }
 }
+

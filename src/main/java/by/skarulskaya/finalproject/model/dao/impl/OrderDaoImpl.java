@@ -8,6 +8,8 @@ import by.skarulskaya.finalproject.model.mapper.impl.OrderMapper;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +50,39 @@ public class OrderDaoImpl extends OrderDao {
         WHERE O.status <> 'IN_PROCESS'
         ORDER BY O.order_id DESC
         LIMIT ? OFFSET ?""";
+    private static final String SQL_FIND_REGISTERED_ORDERS_BY_DATE_LIMIT = """
+        SELECT O.order_id, O.customer_id, O.status AS order_status, O.date_ordered, O.shipping_address, 
+        O.gift_card, O.total_price, C.bank_account, C.phone_number, NULL AS default_address_id, 
+        U.email, U.password, U.name, U.surname, U.role, U.status, 
+        A.address_id, A.country, A.city, A.address, A.apartment, A.postal_code
+        FROM orders O JOIN customers C ON O.customer_id = C.customer_id
+        JOIN users U ON C.customer_id = U.user_id
+        JOIN addresses A ON O.shipping_address = A.address_id
+        WHERE O.date_ordered = ? AND O.status <> 'IN_PROCESS'
+        ORDER BY O.order_id DESC
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_FIND_REGISTERED_ORDERS_BY_STATUS_LIMIT = """
+        SELECT O.order_id, O.customer_id, O.status AS order_status, O.date_ordered, O.shipping_address, 
+        O.gift_card, O.total_price, C.bank_account, C.phone_number, NULL AS default_address_id, 
+        U.email, U.password, U.name, U.surname, U.role, U.status, 
+        A.address_id, A.country, A.city, A.address, A.apartment, A.postal_code
+        FROM orders O JOIN customers C ON O.customer_id = C.customer_id
+        JOIN users U ON C.customer_id = U.user_id
+        JOIN addresses A ON O.shipping_address = A.address_id
+        WHERE O.status = ? AND O.status <> 'IN_PROCESS'
+        ORDER BY O.order_id DESC
+        LIMIT ? OFFSET ?""";
+    private static final String SQL_FIND_REGISTERED_ORDERS_BY_STATUS_BY_DATE_LIMIT = """
+        SELECT O.order_id, O.customer_id, O.status AS order_status, O.date_ordered, O.shipping_address, 
+        O.gift_card, O.total_price, C.bank_account, C.phone_number, NULL AS default_address_id, 
+        U.email, U.password, U.name, U.surname, U.role, U.status, 
+        A.address_id, A.country, A.city, A.address, A.apartment, A.postal_code
+        FROM orders O JOIN customers C ON O.customer_id = C.customer_id
+        JOIN users U ON C.customer_id = U.user_id
+        JOIN addresses A ON O.shipping_address = A.address_id
+        WHERE O.status = ? AND O.date_ordered = ? AND O.status <> 'IN_PROCESS'
+        ORDER BY O.order_id DESC
+        LIMIT ? OFFSET ?""";
     private static final String SQL_FIND_ORDER_CUSTOMER_EMAIL = """
         SELECT U.email
         FROM orders O JOIN users U ON O.customer_id = U.user_id
@@ -79,6 +114,67 @@ public class OrderDaoImpl extends OrderDao {
         try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_REGISTERED_ORDERS_LIMIT)) {
             statement.setInt(1, count);
             statement.setInt(2, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Order order = mapper.map(resultSet);
+                    orders.add(order);
+                }
+            }
+            return orders;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Order> findAllByDateByPage(LocalDate date, int count, int offset) throws DaoException {
+        List<Order> orders = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_REGISTERED_ORDERS_BY_DATE_LIMIT)) {
+            statement.setDate(1, Date.valueOf(date.toString()));
+            statement.setInt(2, count);
+            statement.setInt(3, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Order order = mapper.map(resultSet);
+                    orders.add(order);
+                }
+            }
+            return orders;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Order> findAllByStatusByPage(Order.OrderStatus status, int count, int offset) throws DaoException {
+        List<Order> orders = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_REGISTERED_ORDERS_BY_STATUS_LIMIT)) {
+            statement.setString(1, status.name());
+            statement.setInt(2, count);
+            statement.setInt(3, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Order order = mapper.map(resultSet);
+                    orders.add(order);
+                }
+            }
+            return orders;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Order> findAllByStatusByDateByPage(Order.OrderStatus status, LocalDate date, int count, int offset) throws DaoException {
+        List<Order> orders = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_REGISTERED_ORDERS_BY_STATUS_BY_DATE_LIMIT)) {
+            statement.setString(1, status.name());
+            statement.setDate(2, Date.valueOf(date.toString()));
+            statement.setInt(3, count);
+            statement.setInt(4, offset);
             try(ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Order order = mapper.map(resultSet);
@@ -139,9 +235,7 @@ public class OrderDaoImpl extends OrderDao {
     public boolean registerOrder(int orderId, int addressId, BigDecimal cartTotalPrice) throws DaoException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_REGISTER_ORDER)) {
             statement.setString(1, Order.OrderStatus.NEED_CONFIRMATION.name());
-            long now = System.currentTimeMillis();
-            Date sqlDate = new Date(now);
-            statement.setDate(2, sqlDate);
+            statement.setDate(2, Date.valueOf(LocalDate.now().toString()));
             statement.setInt(3, addressId);
             statement.setBigDecimal(4, cartTotalPrice);
             statement.setInt(5, orderId);

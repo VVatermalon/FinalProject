@@ -12,7 +12,6 @@ public abstract class ItemDao extends AbstractDao<Integer, Item> {
 
     public abstract List<Item> findAllByPageSort(Item.ItemSortParameter sortParameter, SortOrder order, int count, int offset) throws DaoException;
 
-    public abstract List<Item> findAllByCategory(int id) throws DaoException;
     public abstract List<Item> findAllByPage(int count, int offset) throws DaoException;
     public abstract List<Item> findAllByCategoryByPage(int id, int count, int offset) throws DaoException;
 

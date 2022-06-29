@@ -2,6 +2,7 @@ package by.skarulskaya.finalproject.controller;
 
 public final class PagesPaths {
     public static final String START_PAGE = "/jsp/pages/start.jsp";
+    public static final String ERROR_403 = "/jsp/pages/error403.jsp";
     public static final String ERROR_404 = "/jsp/pages/error404.jsp";
     public static final String ERROR_500 = "/jsp/error/error500.jsp";
     public static final String CATALOG_PAGE = "/jsp/pages/catalog.jsp";
@@ -16,6 +17,7 @@ public final class PagesPaths {
     public static final String ORDER_SUCCESS_PAGE = "/jsp/pages/orderSuccess.jsp";
     public static final String ORDER_HISTORY_PAGE = "/jsp/pages/orderHistory.jsp";
     public static final String ORDERS_PAGE = "jsp/pages/orders.jsp";
+    public static final String USERS_PAGE = "jsp/pages/users.jsp";
 
     private PagesPaths(){}
 }

@@ -7,6 +7,8 @@ import by.skarulskaya.finalproject.model.mapper.EntityMapper;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
 
@@ -26,7 +28,7 @@ public class OrderMapper implements EntityMapper<Order> {
             int customerId = resultSet.getInt(CUSTOMER_ID_LABEL);
             String statusStr = resultSet.getString(STATUS_LABEL).trim();
             Order.OrderStatus status = Order.OrderStatus.valueOf(statusStr);
-            Date date = resultSet.getDate(DATE_LABEL);
+            LocalDate date = resultSet.getTimestamp(DATE_LABEL).toInstant().atZone(ZoneId.of("UTC")).toLocalDateTime().toLocalDate();
             int addressId = resultSet.getInt(SHIPPING_ADDRESS_ID_LABEL);
             String giftCard = resultSet.getString(CARD_LABEL);
             BigDecimal totalPrice = resultSet.getBigDecimal(PRICE_LABEL);

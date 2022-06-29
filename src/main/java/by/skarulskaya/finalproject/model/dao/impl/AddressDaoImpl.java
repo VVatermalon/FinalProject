@@ -52,23 +52,6 @@ public class AddressDaoImpl extends AddressDao {
     }
 
     @Override
-    public Optional<Address> findAddressByOrderId(Integer id) throws DaoException {
-        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ADDRESS_BY_ORDER_ID)) {
-            statement.setInt(1, id);
-            try(ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    Address address = mapper.map(resultSet);
-                    return Optional.of(address);
-                }
-                return Optional.empty();
-            }
-        } catch (SQLException e) {
-            logger.error(e);
-            throw new DaoException(e);
-        }
-    }
-
-    @Override
     public Optional<Address> findAddress(Address address) throws DaoException {
         String sqlQuery = SQL_FIND_ADDRESS_APARTMENT_IS_NULL;
         if(address.getApartment().isPresent()) {

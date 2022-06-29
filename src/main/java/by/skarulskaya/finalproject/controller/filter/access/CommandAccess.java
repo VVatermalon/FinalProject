@@ -6,7 +6,6 @@ import java.util.Set;
 
 public enum CommandAccess {
     ADMIN(Set.of(CommandType.SIGN_IN.name(),
-            CommandType.REGISTRATION.name(),
             CommandType.ADD_ITEM_TO_CART.name(),
             CommandType.REMOVE_ITEM_FROM_CART.name(),
             CommandType.UPLOAD_CART.name(),
@@ -18,7 +17,12 @@ public enum CommandAccess {
             CommandType.REGISTRATION.name(),
             CommandType.UPLOAD_ORDERS.name(),
             CommandType.CONFIRM_ORDER.name(),
-            CommandType.CANCEL_ORDER.name())),
+            CommandType.CANCEL_ORDER.name(),
+            CommandType.UPLOAD_CUSTOMERS.name(),
+            CommandType.UPLOAD_ADMINS.name(),
+            CommandType.DELETE_ADMIN.name(),
+            CommandType.REGISTER_ADMIN.name(),
+            CommandType.CHANGE_USER_STATUS.name())),
     GUEST(Set.of(CommandType.SIGN_OUT.name(),
             CommandType.ADD_ITEM_TO_CART.name(),
             CommandType.REMOVE_ITEM_FROM_CART.name(),
@@ -30,7 +34,12 @@ public enum CommandAccess {
             CommandType.UPLOAD_ORDER_HISTORY.name(),
             CommandType.UPLOAD_ORDERS.name(),
             CommandType.CONFIRM_ORDER.name(),
-            CommandType.CANCEL_ORDER.name()));
+            CommandType.CANCEL_ORDER.name(),
+            CommandType.UPLOAD_CUSTOMERS.name(),
+            CommandType.UPLOAD_ADMINS.name(),
+            CommandType.DELETE_ADMIN.name(),
+            CommandType.REGISTER_ADMIN.name(),
+            CommandType.CHANGE_USER_STATUS.name()));
     private final Set<String> commands;
 
     CommandAccess(Set<String> commands){

@@ -47,7 +47,7 @@ public class SignIn implements Command {
         }
         if(userOptional.isPresent()) {
             User user = userOptional.get();
-            processRole(user, session, response, router);
+            processRole(user, session, request, response, router);
         }
         else {
             request.setAttribute(ERROR_INCORRECT_LOGIN_OR_PASSWORD, ERROR_INCORRECT_LOGIN_OR_PASSWORD_MESSAGE);
@@ -56,13 +56,14 @@ public class SignIn implements Command {
         return router;
     }
 
-    private void processRole(User user, HttpSession session, HttpServletResponse response, Router router) throws CommandException {
+    private void processRole(User user, HttpSession session, HttpServletRequest request, HttpServletResponse response, Router router) throws CommandException {
         switch(user.getRole()) {
             case ADMIN -> {
                 session.setAttribute(USER, user);
                 addCookie(USER_PASSWORD, user.getPassword(), response);
                 addCookie(USER_EMAIL, user.getEmail(), response);
-                router.setCurrentPage(START_PAGE);
+                router.setCurrentType(Router.Type.REDIRECT);
+                router.setCurrentPage(request.getContextPath() + START_PAGE);
             }
             case CUSTOMER -> {
                 if (user.getStatus() == User.Status.BLOCKED) {
@@ -82,8 +83,8 @@ public class SignIn implements Command {
                             session.setAttribute(CART_ORDER_ID, cartOrderId);
                             int itemsInCartCount = orderComponentService.countItemsInCart(cartOrderId);
                             session.setAttribute(ITEMS_IN_CART_COUNT, itemsInCartCount);
-
-                            router.setCurrentPage(START_PAGE);
+                            router.setCurrentType(Router.Type.REDIRECT);
+                            router.setCurrentPage(request.getContextPath() + START_PAGE);
                         } else {
                             throw new CommandException("Error with data: cannot find linked to user customer");
                         }

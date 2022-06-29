@@ -29,13 +29,6 @@ public class FindAllItems implements Command {
     private static final ItemService itemService = ItemService.getInstance();
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
-        if(request.getParameter(SORT) != null) {
-            return CommandType.SORT_ITEMS.getCommand().execute(request, response);
-        }
-        if(request.getParameter(CATEGORY_ID) != null) {
-            return CommandType.FIND_BY_CATEGORY_ITEMS.getCommand().execute(request, response);
-        }
-
         Router router = new Router();
         User user = (User)request.getSession().getAttribute(USER);
         int itemPerPage = user != null && user.getRole() == User.Role.ADMIN ? ITEM_PER_PAGE_ADMIN : ITEM_PER_PAGE;
@@ -48,15 +41,18 @@ public class FindAllItems implements Command {
             pagePagination = Integer.parseInt(pageParameter);
         }
         int offset = Pagination.offset(itemPerPage, pagePagination);
+        String sortParameter = request.getParameter(SORT);
+        String sortOrderParameter = request.getParameter(SORT_ORDER);
+        String category = request.getParameter(CATEGORY_ID);
         try {
-            List<Item> itemList = itemService.findAllByPage(itemPerPage, offset);
+            List<Item> itemList = itemService.findAllByCategoryByPageSort(category, sortParameter, sortOrderParameter, itemPerPage, offset);
             if(itemList.size() == itemPerPage) {
                 request.setAttribute(IS_NEXT_PAGE, true);
             }
             if(itemList.isEmpty() && pagePagination > FIRST_PAGINATION_PAGE){
                 pagePagination--;
                 offset = Pagination.offset(itemPerPage, pagePagination);
-                itemList = itemService.findAllByPage(itemPerPage, offset);
+                itemList = itemService.findAllByCategoryByPageSort(category, sortParameter, sortOrderParameter, itemPerPage, offset);
             }
             request.setAttribute(ITEM_LIST, itemList);
             request.setAttribute(PAGE, pagePagination);

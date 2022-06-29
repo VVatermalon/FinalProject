@@ -46,38 +46,47 @@
     <title><fmt:message key="title.registration"/></title>
 </head>
 <body>
-<nav class="navbar navbar-light bg-light navbar-expand-lg" style="height: 100px">
-    <div class="container-fluid" style="height: 100px">
-        <div class="col"></div>
-        <div class="col d-flex justify-content-center">
-            <a class="navbar-brand m-1" href="${absolutePath}/jsp/pages/start.jsp">
-                <img src="${absolutePath}/images/logo.png" alt="${alt_main}" height="90">
-            </a>
-        </div>
-        <div class="col d-flex flex-row-reverse">
-            <ul class="navbar-nav">
-                <c:choose>
-                    <c:when test="${language eq 'ru_RU'}">
-                        <li class="nav-item">
-                            <a class="nav-link" href="${absolutePath}/controller?command=change_language&language=en_US">${lang}</a>
-                        </li>
-                    </c:when>
-                    <c:when test="${language eq 'en_US'}">
-                        <li class="nav-item">
-                            <a class="nav-link" href="${absolutePath}/controller?command=change_language&language=ru_RU">${lang}</a>
-                        </li>
-                    </c:when>
-                    <c:otherwise>
-                        <li class="nav-item">
-                            <a class="nav-link" href="${absolutePath}/controller?command=change_language&language=ru_RU">${lang}</a>
-                        </li>
-                    </c:otherwise>
-                </c:choose>
-                <li class="nav-item"><a class="nav-link" href="${absolutePath}/jsp/pages/signIn.jsp">${sign_in}</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<c:choose>
+    <c:when test="${user.role eq 'ADMIN'}">
+        <header class="sticky-top">
+            <%@include file="header/headerCommon.jsp"%>
+        </header>
+    </c:when>
+    <c:otherwise>
+        <nav class="navbar navbar-light bg-light navbar-expand-lg" style="height: 100px">
+            <div class="container-fluid" style="height: 100px">
+                <div class="col"></div>
+                <div class="col d-flex justify-content-center">
+                    <a class="navbar-brand m-1" href="${absolutePath}/jsp/pages/start.jsp">
+                        <img src="${absolutePath}/images/logo.png" alt="${alt_main}" height="90">
+                    </a>
+                </div>
+                <div class="col d-flex flex-row-reverse">
+                    <ul class="navbar-nav">
+                        <c:choose>
+                            <c:when test="${language eq 'ru_RU'}">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="${absolutePath}/controller?command=change_language&language=en_US">${lang}</a>
+                                </li>
+                            </c:when>
+                            <c:when test="${language eq 'en_US'}">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="${absolutePath}/controller?command=change_language&language=ru_RU">${lang}</a>
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="${absolutePath}/controller?command=change_language&language=ru_RU">${lang}</a>
+                                </li>
+                            </c:otherwise>
+                        </c:choose>
+                        <li class="nav-item"><a class="nav-link" href="${absolutePath}/jsp/pages/signIn.jsp">${sign_in}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </c:otherwise>
+</c:choose>
 <div class="back">
     <a href="${absolutePath}/jsp/pages/start.jsp"><-<fmt:message key="back.home"/></a>
 </div>
@@ -85,7 +94,14 @@
     <div class="container justify-content-center col-12 col-sm-6 mt-3">
         <h3 class="text-center p-3">${reg_name}</h3>
         <form role="form" action="${absolutePath}/controller" method="post" class="needs-validation" novalidate>
-            <input type="hidden" name="command" value="registration"/>
+            <c:choose>
+                <c:when test="${user.role eq 'ADMIN'}">
+                    <input type="hidden" name="command" value="register_admin"/>
+                </c:when>
+                <c:otherwise>
+                    <input type="hidden" name="command" value="registration"/>
+                </c:otherwise>
+            </c:choose>
             <div class="row gy-3">
                 <div class="form-group">
                     <label class="form-label">${user_first_name}</label>
@@ -126,19 +142,21 @@
                         <fmt:message key="registration.invalid_email"/>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">${user_phone}</label>
-                    <input type="tel" name="phone_number" value="${data_map.phone_number}" class="form-control" placeholder="${e_phone}" required pattern="+375(29|25|44|33)\d{7}">
-                    <div id="phoneHelp" class="form-text"><fmt:message key="registration.correct_phone_number"/></div>
-                    <c:if test="${!empty invalid_phone_number}">
-                        <div class="invalid-feedback-backend" style="color: red">
-                            <fmt:message key="${invalid_phone_number}"/>
+                <c:if test="${user.role != 'ADMIN'}">
+                    <div class="form-group">
+                        <label class="form-label">${user_phone}</label>
+                        <input type="tel" name="phone_number" value="${data_map.phone_number}" class="form-control" placeholder="${e_phone}" required pattern="+375(29|25|44|33)\d{7}">
+                        <div id="phoneHelp" class="form-text"><fmt:message key="registration.correct_phone_number"/></div>
+                        <c:if test="${!empty invalid_phone_number}">
+                            <div class="invalid-feedback-backend" style="color: red">
+                                <fmt:message key="${invalid_phone_number}"/>
+                            </div>
+                        </c:if>
+                        <div class="invalid-feedback">
+                            <fmt:message key="registration.invalid_phone_number"/>
                         </div>
-                    </c:if>
-                    <div class="invalid-feedback">
-                        <fmt:message key="registration.invalid_phone_number"/>
                     </div>
-                </div>
+                </c:if>
                 <div class="form-group">
                     <label class="form-label">${user_pass}</label>
                     <input type="password" name="user_password" value="${data_map.user_password}" class="form-control" placeholder="${e_password}" required pattern="^[A-Za-zА-Яа-я0-9\._*]{5,40}$">

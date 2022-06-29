@@ -51,13 +51,13 @@
     <div class="container-fluid" style="height: 100px">
         <div class="col-4">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="${absolutePath}/controller?command=find_by_category_items&category_id=1">${music}</a></li>
+                <li class="nav-item"><a class="nav-link" href="${absolutePath}/controller?command=find_all_items&category_id=1">${music}</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         ${merch}</a>
                     <ul class="dropdown-menu">
                         <c:forEach items="${sessionScope.category_list}" var="category">
-                            <li><a class="dropdown-item" href="${absolutePath}/controller?command=find_by_category_items&category_id=${category.id}"><fmt:message key="${category.categoryName}"/></a></li>
+                            <li><a class="dropdown-item" href="${absolutePath}/controller?command=find_all_items&category_id=${category.id}"><fmt:message key="${category.categoryName}"/></a></li>
                         </c:forEach>
                     </ul>
                 </li>

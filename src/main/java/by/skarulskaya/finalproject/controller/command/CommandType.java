@@ -1,9 +1,7 @@
 package by.skarulskaya.finalproject.controller.command;
 
 import by.skarulskaya.finalproject.controller.command.impl.*;
-import by.skarulskaya.finalproject.controller.command.impl.admin.CancelOrder;
-import by.skarulskaya.finalproject.controller.command.impl.admin.ConfirmOrder;
-import by.skarulskaya.finalproject.controller.command.impl.admin.UploadOrders;
+import by.skarulskaya.finalproject.controller.command.impl.admin.*;
 import by.skarulskaya.finalproject.controller.command.impl.common.*;
 import by.skarulskaya.finalproject.controller.command.impl.customer.*;
 import by.skarulskaya.finalproject.exception.CommandException;
@@ -13,8 +11,6 @@ public enum CommandType {
     SIGN_OUT(new SignOut()),
     REGISTRATION(new Registration()),
     FIND_ALL_ITEMS(new FindAllItems()),
-    FIND_BY_CATEGORY_ITEMS(new FindByCategoryItems()),
-    SORT_ITEMS(new SortItems()),
     OPEN_ITEM_PAGE(new OpenItemPage()),
     ADD_ITEM_TO_CART(new AddItemToCart()),
     REMOVE_ITEM_FROM_CART(new RemoveItemFromCart()),
@@ -27,7 +23,12 @@ public enum CommandType {
     UPLOAD_ORDER_HISTORY(new UploadOrderHistory()),
     UPLOAD_ORDERS(new UploadOrders()),
     CONFIRM_ORDER(new ConfirmOrder()),
-    CANCEL_ORDER(new CancelOrder());
+    CANCEL_ORDER(new CancelOrder()),
+    UPLOAD_CUSTOMERS(new UploadCustomers()),
+    UPLOAD_ADMINS(new UploadAdmins()),
+    DELETE_ADMIN(new DeleteAdmin()),
+    REGISTER_ADMIN(new RegisterAdmin()),
+    CHANGE_USER_STATUS(new ChangeUserStatus());
 
     private final Command command;
 

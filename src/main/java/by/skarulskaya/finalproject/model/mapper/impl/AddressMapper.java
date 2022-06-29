@@ -2,11 +2,8 @@ package by.skarulskaya.finalproject.model.mapper.impl;
 
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.model.entity.Address;
-import by.skarulskaya.finalproject.model.entity.Customer;
-import by.skarulskaya.finalproject.model.entity.User;
 import by.skarulskaya.finalproject.model.mapper.EntityMapper;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -24,7 +21,7 @@ public class AddressMapper implements EntityMapper<Address> {
         try {
             int id = resultSet.getInt(ID_LABEL);
             String countryStr = resultSet.getString(COUNTRY_LABEL).trim();
-            Address.AVAILABLE_COUNTRIES country = Address.AVAILABLE_COUNTRIES.valueOf(countryStr);
+            Address.AvailableCountries country = Address.AvailableCountries.valueOf(countryStr);
             String city = resultSet.getString(CITY_LABEL);
             String address = resultSet.getString(ADDRESS_LABEL);
             String apartment = resultSet.getString(APARTMENT_LABEL);

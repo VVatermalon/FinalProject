@@ -1,6 +1,7 @@
 package by.skarulskaya.finalproject.model.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,13 +29,13 @@ public class Order extends CustomEntity implements Comparable<Order> {
     }
     private OrderStatus status;
     private Customer customer;
-    private Date dateOrdered;
+    private LocalDate dateOrdered;
     private Address address;
     private String giftCard;
     private BigDecimal totalPrice;
     private List<OrderComponent> components;
 
-    public Order(OrderStatus status, Date dateOrdered, Address address, String giftCard, BigDecimal totalPrice, List<OrderComponent> components) {
+    public Order(OrderStatus status, LocalDate dateOrdered, Address address, String giftCard, BigDecimal totalPrice, List<OrderComponent> components) {
         this.status = status;
         this.dateOrdered = dateOrdered;
         this.address = address;
@@ -43,7 +44,7 @@ public class Order extends CustomEntity implements Comparable<Order> {
         this.components = components;
     }
 
-    public Order(int id, OrderStatus status, Date dateOrdered, Address address, String giftCard, BigDecimal totalPrice, List<OrderComponent> components) {
+    public Order(int id, OrderStatus status, LocalDate dateOrdered, Address address, String giftCard, BigDecimal totalPrice, List<OrderComponent> components) {
         super(id);
         this.status = status;
         this.dateOrdered = dateOrdered;
@@ -53,7 +54,7 @@ public class Order extends CustomEntity implements Comparable<Order> {
         this.components = components;
     }
 
-    public Order(int id, OrderStatus status, Date dateOrdered, String giftCard, BigDecimal totalPrice) {
+    public Order(int id, OrderStatus status, LocalDate dateOrdered, String giftCard, BigDecimal totalPrice) {
         super(id);
         this.status = status;
         this.dateOrdered = dateOrdered;
@@ -77,11 +78,11 @@ public class Order extends CustomEntity implements Comparable<Order> {
         this.customer = customer;
     }
 
-    public Date getDateOrdered() {
+    public LocalDate getDateOrdered() {
         return dateOrdered;
     }
 
-    public void setDateOrdered(Date dateOrdered) {
+    public void setDateOrdered(LocalDate dateOrdered) {
         this.dateOrdered = dateOrdered;
     }
 

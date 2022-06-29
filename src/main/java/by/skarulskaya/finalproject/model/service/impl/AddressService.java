@@ -10,7 +10,6 @@ import by.skarulskaya.finalproject.model.dao.impl.CustomerDaoImpl;
 import by.skarulskaya.finalproject.model.entity.Address;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,7 +29,7 @@ public class AddressService {
         if (!BaseValidatorImpl.INSTANCE.validateAddress(map)) {
             return Optional.empty();
         }
-        Address.AVAILABLE_COUNTRIES country = Address.AVAILABLE_COUNTRIES.valueOf(map.get(COUNTRY).toUpperCase());
+        Address.AvailableCountries country = Address.AvailableCountries.valueOf(map.get(COUNTRY).toUpperCase());
         String saveAddress = map.get(SAVE_FOR_LATER);
         String city = map.get(CITY);
         String address = map.get(ADDRESS);

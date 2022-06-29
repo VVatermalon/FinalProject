@@ -8,6 +8,9 @@ public interface BaseValidator {
     boolean validateName(String name);
     boolean validatePhoneNumber(String phoneNumber);
     boolean validateRegistration(Map<String, String> map);
+
+    boolean validateRegistrationAdmin(Map<String, String> map);
+
     boolean validateSignIn(String email, String password);
     boolean validateCountry(String country);
     boolean validateCity(String city);

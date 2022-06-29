@@ -14,6 +14,7 @@ import by.skarulskaya.finalproject.util.mail.MailSender;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,6 +25,26 @@ public class CustomerService {
     private CustomerService() {}
     public static CustomerService getInstance() {
         return INSTANCE;
+    }
+
+    public List<Customer> findAll() throws ServiceException {
+        CustomerDao customerDao = new CustomerDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(customerDao);
+            return customerDao.findAll();
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    public List<Customer> findAllByPage(int count, int offset) throws ServiceException {
+        CustomerDao customerDao = new CustomerDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(customerDao);
+            return customerDao.findAllByPage(count, offset);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
     }
 
     public Optional<Customer> findCustomerById(int id) throws ServiceException {

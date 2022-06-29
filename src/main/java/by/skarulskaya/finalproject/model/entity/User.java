@@ -1,11 +1,24 @@
 package by.skarulskaya.finalproject.model.entity;
 
-public class User extends CustomEntity {
+public class User extends CustomEntity implements Comparable<User> {
+    @Override
+    public int compareTo(User o) {
+        if (o == null) {
+            return -1;
+        }
+        return Integer.compare(this.getId(), o.getId());
+    }
+
     public enum Role {
         GUEST, CUSTOMER, ADMIN
     }
     public enum Status {
-        ACTIVE, BLOCKED, IN_REGISTRATION_PROCESS, DELETED
+        ACTIVE, BLOCKED, IN_REGISTRATION_PROCESS, DELETED;
+
+        @Override
+        public String toString() {
+            return this.name().toLowerCase();
+        }
     }
     private String email;
     private String password;

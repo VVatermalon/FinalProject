@@ -36,7 +36,6 @@ public class AddMoneyToAccount implements Command {
             if(!isUpdated || customer.getBankAccount().compareTo(expectedAmount) != 0) {
                 request.setAttribute(ERROR_ADD_MONEY, ERROR_CANNOT_ADD_MONEY_OVER_LIMIT);
             }
-            session.setAttribute(CUSTOMER, customer);
         } catch (ServiceException e) {
             throw new CommandException(e);
         }

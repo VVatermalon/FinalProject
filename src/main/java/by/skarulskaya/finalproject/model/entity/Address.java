@@ -1,10 +1,9 @@
 package by.skarulskaya.finalproject.model.entity;
 
-import java.util.Locale;
 import java.util.Optional;
 
 public class Address extends CustomEntity {
-    public enum AVAILABLE_COUNTRIES {
+    public enum AvailableCountries {
         USA, RUSSIA, CANADA, CHINA, BRAZIL, AUSTRALIA, INDIA, ARGENTINA,
         KAZAKHSTAN, FRANCE, UKRAINE, THAILAND, SPAIN, SWEDEN, JAPAN,
         GERMANY, POLAND, ITALY, BELARUS;
@@ -14,13 +13,13 @@ public class Address extends CustomEntity {
             return this.name().toLowerCase();
         }
     }
-    private AVAILABLE_COUNTRIES country;
+    private AvailableCountries country;
     private String city;
     private String address;
     private Optional<String> apartment;
     private String postalCode;
 
-    public Address(AVAILABLE_COUNTRIES country, String city, String address, Optional<String> apartment, String postalCode) {
+    public Address(AvailableCountries country, String city, String address, Optional<String> apartment, String postalCode) {
         this.country = country;
         this.city = city;
         this.address = address;
@@ -28,7 +27,7 @@ public class Address extends CustomEntity {
         this.postalCode = postalCode;
     }
 
-    public Address(int id, AVAILABLE_COUNTRIES country, String city, String address, Optional<String> apartment, String postalCode) {
+    public Address(int id, AvailableCountries country, String city, String address, Optional<String> apartment, String postalCode) {
         super(id);
         this.country = country;
         this.city = city;
@@ -37,11 +36,11 @@ public class Address extends CustomEntity {
         this.postalCode = postalCode;
     }
 
-    public AVAILABLE_COUNTRIES getCountry() {
+    public AvailableCountries getCountry() {
         return country;
     }
 
-    public void setCountry(AVAILABLE_COUNTRIES country) {
+    public void setCountry(AvailableCountries country) {
         this.country = country;
     }
 

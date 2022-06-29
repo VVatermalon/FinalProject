@@ -1,6 +1,7 @@
 package by.skarulskaya.finalproject.model.dao.impl;
 
 import by.skarulskaya.finalproject.model.dao.UserDao;
+import by.skarulskaya.finalproject.model.entity.Customer;
 import by.skarulskaya.finalproject.model.entity.User;
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.model.mapper.EntityMapper;
@@ -14,6 +15,10 @@ import java.util.Optional;
 public class UserDaoImpl extends UserDao {
     private static final String SQL_SELECT_ALL_USERS = """
         SELECT user_id, email, password, name, surname, role, status FROM users""";
+    private static final String SQL_FIND_ALL_ADMINS_BY_PAGE = """
+        SELECT user_id, email, password, name, surname, role, status FROM users
+        WHERE role = 'ADMIN'
+        LIMIT ? OFFSET ?""";
     private static final String SQL_FIND_USER_BY_ID = """
         SELECT user_id, email, password, name, surname, role, status 
         FROM users WHERE user_id = ?""";
@@ -30,14 +35,16 @@ public class UserDaoImpl extends UserDao {
         INSERT INTO users(email, password, name, surname, role, status) 
         VALUES(?,?,?,?,?,?)""";
     private static final String SQL_UPDATE_USER = """
-        UPDATE users set email = ?, password = ?, name = ?, surname = ?, 
+        UPDATE users SET email = ?, password = ?, name = ?, surname = ?, 
         role = ?, status = ? WHERE user_id = ?""";
     private static final String SQL_UPDATE_NAME = """
-        UPDATE users set name = ? WHERE user_id = ?""";
+        UPDATE users SET name = ? WHERE user_id = ?""";
     private static final String SQL_UPDATE_SURNAME = """
-        UPDATE users set surname = ? WHERE user_id = ?""";
+        UPDATE users SET surname = ? WHERE user_id = ?""";
     private static final String SQL_UPDATE_PASSWORD = """
-        UPDATE users set password = ? WHERE user_id = ?""";
+        UPDATE users SET password = ? WHERE user_id = ?""";
+    private static final String SQL_UPDATE_STATUS = """
+        UPDATE users SET status = ? WHERE user_id = ?""";
     private static final EntityMapper<User> mapper = new UserMapper();
 
     @Override
@@ -49,11 +56,30 @@ public class UserDaoImpl extends UserDao {
                 User user = mapper.map(resultSet);
                 users.add(user);
             }
+            return users;
         } catch (SQLException e) {
             logger.error("Sql exception: ", e);
             throw new DaoException(e);
         }
-        return users;
+    }
+
+    @Override
+    public List<User> findAllAdminsByPage(int count, int offset) throws DaoException {
+        List<User> users = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_ADMINS_BY_PAGE)) {
+            statement.setInt(1, count);
+            statement.setInt(2, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    User user = mapper.map(resultSet);
+                    users.add(user);
+                }
+            }
+            return users;
+        } catch (SQLException e) {
+            logger.error("Sql exception: ", e);
+            throw new DaoException(e);
+        }
     }
 
     @Override
@@ -148,27 +174,23 @@ public class UserDaoImpl extends UserDao {
 
     @Override
     public boolean delete(Integer id) throws DaoException {
-        ResultSet resultSet = null;
         try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_BY_ID, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE)) {
             statement.setInt(1, id);
-            resultSet = statement.executeQuery();
-            if (!resultSet.next()) {
-                return false;
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (!resultSet.next()) {
+                    return false;
+                }
+                resultSet.deleteRow();
+                return true;
             }
-            resultSet.updateInt("status", User.Status.DELETED.ordinal()); //todo или надо удалять каскадом все?
-            resultSet.updateRow();
-            return true;
         } catch (SQLException e) {
             logger.error(e);
             throw new DaoException(e);
-        } finally {
-            close(resultSet);
         }
     }
 
     @Override
     public boolean create(User entity) throws DaoException {
-        ResultSet keys = null;
         try (PreparedStatement statement = connection.prepareStatement(SQL_CREATE_USER, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, entity.getEmail());
             statement.setString(2, entity.getPassword());
@@ -177,17 +199,16 @@ public class UserDaoImpl extends UserDao {
             statement.setString(5, entity.getRole().name());
             statement.setString(6, entity.getStatus().name());
             statement.executeUpdate();
-            keys = statement.getGeneratedKeys(); //todo where to close resultSet?
-            if (!keys.next()) {
-                throw new DaoException("Smth wrong with generated id"); //todo is that possible?
+            try(ResultSet keys = statement.getGeneratedKeys()) {
+                if (!keys.next()) {
+                    throw new DaoException("Smth wrong with generated id");
+                }
+                int id = keys.getInt(1);
+                entity.setId(id);
+                return true;
             }
-            int id = keys.getInt(1);
-            entity.setId(id);
-            return true;
         } catch (SQLException e) {
             throw new DaoException(e);
-        } finally {
-            close(keys);
         }
     }
 
@@ -236,6 +257,18 @@ public class UserDaoImpl extends UserDao {
     public boolean updatePassword(int id, String password) throws DaoException {
         try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_PASSWORD)) {
             statement.setString(1, password);
+            statement.setInt(2, id);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean updateStatus(int id, User.Status status) throws DaoException {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_STATUS)) {
+            statement.setString(1, status.name());
             statement.setInt(2, id);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {

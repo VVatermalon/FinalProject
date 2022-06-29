@@ -368,21 +368,21 @@
         <%@include file="header/headerCommon.jsp"%>
     </header>
     <div id="toastSuccess" class="toast align-items-center text-white bg-success position-fixed bottom-0 end-0 m-3" style="z-index: 11" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    <fmt:message key="action.success_add_item"/>
-                </div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+        <div class="d-flex">
+            <div class="toast-body">
+                <fmt:message key="action.success_add_item"/>
             </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
         </div>
+    </div>
     <div id="toastError" class="toast align-items-center text-white bg-danger position-fixed bottom-0 end-0 m-3" style="z-index: 11" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    <fmt:message key="${error_add_item_to_cart}"/>
-                </div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+        <div class="d-flex">
+            <div class="toast-body">
+                <fmt:message key="${error_add_item_to_cart}"/>
             </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
         </div>
+    </div>
     <div class="back">
         <a href="${absolutePath}/controller?command=find_all_items"><-<fmt:message key="back.shop"/></a>
     </div>

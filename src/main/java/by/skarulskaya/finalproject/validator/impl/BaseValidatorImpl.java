@@ -1,13 +1,10 @@
 package by.skarulskaya.finalproject.validator.impl;
 
-import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.Address;
-import by.skarulskaya.finalproject.model.entity.OrderComponent;
 import by.skarulskaya.finalproject.validator.BaseValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Locale;
 import java.util.Map;
 
 import static by.skarulskaya.finalproject.controller.Parameters.*;
@@ -48,12 +45,23 @@ public enum BaseValidatorImpl implements BaseValidator {
 
     @Override
     public boolean validateRegistration(Map<String, String> map) {
+        boolean result = validateRegistrationAdmin(map);
+        String phoneNumber = map.get(USER_PHONE_NUMBER);
+        if(!validatePhoneNumber(phoneNumber)){
+            map.put(USER_PHONE_NUMBER,INVALID_PHONE_NUMBER);
+            logger.debug(phoneNumber, USER_PHONE_NUMBER_PATTERN);
+            result = false;
+        }
+        return result;
+    }
+
+    @Override
+    public boolean validateRegistrationAdmin(Map<String, String> map) {
         boolean result = true;
         String email = map.get(USER_EMAIL);
         String password = map.get(USER_PASSWORD);
         String name = map.get(USER_NAME);
         String surname = map.get(USER_SURNAME);
-        String phoneNumber = map.get(USER_PHONE_NUMBER);
         if(!validateEmail(email)){
             map.put(USER_EMAIL, INVALID_EMAIL);
             logger.debug(email, USER_EMAIL_PATTERN);
@@ -74,11 +82,6 @@ public enum BaseValidatorImpl implements BaseValidator {
             logger.debug(surname, USER_NAME_PATTERN);
             result = false;
         }
-        if(!validatePhoneNumber(phoneNumber)){
-            map.put(USER_PHONE_NUMBER,INVALID_PHONE_NUMBER);
-            logger.debug(phoneNumber, USER_PHONE_NUMBER_PATTERN);
-            result = false;
-        }
         return result;
     }
 
@@ -93,7 +96,7 @@ public enum BaseValidatorImpl implements BaseValidator {
             return false;
         }
         try {
-            Address.AVAILABLE_COUNTRIES.valueOf(country.toUpperCase());
+            Address.AvailableCountries.valueOf(country.toUpperCase());
             return true;
         }
         catch (IllegalArgumentException e) {

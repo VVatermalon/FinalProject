@@ -3,6 +3,7 @@ package by.skarulskaya.finalproject.controller;
 public final class Parameters {
     // context attributes
     public static final String COUNTRY_LIST = "country_list";
+    public static final String ORDER_STATUS_LIST = "order_status_list";
     // session attributes
     public static final String CATEGORY_LIST = "category_list";
     public static final String CART_ORDER_ID = "cart_order_id";
@@ -48,6 +49,10 @@ public final class Parameters {
     public static final String SETTING_PASSWORD = "password";
     public static final String UPDATE_ADDRESS = "update_address";
     public static final String ORDER_ID = "order_id";
+    public static final String ORDER_STATUS = "order_status";
+    public static final String ORDER_DATE = "order_date";
+    public static final String ORDER_STATUS_ANY = "order_status_any";
+    public static final String USER_STATUS = "user_status";
     // request attributes
     public static final String IS_NEXT_PAGE = "is_next_page";
     public static final String UPLOADED_CART = "uploaded_cart";
@@ -78,6 +83,8 @@ public final class Parameters {
     public static final String INVALID_POSTAL_CODE = "invalid_postal_code";
     public static final String ERROR_ADD_ITEM_TO_CART = "error_add_item_to_cart";
     public static final String ORDERS = "orders";
+    public static final String USER_LIST = "user_list";
+    public static final String ERROR_DELETE_ADMIN = "error_delete_admin";
     // cookie max age constant
     public static final int COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
 

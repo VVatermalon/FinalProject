@@ -17,6 +17,9 @@
 <fmt:setBundle basename="language.language"/>
 <fmt:message key="profile.change_setting" var="change_setting"/>
 <fmt:message key="action.close" var="close"/>
+<c:set var="userName" scope="page" value="${!empty customer ? customer.name : user.name}"/>
+<c:set var="userSurname" scope="page" value="${!empty customer ? customer.surname : user.surname}"/>
+<c:set var="userEmail" scope="page" value="${!empty customer ? customer.email : user.email}"/>
 <c:set var="defaultFullAddress" scope="page" value="${customer.defaultAddress.isPresent() eq 'true' ? customer.defaultAddress.get() : null}"/>
 <c:set var="defaultCountry" scope="page" value="${defaultFullAddress != null ? defaultFullAddress.country.toString() : null}"/>
 <c:set var="defaultCity" scope="page" value="${defaultFullAddress != null ? defaultFullAddress.city : null}"/>
@@ -65,6 +68,16 @@
     <header class="sticky-top">
         <%@include file="header/headerCommon.jsp"%>
     </header>
+    <c:if test="${!empty user and user.role eq 'ADMIN' and user.status eq 'IN_REGISTRATION_PROCESS'}">
+        <div id="toastError" class="toast align-items-center text-white bg-danger position-fixed bottom-0 end-0 m-3 show" style="z-index: 11" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <fmt:message key="profile.need_password_changing"/>
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+            </div>
+        </div>
+    </c:if>
     <div class="modal fade" id="modalFirstName" tabindex="-1" aria-labelledby="modalFirstNameLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -304,7 +317,7 @@
                     <fmt:message key="form.label.first_name"/>
                 </td>
                 <td colspan="2" class="p-3">
-                    ${customer.name}
+                    ${userName}
                 </td>
                 <td class="p-3">
                     <a class="link" data-bs-toggle="modal" href="#modalFirstName" aria-expanded="false" aria-controls="modalFirstName">
@@ -317,7 +330,7 @@
                     <fmt:message key="form.label.last_name"/>
                 </td>
                 <td colspan="2" class="p-3">
-                    ${customer.surname}
+                    ${userSurname}
                 </td>
                 <td class="p-3">
                     <a class="link" data-bs-toggle="modal" href="#modalLastName" aria-expanded="false" aria-controls="modalLastName">
@@ -330,22 +343,24 @@
                     <fmt:message key="form.label.email"/>
                 </td>
                 <td colspan="3" class="p-3">
-                    ${customer.email}
+                    ${userEmail}
                 </td>
             </tr>
-            <tr>
-                <td colspan="1" class="p-3 firstColumn">
-                    <fmt:message key="form.label.phone"/>
-                </td>
-                <td colspan="2" class="p-3">
-                    ${customer.phoneNumber}
-                </td>
-                <td class="p-3">
-                    <a class="link" data-bs-toggle="modal" href="#modalPhone" aria-expanded="false" aria-controls="modalPhone">
-                        ${change_setting}
-                    </a>
-                </td>
-            </tr>
+            <c:if test="${!empty customer}">
+                <tr>
+                    <td colspan="1" class="p-3 firstColumn">
+                        <fmt:message key="form.label.phone"/>
+                    </td>
+                    <td colspan="2" class="p-3">
+                            ${customer.phoneNumber}
+                    </td>
+                    <td class="p-3">
+                        <a class="link" data-bs-toggle="modal" href="#modalPhone" aria-expanded="false" aria-controls="modalPhone">
+                                ${change_setting}
+                        </a>
+                    </td>
+                </tr>
+            </c:if>
             <tr>
                 <td colspan="3" class="p-3 firstColumn">
                     <fmt:message key="form.label.password"/>
@@ -356,25 +371,27 @@
                     </a>
                 </td>
             </tr>
-            <tr>
-                <td colspan="1" class="p-3 firstColumn">
-                    <fmt:message key="order.shipping_address"/>
-                </td>
-                <td colspan="2" class="p-3">
-                    <c:choose>
-                        <c:when test="${defaultFullAddress == null}">
-                        </c:when>
-                        <c:otherwise>
-                            <fmt:message key="country.${defaultCountry}"/> ${defaultCity}, ${defaultAddress}, ${defaultApartment} <fmt:message key="order.label.postal_code"/>: ${defaultPostalCode}
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-                <td class="p-3">
-                    <a class="link" data-bs-toggle="modal" href="#modalAddress" aria-expanded="false" aria-controls="modalAddress">
-                        ${change_setting}
-                    </a>
-                </td>
-            </tr>
+            <c:if test="${!empty customer}">
+                <tr>
+                    <td colspan="1" class="p-3 firstColumn">
+                        <fmt:message key="order.shipping_address"/>
+                    </td>
+                    <td colspan="2" class="p-3">
+                        <c:choose>
+                            <c:when test="${defaultFullAddress == null}">
+                            </c:when>
+                            <c:otherwise>
+                                <fmt:message key="country.${defaultCountry}"/> ${defaultCity}, ${defaultAddress}, ${defaultApartment} <fmt:message key="order.label.postal_code"/>: ${defaultPostalCode}
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                    <td class="p-3">
+                        <a class="link" data-bs-toggle="modal" href="#modalAddress" aria-expanded="false" aria-controls="modalAddress">
+                                ${change_setting}
+                        </a>
+                    </td>
+                </tr>
+            </c:if>
         </tbody>
     </table>
     </div>
