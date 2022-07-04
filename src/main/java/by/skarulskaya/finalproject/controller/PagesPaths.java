@@ -5,6 +5,7 @@ public final class PagesPaths {
     public static final String ERROR_403 = "/jsp/pages/error403.jsp";
     public static final String ERROR_404 = "/jsp/pages/error404.jsp";
     public static final String ERROR_500 = "/jsp/error/error500.jsp";
+    public static final String USER_BLOCKED_PAGE = "/jsp/pages/userBlocked.jsp";
     public static final String CATALOG_PAGE = "/jsp/pages/catalog.jsp";
     public static final String ITEM_PAGE = "/jsp/pages/item.jsp";
     public static final String CART_PAGE = "jsp/pages/cart.jsp";

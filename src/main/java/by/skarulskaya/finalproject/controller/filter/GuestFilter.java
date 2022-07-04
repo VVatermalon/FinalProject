@@ -20,9 +20,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.*;
 
-import static by.skarulskaya.finalproject.controller.PagesPaths.*;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
-import static by.skarulskaya.finalproject.controller.ParametersMessages.USER_BLOCKED_MESSAGE;
 
 @WebFilter(filterName = "guestFilter", urlPatterns = "/*")
 public class GuestFilter implements Filter {
@@ -76,12 +74,6 @@ public class GuestFilter implements Filter {
                 return false;
             }
             User user = userOptional.get();
-            if (user.getStatus() == User.Status.BLOCKED) {
-                logger.info("blocked");
-                session.setAttribute(USER_STATUS_BLOCKED, USER_BLOCKED_MESSAGE);
-                return false;
-                //todo blocking page
-            }
             if (user.getRole() == User.Role.ADMIN) {
                 session.setAttribute(USER, user);
                 logger.info("Added admin to session");

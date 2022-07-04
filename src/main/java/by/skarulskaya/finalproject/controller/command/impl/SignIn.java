@@ -57,7 +57,7 @@ public class SignIn implements Command {
     }
 
     private void processRole(User user, HttpSession session, HttpServletRequest request, HttpServletResponse response, Router router) throws CommandException {
-        switch(user.getRole()) {
+        switch (user.getRole()) {
             case ADMIN -> {
                 session.setAttribute(USER, user);
                 addCookie(USER_PASSWORD, user.getPassword(), response);
@@ -66,31 +66,25 @@ public class SignIn implements Command {
                 router.setCurrentPage(request.getContextPath() + START_PAGE);
             }
             case CUSTOMER -> {
-                if (user.getStatus() == User.Status.BLOCKED) {
-                    logger.info("blocked");
-                    session.setAttribute(USER_STATUS_BLOCKED, USER_BLOCKED_MESSAGE);
-                    router.setCurrentPage(SIGN_IN_PAGE); //todo blocking page
-                } else {
-                    try {
-                        Optional<Customer> customerOptional = customerService.findCustomerById(user.getId());
-                        if (customerOptional.isPresent()) {
-                            session.setAttribute(CUSTOMER, customerOptional.get());
-                            addCookie(USER_PASSWORD, user.getPassword(), response);
-                            addCookie(USER_EMAIL, user.getEmail(), response);
-                            session.removeAttribute(USER);
+                try {
+                    Optional<Customer> customerOptional = customerService.findCustomerById(user.getId());
+                    if (customerOptional.isPresent()) {
+                        session.setAttribute(CUSTOMER, customerOptional.get());
+                        addCookie(USER_PASSWORD, user.getPassword(), response);
+                        addCookie(USER_EMAIL, user.getEmail(), response);
+                        session.removeAttribute(USER);
 
-                            int cartOrderId = orderService.findCartOrderId(user.getId());
-                            session.setAttribute(CART_ORDER_ID, cartOrderId);
-                            int itemsInCartCount = orderComponentService.countItemsInCart(cartOrderId);
-                            session.setAttribute(ITEMS_IN_CART_COUNT, itemsInCartCount);
-                            router.setCurrentType(Router.Type.REDIRECT);
-                            router.setCurrentPage(request.getContextPath() + START_PAGE);
-                        } else {
-                            throw new CommandException("Error with data: cannot find linked to user customer");
-                        }
-                    } catch (ServiceException e) {
-                        throw new CommandException(e);
+                        int cartOrderId = orderService.findCartOrderId(user.getId());
+                        session.setAttribute(CART_ORDER_ID, cartOrderId);
+                        int itemsInCartCount = orderComponentService.countItemsInCart(cartOrderId);
+                        session.setAttribute(ITEMS_IN_CART_COUNT, itemsInCartCount);
+                        router.setCurrentType(Router.Type.REDIRECT);
+                        router.setCurrentPage(request.getContextPath() + START_PAGE);
+                    } else {
+                        throw new CommandException("Error with data: cannot find linked to user customer");
                     }
+                } catch (ServiceException e) {
+                    throw new CommandException(e);
                 }
             }
         }
