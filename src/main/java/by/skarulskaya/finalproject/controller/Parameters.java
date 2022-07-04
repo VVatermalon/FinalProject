@@ -4,6 +4,7 @@ public final class Parameters {
     // context attributes
     public static final String COUNTRY_LIST = "country_list";
     public static final String ORDER_STATUS_LIST = "order_status_list";
+    public static final String USER_STATUS_LIST = "user_status_list";
     // session attributes
     public static final String CATEGORY_LIST = "category_list";
     public static final String CART_ORDER_ID = "cart_order_id";
@@ -85,6 +86,7 @@ public final class Parameters {
     public static final String ORDERS = "orders";
     public static final String USER_LIST = "user_list";
     public static final String ERROR_DELETE_ADMIN = "error_delete_admin";
+    public static final String INVALID_USER_ID = "invalid_user_id";
     // cookie max age constant
     public static final int COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
 

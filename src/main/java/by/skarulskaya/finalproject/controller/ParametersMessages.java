@@ -25,6 +25,7 @@ public final class ParametersMessages {
     public static final String INVALID_POSTAL_CODE_MESSAGE = "order.invalid_postal_code";
     public static final String CANNOT_DELETE_CURRENT_ADMIN_MESSAGE = "users.cannot_delete_current_admin";
     public static final String CHANGE_PASSWORD_MESSAGE = "profile.need_password_changing";
+    public static final String INVALID_USER_ID_MESSAGE = "users.invalid_user_id";
 
     private ParametersMessages(){}
 }

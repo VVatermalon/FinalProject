@@ -28,6 +28,7 @@ public enum CommandType {
     UPLOAD_ADMINS(new UploadAdmins()),
     DELETE_ADMIN(new DeleteAdmin()),
     REGISTER_ADMIN(new RegisterAdmin()),
+    FIND_USER_BY_ID(new FindUserById()),
     CHANGE_USER_STATUS(new ChangeUserStatus());
 
     private final Command command;

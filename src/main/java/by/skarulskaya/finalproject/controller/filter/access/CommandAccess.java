@@ -22,7 +22,8 @@ public enum CommandAccess {
             CommandType.UPLOAD_ADMINS.name(),
             CommandType.DELETE_ADMIN.name(),
             CommandType.REGISTER_ADMIN.name(),
-            CommandType.CHANGE_USER_STATUS.name())),
+            CommandType.CHANGE_USER_STATUS.name(),
+            CommandType.FIND_USER_BY_ID.name())),
     GUEST(Set.of(CommandType.SIGN_OUT.name(),
             CommandType.ADD_ITEM_TO_CART.name(),
             CommandType.REMOVE_ITEM_FROM_CART.name(),
@@ -39,7 +40,8 @@ public enum CommandAccess {
             CommandType.UPLOAD_ADMINS.name(),
             CommandType.DELETE_ADMIN.name(),
             CommandType.REGISTER_ADMIN.name(),
-            CommandType.CHANGE_USER_STATUS.name()));
+            CommandType.CHANGE_USER_STATUS.name(),
+            CommandType.FIND_USER_BY_ID.name()));
     private final Set<String> commands;
 
     CommandAccess(Set<String> commands){

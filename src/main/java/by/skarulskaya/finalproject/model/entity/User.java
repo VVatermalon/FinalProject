@@ -13,7 +13,7 @@ public class User extends CustomEntity implements Comparable<User> {
         GUEST, CUSTOMER, ADMIN
     }
     public enum Status {
-        ACTIVE, BLOCKED, IN_REGISTRATION_PROCESS, DELETED;
+        ACTIVE, BLOCKED, IN_REGISTRATION_PROCESS;
 
         @Override
         public String toString() {

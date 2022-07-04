@@ -22,6 +22,7 @@ public enum BaseValidatorImpl implements BaseValidator {
     private static final String ADDRESS_POSTAL_CODE_PATTERN = "^[\\dA-Za-z]{3,10}$";
     private static final Double MONEY_MIN_VALUE = 0.01;
     private static final Double MONEY_MAX_VALUE = 999.99;
+    private static final int ID_MIN_VALUE = 1;
 
     @Override
     public boolean validateEmail(String email) {
@@ -206,6 +207,19 @@ public enum BaseValidatorImpl implements BaseValidator {
         try {
             Integer.parseInt(parameter);
             return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean validateId(String parameter) {
+        if (parameter == null) {
+            return false;
+        }
+        try {
+            int value = Integer.parseInt(parameter);
+            return value >= ID_MIN_VALUE;
         } catch (NumberFormatException e) {
             return false;
         }

@@ -2,6 +2,7 @@ package by.skarulskaya.finalproject.controller.filter;
 
 import by.skarulskaya.finalproject.model.entity.Address;
 import by.skarulskaya.finalproject.model.entity.Order;
+import by.skarulskaya.finalproject.model.entity.User;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +38,14 @@ public class ServletContextAttributesFilter implements Filter {
                     .toList();
             context.setAttribute(ORDER_STATUS_LIST, orderStatusList);
             logger.info("ServletContextAttributesFilter added order status list");
+        }
+        if(context.getAttribute(USER_STATUS_LIST) == null) {
+            List<String> userStatusList = Arrays.stream(User.Status.values())
+                    .map(User.Status::toString)
+                    .sorted()
+                    .toList();
+            context.setAttribute(USER_STATUS_LIST, userStatusList);
+            logger.info("ServletContextAttributesFilter added user status list");
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }

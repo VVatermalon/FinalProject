@@ -8,12 +8,15 @@ import by.skarulskaya.finalproject.model.dao.UserDao;
 import by.skarulskaya.finalproject.model.dao.impl.CustomerDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.UserDaoImpl;
 import by.skarulskaya.finalproject.model.entity.Customer;
+import by.skarulskaya.finalproject.model.entity.Order;
+import by.skarulskaya.finalproject.model.entity.OrderComponent;
 import by.skarulskaya.finalproject.model.entity.User;
 import by.skarulskaya.finalproject.util.encryptor.PasswordEncryptor;
 import by.skarulskaya.finalproject.util.mail.MailSender;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,6 +46,24 @@ public class CustomerService {
             transaction.init(customerDao);
             return customerDao.findAllByPage(count, offset);
         } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    public List<Customer> findAllByStatusByPage(String status, int count, int offset) throws ServiceException {
+        CustomerDao customerDao = new CustomerDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(customerDao);
+            List<Customer> customers;
+            if (status == null) {
+                customers = customerDao.findAllByPage(count, offset);
+            }
+            else {
+                User.Status userStatus = User.Status.valueOf(status.toUpperCase());
+                customers = customerDao.findAllByStatusByPage(userStatus, count, offset);
+            }
+            return customers;
+        } catch (DaoException | IllegalArgumentException e) {
             throw new ServiceException(e);
         }
     }

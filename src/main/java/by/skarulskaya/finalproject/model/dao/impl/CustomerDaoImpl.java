@@ -32,6 +32,15 @@ public class CustomerDaoImpl extends CustomerDao {
         LEFT JOIN addresses A on C.default_address_id = A.address_id
         ORDER BY C.customer_id
         LIMIT ? OFFSET ?""";
+    private static final String SQL_FIND_ALL_CUSTOMERS_BY_STATUS_BY_PAGE = """
+        SELECT C.customer_id, C.bank_account, C.phone_number, C.default_address_id,
+        U.email, U.password, U.name, U.surname, U.role, U.status, A.address_id, 
+        A.country, A.city, A.address, A.apartment, A.postal_code
+        FROM customers C JOIN users U ON C.customer_id = U.user_id 
+        LEFT JOIN addresses A on C.default_address_id = A.address_id
+        WHERE U.status = ?
+        ORDER BY C.customer_id
+        LIMIT ? OFFSET ?""";
     private static final String SQL_FIND_CUSTOMER_BY_PHONE = """
         SELECT customer_id FROM customers WHERE phone_number = ?""";
     private static final String SQL_FIND_CUSTOMER_BY_ID = """
@@ -74,6 +83,26 @@ public class CustomerDaoImpl extends CustomerDao {
         try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_CUSTOMERS_BY_PAGE)) {
             statement.setInt(1, count);
             statement.setInt(2, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Customer customer = mapper.map(resultSet);
+                    customers.add(customer);
+                }
+            }
+            return customers;
+        } catch (SQLException e) {
+            logger.error("Sql exception: ", e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<Customer> findAllByStatusByPage(User.Status status, int count, int offset) throws DaoException {
+        List<Customer> customers = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_CUSTOMERS_BY_STATUS_BY_PAGE)) {
+            statement.setString(1, status.name());
+            statement.setInt(2, count);
+            statement.setInt(3, offset);
             try(ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     Customer customer = mapper.map(resultSet);

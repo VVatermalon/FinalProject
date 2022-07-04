@@ -26,4 +26,6 @@ public interface BaseValidator {
     boolean validateAddItemToCart(Map<String, String> mapData);
 
     boolean validateIntParameter(String parameter);
+
+    boolean validateId(String parameter);
 }

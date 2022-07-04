@@ -77,6 +77,24 @@ public class UserService implements BaseService {
         }
     }
 
+    public List<User> findAllAdminsByStatusByPage(String status, int count, int offset) throws ServiceException {
+        UserDao userDao = new UserDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(userDao);
+            List<User> users;
+            if (status == null) {
+                users = userDao.findAllAdminsByPage(count, offset);
+            }
+            else {
+                User.Status userStatus = User.Status.valueOf(status.toUpperCase());
+                users = userDao.findAllAdminsByStatusByPage(userStatus, count, offset);
+            }
+            return users;
+        } catch (DaoException | IllegalArgumentException e) {
+            throw new ServiceException(e);
+        }
+    }
+
     public Optional<User> findUserByEmailAndPassword(String email, String password) throws ServiceException {
         UserDaoImpl userDao = new UserDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {

@@ -40,15 +40,16 @@ public class UploadCustomers implements Command {
             pagePagination = Integer.parseInt(pageParameter);
         }
         int offset = Pagination.offset(USER_PER_PAGE, pagePagination);
+        String userStatus = request.getParameter(USER_STATUS);
         try {
-            List<Customer> customers = customerService.findAllByPage(USER_PER_PAGE, offset);
+            List<Customer> customers = customerService.findAllByStatusByPage(userStatus, USER_PER_PAGE, offset);
             if(customers.size() == USER_PER_PAGE) {
                 request.setAttribute(IS_NEXT_PAGE, true);
             }
             if(customers.isEmpty() && pagePagination > FIRST_PAGINATION_PAGE){
                 pagePagination--;
                 offset = Pagination.offset(USER_PER_PAGE, pagePagination);
-                customers = customerService.findAllByPage(USER_PER_PAGE, offset);
+                customers = customerService.findAllByStatusByPage(userStatus, USER_PER_PAGE, offset);
             }
             customers.sort(null);
             request.setAttribute(USER_LIST, customers);

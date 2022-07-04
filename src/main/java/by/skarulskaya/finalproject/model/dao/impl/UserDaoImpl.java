@@ -19,6 +19,10 @@ public class UserDaoImpl extends UserDao {
         SELECT user_id, email, password, name, surname, role, status FROM users
         WHERE role = 'ADMIN'
         LIMIT ? OFFSET ?""";
+    private static final String SQL_FIND_ALL_ADMINS_BY_STATUS_BY_PAGE = """
+        SELECT user_id, email, password, name, surname, role, status FROM users
+        WHERE role = 'ADMIN' AND status = ?
+        LIMIT ? OFFSET ?""";
     private static final String SQL_FIND_USER_BY_ID = """
         SELECT user_id, email, password, name, surname, role, status 
         FROM users WHERE user_id = ?""";
@@ -69,6 +73,26 @@ public class UserDaoImpl extends UserDao {
         try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_ADMINS_BY_PAGE)) {
             statement.setInt(1, count);
             statement.setInt(2, offset);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    User user = mapper.map(resultSet);
+                    users.add(user);
+                }
+            }
+            return users;
+        } catch (SQLException e) {
+            logger.error("Sql exception: ", e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public List<User> findAllAdminsByStatusByPage(User.Status status, int count, int offset) throws DaoException {
+        List<User> users = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_ADMINS_BY_STATUS_BY_PAGE)) {
+            statement.setString(1, status.name());
+            statement.setInt(2, count);
+            statement.setInt(3, offset);
             try(ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     User user = mapper.map(resultSet);

@@ -9,6 +9,8 @@ import java.util.Optional;
 public abstract class UserDao extends AbstractDao<Integer, User> {
     public abstract List<User> findAllAdminsByPage(int count, int offset) throws DaoException;
 
+    public abstract List<User> findAllAdminsByStatusByPage(User.Status status, int count, int offset) throws DaoException;
+
     public abstract Optional<User> findUserByEmailAndPassword(String email, String password) throws DaoException;
     public abstract boolean findUserByEmail(String email) throws DaoException;
 

@@ -18,6 +18,8 @@
 <fmt:message key="action.page_navigation" var="page_navigation"/>
 <fmt:message key="action.previous" var="previous"/>
 <fmt:message key="action.next" var="next"/>
+<fmt:message key="users.invalid_user_id" var="invalid_user_id_message"/>
+<fmt:message key="users.id_placeholder" var="user_id_placeholder"/>
 <html>
 <head>
     <title><fmt:message key="title.users"/></title>
@@ -96,43 +98,47 @@
             <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
         </div>
     </div>
-    <div class="row justify-content-between px-5 me-0">
-<%--        <nav class="navbar navbar-expand-lg col-3 flex-column position-sticky">--%>
-<%--            <div class="container-fluid p-3">--%>
-<%--                <div class="container-fluid bg-light">--%>
-<%--                    <form name="sortByPrice" action="${absolutePath}/controller" novalidate>--%>
-<%--                        <input type="hidden" name="command" value="upload_orders">--%>
-<%--                        <div class="nav-item my-3">--%>
-<%--                            <strong>Фильтр</strong>--%>
-<%--                        </div>--%>
-<%--                        <div class="nav-item mb-2">--%>
-<%--                            <label class="form-label">Статус</label>--%>
-<%--                            <select class="form-select" name="order_status" required>--%>
-<%--                                <option value="order_status_any" selected><fmt:message key="order.status.any"/></option>--%>
-<%--                                <c:forEach items="${applicationScope.order_status_list}" var="status">--%>
-<%--                                    <c:choose>--%>
-<%--                                        <c:when test="${!empty param.order_status && param.order_status eq status}">--%>
-<%--                                            <option value="${status}" selected><fmt:message key="order.status.${status}"/></option>--%>
-<%--                                        </c:when>--%>
-<%--                                        <c:otherwise>--%>
-<%--                                            <option value="${status}"><fmt:message key="order.status.${status}"/></option>--%>
-<%--                                        </c:otherwise>--%>
-<%--                                    </c:choose>--%>
-<%--                                </c:forEach>--%>
-<%--                            </select>--%>
-<%--                        </div>--%>
-<%--                        <div class="nav-item mb-2">--%>
-<%--                            <label class="form-label">Дата</label>--%>
-<%--                            <input class="form-control" id="date" type="date" name="order_date" value="${param.order_date}" required>--%>
-<%--                        </div>--%>
-<%--                        <button class="btn btn-outline-success" type="submit">Найти</button>--%>
-<%--                    </form>--%>
-<%--                </div>--%>
-<%--            </div>--%>
-<%--        </nav>--%>
+    <div id="toastInvalidUserId" class="toast align-items-center text-white bg-danger position-fixed bottom-0 end-0 m-3" style="z-index: 11" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <fmt:message key="${invalid_user_id}"/>
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+        </div>
+    </div>
+    <div class="justify-content-between px-5 me-0">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid row justify-content-end">
+                <c:if test="${param.command eq 'upload_customers' or param.command eq 'upload_admins'}">
+                    <div class="collapse navbar-collapse col-8" id="navbarSupportedContent">
+                        <ul class="navbar-nav mb-2 mb-lg-0">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <fmt:message key="users.filter_by_status"/>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <c:forEach items="${applicationScope.user_status_list}" var="status">
+                                        <li>
+                                            <a class="dropdown-item" href="${absolutePath}/controller?command=${param.command}&user_status=${status}">
+                                                <fmt:message key="user.status.${status}"/>
+                                            </a>
+                                        </li>
+                                    </c:forEach>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </c:if>
+                <form class="d-flex needs-validation col-4" name="findById" action="${absolutePath}/controller" novalidate>
+                    <input type="hidden" name="command" value="find_user_by_id">
+                    <input id="userIdInput" class="form-control me-2" data-bs-toggle="tooltip" data-bs-placement="bottom" title="${invalid_user_id_message}" type="number" name="user_id" placeholder="${user_id_placeholder}" min="1" max="2147483647" required/>
+                    <button class="btn btn-outline-success" type="submit"><fmt:message key="action.find"/></button>
+                </form>
+            </div>
+        </nav>
         <div class="p-5 bg-default">
             <c:choose>
-                <c:when test="${user_list.isEmpty() eq 'true'}">
+                <c:when test="${empty user_list or user_list.isEmpty() eq 'true'}">
                     <div class="product_title"><fmt:message key="users.no_users"/></div>
                 </c:when>
                 <c:otherwise>
@@ -212,11 +218,8 @@
                             <ul class="pagination pagination-lg justify-content-center">
                                 <form id="paginationPrevious" action="${absolutePath}/controller">
                                     <input type="hidden" name="command" value="upload_orders">
-                                    <c:if test="${not empty param.order_status}">
-                                        <input type="hidden" name="order_status" value="${param.order_status}">
-                                    </c:if>
-                                    <c:if test="${not empty param.order_date}">
-                                        <input type="hidden" name="order_date" value="${param.order_date}">
+                                    <c:if test="${not empty param.user_status}">
+                                        <input type="hidden" name="user_status" value="${param.user_status}">
                                     </c:if>
                                     <input type="hidden" name="page" value="${requestScope.page-1}"/>
                                     <c:choose>
@@ -240,11 +243,8 @@
                                 <li class="page-item"><span class="page-link">${requestScope.page}</span></li>
                                 <form id="paginationNext" action="${absolutePath}/controller">
                                     <input type="hidden" name="command" value="upload_orders">
-                                    <c:if test="${not empty param.order_status}">
-                                        <input type="hidden" name="order_status" value="${param.order_status}">
-                                    </c:if>
-                                    <c:if test="${not empty param.order_date}">
-                                        <input type="hidden" name="order_date" value="${param.order_date}">
+                                    <c:if test="${not empty param.user_status}">
+                                        <input type="hidden" name="user_status" value="${param.user_status}">
                                     </c:if>
                                     <input type="hidden" name="page" value="${requestScope.page+1}"/>
                                     <c:choose>
@@ -287,6 +287,34 @@
         var toastError = bootstrap.Toast.getOrCreateInstance(document.getElementById('toastError'));
         toastError.show();
     }
+
+    var invalidUserId = '${invalid_user_id}';
+    if(invalidUserId.length !== 0) {
+        var toastInvalidId = bootstrap.Toast.getOrCreateInstance(document.getElementById('toastInvalidUserId'));
+        toastInvalidId.show();
+    }
+</script>
+<script>
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                        let userIdInput = document.getElementById('userIdInput')
+                        let tooltip = new bootstrap.Tooltip(userIdInput, {
+                            delay: { "show": 1000, "hide": 100 },
+                            trigger: 'manual'
+                        });
+                        tooltip.show();
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>

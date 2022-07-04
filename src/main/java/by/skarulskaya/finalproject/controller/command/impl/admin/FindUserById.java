@@ -16,46 +16,35 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Optional;
 
+import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_404;
 import static by.skarulskaya.finalproject.controller.PagesPaths.USERS_PAGE;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
-import static by.skarulskaya.finalproject.controller.Parameters.PAGE;
+import static by.skarulskaya.finalproject.controller.ParametersMessages.INVALID_USER_ID_MESSAGE;
 
-public class UploadAdmins implements Command {
+public class FindUserById  implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final int FIRST_PAGINATION_PAGE = 1;
-    private static final int USER_PER_PAGE = 8;
     private static final UserService userService = UserService.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         Router router = new Router();
-        String pageParameter = request.getParameter(PAGE);
-        int pagePagination = FIRST_PAGINATION_PAGE;
-        if(pageParameter != null) {
-            if(!BaseValidatorImpl.INSTANCE.validatePage(pageParameter)) {
-                throw new CommandException("Invalid pagination page parameter, page = " + pageParameter);
-            }
-            pagePagination = Integer.parseInt(pageParameter);
+        String userIdParameter = request.getParameter(USER_ID);
+        if(!BaseValidatorImpl.INSTANCE.validateId(userIdParameter)) {
+            request.setAttribute(INVALID_USER_ID, INVALID_USER_ID_MESSAGE);
+            router.setCurrentPage(USERS_PAGE);
+            return router;
         }
-        int offset = Pagination.offset(USER_PER_PAGE, pagePagination);
-        String userStatus = request.getParameter(USER_STATUS);
         try {
-            List<User> users = userService.findAllAdminsByStatusByPage(userStatus, USER_PER_PAGE, offset);
-            if(users.size() == USER_PER_PAGE) {
-                request.setAttribute(IS_NEXT_PAGE, true);
-            }
-            if(users.isEmpty() && pagePagination > FIRST_PAGINATION_PAGE){
-                pagePagination--;
-                offset = Pagination.offset(USER_PER_PAGE, pagePagination);
-                users = userService.findAllAdminsByStatusByPage(userStatus, USER_PER_PAGE, offset);
-            }
-            users.sort(null);
-            request.setAttribute(USER_LIST, users);
-            request.setAttribute(PAGE, pagePagination);
-        } catch (ServiceException e) {
+            int userId = Integer.parseInt(userIdParameter);
+            Optional<User> userOptional = userService.findUserById(userId);
+            userOptional.ifPresent(user -> request.setAttribute(USER_LIST, List.of(user)));
+        } catch (ServiceException | NumberFormatException e) {
             throw new CommandException(e);
         }
+        request.setAttribute(PAGE, FIRST_PAGINATION_PAGE);
         router.setCurrentPage(USERS_PAGE);
         return router;
     }
