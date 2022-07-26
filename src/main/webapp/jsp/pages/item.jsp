@@ -389,7 +389,14 @@
     <div class="box box_padding catalog-wrapp catalog-body">
         <div class="row">
             <div class="col">
-                <img src="${absolutePath}/images/${item.imagePath}" alt="${item.name}" class="product_img">
+                <c:choose>
+                    <c:when test="${item.imagePath eq 'defaultItem.png'}">
+                        <img src="${absolutePath}/images/${item.imagePath}" alt="${item.name}" class="product_img">
+                    </c:when>
+                    <c:otherwise>
+                        <img src="${absolutePath}/uploadImage?image_path=${item.imagePath}" alt="${item.name}" class="product_img">
+                    </c:otherwise>
+                </c:choose>
             </div>
             <div class="col">
                 <div class="product">
@@ -445,7 +452,7 @@
                                                 <button type="submit" class="btn btn_type_light"><fmt:message key="item.to_cart"/></button>
                                             </c:when>
                                             <c:otherwise>
-                                                <a href="${absolutePath}/jsp/pages/signIn.jsp" role="button" class="btn btn-info"><fmt:message key="item.to_cart"/></a>
+                                                <a href="${absolutePath}/jsp/pages/signIn.jsp" role="button" class="btn btn_type_light"><fmt:message key="item.to_cart"/></a>
                                             </c:otherwise>
                                         </c:choose>
                                     </c:otherwise>
@@ -453,18 +460,6 @@
                             </div>
                         </form>
                     </c:if>
-                    <%--                            <c:if test="${user.role eq 'ADMIN'}">--%>
-                    <%--                                <form name="UploadPhoto" method="post" action="${absolutePath}/controller" enctype="multipart/form-data">--%>
-                    <%--                                    <input type="hidden" name="command" value="upload_product_photo">--%>
-                    <%--                                    <input type="hidden" name="product_name" value="${menu.nameFood}">--%>
-                    <%--                                    </br>--%>
-                    <%--                                    <div class="form-group" class="mb-3">--%>
-                    <%--                                        <label class="form-label"><fmt:message key="menu.picture"/></label>--%>
-                    <%--                                        <input type="file" name="picture_path" class="form-control form-control-sm">--%>
-                    <%--                                    </div>--%>
-                    <%--                                    <button type="submit" class="btn btn-primary btn-sm"><fmt:message key="menu.insert_menu"/></button>--%>
-                    <%--                                </form>--%>
-                    <%--                            </c:if>--%>
                     <div class="item_description text-start" style="white-space: pre-line">${item.description}</div>
                 </div>
             </div>

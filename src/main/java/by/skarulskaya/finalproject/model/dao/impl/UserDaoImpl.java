@@ -62,7 +62,7 @@ public class UserDaoImpl extends UserDao {
             }
             return users;
         } catch (SQLException e) {
-            logger.error("Sql exception: ", e);
+            logger.error(e);
             throw new DaoException(e);
         }
     }
@@ -81,7 +81,7 @@ public class UserDaoImpl extends UserDao {
             }
             return users;
         } catch (SQLException e) {
-            logger.error("Sql exception: ", e);
+            logger.error(e);
             throw new DaoException(e);
         }
     }
@@ -101,49 +101,45 @@ public class UserDaoImpl extends UserDao {
             }
             return users;
         } catch (SQLException e) {
-            logger.error("Sql exception: ", e);
+            logger.error(e);
             throw new DaoException(e);
         }
     }
 
     @Override
     public Optional<User> findEntityById(Integer id) throws DaoException {
-        ResultSet resultSet = null;
         Optional<User> output = Optional.empty();
         try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_BY_ID)) {
             statement.setInt(1, id);
-            resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                User user = mapper.map(resultSet);
-                output = Optional.of(user);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    User user = mapper.map(resultSet);
+                    output = Optional.of(user);
+                }
             }
         } catch (SQLException e) {
             logger.error(e);
             throw new DaoException(e);
-        } finally {
-            close(resultSet);
         }
         return output;
     }
 
     @Override
     public Optional<User> findUserByEmailAndPassword(String email, String password) throws DaoException {
-        ResultSet resultSet = null;
         Optional<User> output = Optional.empty();
         try (PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_BY_EMAIL_AND_PASSWORD)) {
             statement.setString(1, email);
             statement.setString(2, password);
-            resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                User user = mapper.map(resultSet);
-                output = Optional.of(user);
+            try(ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    User user = mapper.map(resultSet);
+                    output = Optional.of(user);
+                }
+                return output;
             }
-            return output;
         } catch (SQLException e) {
             logger.error(e);
             throw new DaoException(e);
-        } finally {
-            close(resultSet);
         }
     }
 
@@ -232,6 +228,7 @@ public class UserDaoImpl extends UserDao {
                 return true;
             }
         } catch (SQLException e) {
+            logger.error(e);
             throw new DaoException(e);
         }
     }

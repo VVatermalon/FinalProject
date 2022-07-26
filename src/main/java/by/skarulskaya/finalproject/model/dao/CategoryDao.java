@@ -7,4 +7,8 @@ import java.util.List;
 
 public abstract class CategoryDao extends AbstractDao<Integer, ItemCategory> {
     public abstract List<ItemCategory> findAllCategoriesForItem(int itemId) throws DaoException;
+
+    public abstract boolean delete(int categoryId, int itemId) throws DaoException;
+
+    public abstract boolean createItemCategory(int categoryId, int itemId) throws DaoException;
 }

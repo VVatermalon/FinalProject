@@ -26,6 +26,14 @@ public final class ParametersMessages {
     public static final String CANNOT_DELETE_CURRENT_ADMIN_MESSAGE = "users.cannot_delete_current_admin";
     public static final String CHANGE_PASSWORD_MESSAGE = "profile.need_password_changing";
     public static final String INVALID_USER_ID_MESSAGE = "users.invalid_user_id";
+    public static final String NOT_UNIQUE_ITEM_NAME_MESSAGE = "item.not_unique_name";
+    public static final String INVALID_ITEM_NAME_MESSAGE = "item.invalid_name";
+    public static final String INVALID_PRICE_MESSAGE = "item.invalid_price";
+    public static final String INVALID_DESCRIPTION_MESSAGE = "item.invalid_description";
+    public static final String INVALID_ITEM_SIZES_MESSAGE = "item.invalid_sizes";
+    public static final String INVALID_AMOUNTS_IN_STOCK_MESSAGE = "item.invalid_amounts";
+    public static final String INVALID_CATEGORIES_CATEGORIES = "item.invalid_categories";
+    public static final String NOT_UNIQUE_IMAGE_NAME_MESSAGE = "item.not_unique_image_name";
 
     private ParametersMessages(){}
 }

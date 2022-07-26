@@ -6,6 +6,7 @@ import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ConnectionPoolException;
 import by.skarulskaya.finalproject.model.pool.CustomConnectionPool;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +20,9 @@ import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_500;
 import static by.skarulskaya.finalproject.controller.Parameters.COMMAND;
 
 @WebServlet(urlPatterns = {"/controller"})
+@MultipartConfig(fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 1024 * 1024 * 5,
+        maxRequestSize = 1024 * 1024 * 25)
 public class CommonController extends HttpServlet {
     private static final Logger logger = LogManager.getLogger();
     @Override

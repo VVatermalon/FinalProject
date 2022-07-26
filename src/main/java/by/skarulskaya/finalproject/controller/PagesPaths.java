@@ -19,6 +19,7 @@ public final class PagesPaths {
     public static final String ORDER_HISTORY_PAGE = "/jsp/pages/orderHistory.jsp";
     public static final String ORDERS_PAGE = "jsp/pages/orders.jsp";
     public static final String USERS_PAGE = "jsp/pages/users.jsp";
+    public static final String UPDATE_ITEM_PAGE = "jsp/pages/updateItem.jsp";
 
     private PagesPaths(){}
 }

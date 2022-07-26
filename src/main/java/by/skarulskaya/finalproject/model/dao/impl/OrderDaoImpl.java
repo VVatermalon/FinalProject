@@ -241,6 +241,7 @@ public class OrderDaoImpl extends OrderDao {
             statement.setInt(5, orderId);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
+            logger.error(e);
             throw new DaoException(e);
         }
     }
@@ -258,6 +259,7 @@ public class OrderDaoImpl extends OrderDao {
                 return keys.getInt(1);
             }
         } catch (SQLException e) {
+            logger.error(e);
             throw new DaoException(e);
         }
     }
@@ -313,6 +315,7 @@ public class OrderDaoImpl extends OrderDao {
             statement.setInt(2, orderId);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
+            logger.error(e);
             throw new DaoException(e);
         }
     }

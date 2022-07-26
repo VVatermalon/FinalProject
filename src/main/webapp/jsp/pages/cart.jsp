@@ -60,7 +60,7 @@
     <c:if test="${uploaded_cart.isEmpty() eq 'false'}">
         <table width="95%">
             <thead>
-            <th colspan="3" class="text-left"><fmt:message key="cart.product"/></th>
+            <th colspan="3" class="text-left"><fmt:message key="cart.item"/></th>
             <th colspan="2"></th>
             <th class="text-center"><fmt:message key="cart.price"/></th>
             <th class="text-center"><fmt:message key="cart.quantity"/></th>
@@ -72,7 +72,14 @@
                 <tr style="border-top: 1px solid grey">
                     <td colspan="3" class="text-center">
                         <a href="${absolutePath}/controller?command=open_item_page&item_id=${component.item.id}" class="cart_image">
-                            <img src="${absolutePath}/images/${component.item.imagePath}" alt="${component.item.name}">
+                            <c:choose>
+                                <c:when test="${component.item.imagePath eq 'defaultItem.png'}">
+                                    <img src="${absolutePath}/images/${component.item.imagePath}" alt="${component.item.name}" class="product_img">
+                                </c:when>
+                                <c:otherwise>
+                                    <img src="${absolutePath}/uploadImage?image_path=${component.item.imagePath}" alt="${component.item.name}" class="product_img">
+                                </c:otherwise>
+                            </c:choose>
                         </a>
                     </td>
                     <td colspan="2" class="text-center">

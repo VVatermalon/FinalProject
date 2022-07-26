@@ -7,6 +7,10 @@ public class ItemCategory extends CustomEntity{
         this.categoryName = categoryName;
     }
 
+    public ItemCategory(int id) {
+        super(id);
+    }
+
     public ItemCategory(int id, String categoryName) {
         super(id);
         this.categoryName = categoryName;

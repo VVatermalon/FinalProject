@@ -29,7 +29,6 @@
 <fmt:message key="input.placeholder.last_name" var="e_last_name"/>
 <fmt:message key="input.placeholder.password" var="e_password"/>
 <fmt:message key="input.placeholder.phone" var="e_phone"/>
-
 <html>
 <head>
     <!-- Required meta tags -->

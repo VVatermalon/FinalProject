@@ -5,6 +5,8 @@ import by.skarulskaya.finalproject.validator.BaseValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static by.skarulskaya.finalproject.controller.Parameters.*;
@@ -20,8 +22,14 @@ public enum BaseValidatorImpl implements BaseValidator {
     private static final String ADDRESS_ADDRESS_PATTERN = "^[\\wА-Яа-я\\h\\.,/]{5,50}$";
     private static final String ADDRESS_APARTMENT_PATTERN = "^(\\d{1,5}|\\d{1,4}[A-Za-zА-Яа-я])$";
     private static final String ADDRESS_POSTAL_CODE_PATTERN = "^[\\dA-Za-z]{3,10}$";
+    private static final String ITEM_NAME_PATTERN = "^[\\s\\S]{1,40}$";
+    private static final String ITEM_DESCRIPTION_PATTERN = "^[\\s\\S]{1,1000}$";
+    private static final Double PRICE_MIN_VALUE = 0.01;
+    private static final Double PRICE_MAX_VALUE = 999_999.99;
     private static final Double MONEY_MIN_VALUE = 0.01;
     private static final Double MONEY_MAX_VALUE = 999.99;
+    private static final int ITEM_AMOUNT_MIN_VALUE = 0;
+    private static final int ITEM_AMOUNT_MAX_VALUE = 100_000_000;
     private static final int ID_MIN_VALUE = 1;
 
     @Override
@@ -185,7 +193,7 @@ public enum BaseValidatorImpl implements BaseValidator {
     @Override
     public boolean validateAddItemToCart(Map<String, String> mapData) {
         String itemIdParameter = mapData.get(ITEM_ID);
-        if(!validateIntParameter(itemIdParameter)) {
+        if(!validateId(itemIdParameter)) {
             return false;
         }
         String amountParameter = mapData.get(AMOUNT);
@@ -223,5 +231,81 @@ public enum BaseValidatorImpl implements BaseValidator {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    @Override
+    public boolean validateItemName(String name) {
+        return name != null && !name.isBlank() && name.matches(ITEM_NAME_PATTERN);
+    }
+
+    @Override
+    public boolean validatePrice(String price) {
+        if(price == null) {
+            return false;
+        }
+        try {
+            return Double.parseDouble(price) >= PRICE_MIN_VALUE && Double.parseDouble(price) <= PRICE_MAX_VALUE;
+        }
+        catch(NumberFormatException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean validateItemDescription(String description) {
+        return description != null && !description.isBlank() && description.matches(ITEM_DESCRIPTION_PATTERN);
+    }
+
+    @Override
+    public boolean validateItemAmountInStock(List<String> amountsInStock) {
+        for (String amountInStock : amountsInStock) {
+            if(!validateIntParameter(amountInStock)) {
+                return false;
+            }
+            int amount = Integer.parseInt(amountInStock);
+            if(amount < ITEM_AMOUNT_MIN_VALUE || amount > ITEM_AMOUNT_MAX_VALUE) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean validateItemCategoriesId(List<Integer> categoriesId) {
+        return !categoriesId.isEmpty();
+    }
+
+    @Override
+    public boolean validateUpdateItem(HashMap<String, String> map, List<Integer> sizesId,
+                                      List<String> amountsInStock, List<Integer> categoriesId) {
+        boolean result = true;
+        String name = map.get(ITEM_NAME);
+        String price = map.get(ITEM_PRICE);
+        String description = map.get(ITEM_DESCRIPTION);
+        if (!validateItemName(name)) {
+            map.put(ITEM_NAME, INVALID_NAME);
+            result = false;
+        }
+        if (!validatePrice(price)) {
+            map.put(ITEM_PRICE, INVALID_PRICE);
+            result = false;
+        }
+        if (!validateItemDescription(description)) {
+            map.put(ITEM_DESCRIPTION, INVALID_DESCRIPTION);
+            result = false;
+        }
+        if (sizesId.contains(1) && sizesId.size() > 1) {
+            map.put(SIZES_ID, INVALID_ITEM_SIZES);
+            result = false;
+        }
+        if(!validateItemAmountInStock(amountsInStock)) {
+            map.put(ITEM_SIZE_AMOUNT_IN_STOCK, INVALID_AMOUNTS_IN_STOCK);
+            result = false;
+        }
+        if(!validateItemCategoriesId(categoriesId)) {
+            map.put(CATEGORIES_ID, INVALID_CATEGORIES);
+            result = false;
+        }
+        return result;
     }
 }

@@ -1,4 +1,4 @@
-package by.skarulskaya.finalproject.controller.command.impl.common;
+package by.skarulskaya.finalproject.controller.command.impl.admin;
 
 import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
@@ -12,14 +12,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.List;
 import java.util.Optional;
 
-import static by.skarulskaya.finalproject.controller.Parameters.*;
-import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
 import static by.skarulskaya.finalproject.controller.PagesPaths.*;
+import static by.skarulskaya.finalproject.controller.Parameters.ITEM;
+import static by.skarulskaya.finalproject.controller.Parameters.ITEM_ID;
 
-public class OpenItemPage implements Command {
+public class OpenUpdateItemPage  implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final ItemService itemService = ItemService.getInstance();
 
@@ -41,7 +40,7 @@ public class OpenItemPage implements Command {
         }
         if (itemOptional.isPresent()) {
             request.setAttribute(ITEM, itemOptional.get());
-            router.setCurrentPage(ITEM_PAGE);
+            router.setCurrentPage(UPDATE_ITEM_PAGE);
         } else {
             logger.error("Can't find item by id, id = {}", id);
             router.setCurrentPage(ERROR_500);

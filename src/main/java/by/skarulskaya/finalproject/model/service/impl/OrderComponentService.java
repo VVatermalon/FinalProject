@@ -154,7 +154,7 @@ public class OrderComponentService {
         try {
             int cartOrderId = Integer.parseInt(mapData.get(CART_ORDER_ID));
             String itemIdParameter = mapData.get(ITEM_ID);
-            if (!BaseValidatorImpl.INSTANCE.validateIntParameter(itemIdParameter)) {
+            if (!BaseValidatorImpl.INSTANCE.validateId(itemIdParameter)) {
                 throw new ServiceException("Invalid item id " + itemIdParameter);
             }
             int itemId = Integer.parseInt(mapData.get(ITEM_ID));

@@ -14,6 +14,11 @@ public class ItemSize extends CustomEntity{
         this.sizeName = sizeName;
     }
 
+    public ItemSize(int id, int amountInStock) {
+        super(id);
+        this.amountInStock = amountInStock;
+    }
+
     public ItemSize(int id, String sizeName, int amountInStock) {
         super(id);
         this.sizeName = sizeName;

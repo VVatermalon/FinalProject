@@ -440,11 +440,11 @@
                         <div class="catalog-item">
                             <div class="product">
                                 <div class="product_header">
-                                    <a href="${absolutePath}/controller?command=">
+                                    <a href="${absolutePath}/jsp/pages/updateItem.jsp">
                                         <div class="product_title"><fmt:message key="item.new"/></div>
                                     </a>
                                 </div>
-                                <a href="${absolutePath}/controller?command=">
+                                <a href="${absolutePath}/jsp/pages/updateItem.jsp">
                                     <div class="product_figure" id="add_item">
                                         <img src="${absolutePath}/images/createItem.png" alt="${alt_new_item}" class="product_img">
                                     </div>
@@ -462,7 +462,14 @@
                                 </div>
                                 <a href="${absolutePath}/controller?command=open_item_page&item_id=${item.id}">
                                     <div class="product_figure">
-                                        <img src="${absolutePath}/images/${item.imagePath}" alt="${item.name}" class="product_img">
+                                        <c:choose>
+                                            <c:when test="${item.imagePath eq 'defaultItem.png'}">
+                                                <img src="${absolutePath}/images/${item.imagePath}" alt="${item.name}" class="product_img">
+                                            </c:when>
+                                            <c:otherwise>
+                                                <img src="${absolutePath}/uploadImage?image_path=${item.imagePath}" alt="${item.name}" class="product_img">
+                                            </c:otherwise>
+                                        </c:choose>
                                     </div>
                                 </a>
                                 <div class="">
@@ -470,18 +477,20 @@
                                     <c:if test="${item.amountInStock == 0}">
                                         <div style="color: red"><fmt:message key="catalog.sold_out"/></div>
                                     </c:if>
-                                        <%--                            <c:if test="${user.role eq 'ADMIN'}">--%>
-                                        <%--                                <form name="UploadPhoto" method="post" action="${absolutePath}/controller" enctype="multipart/form-data">--%>
-                                        <%--                                    <input type="hidden" name="command" value="upload_product_photo">--%>
-                                        <%--                                    <input type="hidden" name="product_name" value="${menu.nameFood}">--%>
-                                        <%--                                    </br>--%>
-                                        <%--                                    <div class="form-group" class="mb-3">--%>
-                                        <%--                                        <label class="form-label"><fmt:message key="menu.picture"/></label>--%>
-                                        <%--                                        <input type="file" name="picture_path" class="form-control form-control-sm">--%>
-                                        <%--                                    </div>--%>
-                                        <%--                                    <button type="submit" class="btn btn-primary btn-sm"><fmt:message key="menu.insert_menu"/></button>--%>
-                                        <%--                                </form>--%>
-                                        <%--                            </c:if>--%>
+                                    <c:if test="${user.role eq 'ADMIN'}">
+                                        <div class="row">
+                                            <div class="col">
+                                                <a class="btn btn-info btn-sm" href="${absolutePath}/controller?command=open_update_item_page&item_id=${item.id}" role="button"><fmt:message key="action.update"/></a>
+                                            </div>
+                                            <div class="col">
+                                                <form action="${absolutePath}/controller" method="post">
+                                                    <input type="hidden" name="command" value="delete_item">
+                                                    <input type="hidden" name="item_id" value="${item.id}">
+                                                    <button type="submit" class="btn btn-danger btn-sm"><fmt:message key="action.delete"/></button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </c:if>
                                 </div>
                             </div>
                         </div>

@@ -5,8 +5,9 @@ public final class Parameters {
     public static final String COUNTRY_LIST = "country_list";
     public static final String ORDER_STATUS_LIST = "order_status_list";
     public static final String USER_STATUS_LIST = "user_status_list";
-    // session attributes
+    public static final String SIZE_LIST = "size_list";
     public static final String CATEGORY_LIST = "category_list";
+    // session attributes
     public static final String CART_ORDER_ID = "cart_order_id";
     public static final String ITEMS_IN_CART_COUNT = "items_in_cart_count";
     public static final String CART_TOTAL_PRICE = "cart_total_price";
@@ -54,6 +55,13 @@ public final class Parameters {
     public static final String ORDER_DATE = "order_date";
     public static final String ORDER_STATUS_ANY = "order_status_any";
     public static final String USER_STATUS = "user_status";
+    public static final String ITEM_NAME = "item_name";
+    public static final String ITEM_PRICE = "item_price";
+    public static final String SIZES_ID = "sizes_id";
+    public static final String CATEGORIES_ID = "categories_id";
+    public static final String ITEM_SIZE_AMOUNT_IN_STOCK = "item_size_amount_in_stock";
+    public static final String ITEM_DESCRIPTION = "item_description";
+    public static final String IMAGE_PATH = "image_path";
     // request attributes
     public static final String IS_NEXT_PAGE = "is_next_page";
     public static final String UPLOADED_CART = "uploaded_cart";
@@ -86,7 +94,16 @@ public final class Parameters {
     public static final String ORDERS = "orders";
     public static final String USER_LIST = "user_list";
     public static final String ERROR_DELETE_ADMIN = "error_delete_admin";
+    public static final String ITEM_DATA_MAP = "item_data_map";
+    public static final String NOT_UNIQUE_ITEM_NAME = "not_unique_item_name";
     public static final String INVALID_USER_ID = "invalid_user_id";
+    public static final String INVALID_DESCRIPTION = "invalid_description";
+    public static final String INVALID_PRICE = "invalid_price";
+    public static final String INVALID_ITEM_SIZES = "invalid_sizes";
+    public static final String INVALID_AMOUNTS_IN_STOCK = "invalid_amounts";
+    public static final String INVALID_CATEGORIES = "invalid_categories";
+    public static final String INVALID_IMAGE = "invalid_image";
+    public static final String NOT_UNIQUE_IMAGE_NAME = "not_unique_image_name";
     // cookie max age constant
     public static final int COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
 

@@ -68,7 +68,8 @@ public class UserStatusFilter implements Filter {
                 return;
             }
         } catch (ServiceException e) {
-
+            ((HttpServletResponse) servletResponse).sendError(500);
+            return;
         }
         filterChain.doFilter(request, response);
     }

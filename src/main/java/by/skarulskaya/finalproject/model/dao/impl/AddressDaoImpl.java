@@ -111,6 +111,7 @@ public class AddressDaoImpl extends AddressDao {
                 return true;
             }
         } catch (SQLException e) {
+            logger.error(e);
             throw new DaoException(e);
         }
     }

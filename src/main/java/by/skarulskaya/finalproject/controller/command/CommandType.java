@@ -29,7 +29,10 @@ public enum CommandType {
     DELETE_ADMIN(new DeleteAdmin()),
     REGISTER_ADMIN(new RegisterAdmin()),
     FIND_USER_BY_ID(new FindUserById()),
-    CHANGE_USER_STATUS(new ChangeUserStatus());
+    CHANGE_USER_STATUS(new ChangeUserStatus()),
+    OPEN_UPDATE_ITEM_PAGE(new OpenUpdateItemPage()),
+    UPDATE_ITEM(new UpdateItem()),
+    DELETE_ITEM(new DeleteItem());
 
     private final Command command;
 

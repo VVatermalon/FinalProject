@@ -107,7 +107,14 @@
                             <div class="row m-3 align-items-start">
                                 <div class="col-md-4 text-center">
                                     <a href="${absolutePath}/controller?command=open_item_page&item_id=${component.item.id}" class="cart_image">
-                                        <img src="${absolutePath}/images/${component.item.imagePath}" alt="${component.item.name}">
+                                        <c:choose>
+                                            <c:when test="${component.item.imagePath eq 'defaultItem.png'}">
+                                                <img src="${absolutePath}/images/${component.item.imagePath}" alt="${component.item.name}" class="product_img">
+                                            </c:when>
+                                            <c:otherwise>
+                                                <img src="${absolutePath}/uploadImage?image_path=${component.item.imagePath}" alt="${component.item.name}" class="product_img">
+                                            </c:otherwise>
+                                        </c:choose>
                                     </a>
                                 </div>
                                 <div class="col-md-2 text-center">

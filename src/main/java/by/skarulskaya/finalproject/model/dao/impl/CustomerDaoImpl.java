@@ -72,7 +72,7 @@ public class CustomerDaoImpl extends CustomerDao {
             }
             return customers;
         } catch (SQLException e) {
-            logger.error("Sql exception: ", e);
+            logger.error(e);
             throw new DaoException(e);
         }
     }
@@ -91,7 +91,7 @@ public class CustomerDaoImpl extends CustomerDao {
             }
             return customers;
         } catch (SQLException e) {
-            logger.error("Sql exception: ", e);
+            logger.error(e);
             throw new DaoException(e);
         }
     }
@@ -111,7 +111,7 @@ public class CustomerDaoImpl extends CustomerDao {
             }
             return customers;
         } catch (SQLException e) {
-            logger.error("Sql exception: ", e);
+            logger.error(e);
             throw new DaoException(e);
         }
     }
@@ -166,6 +166,7 @@ public class CustomerDaoImpl extends CustomerDao {
             entity.setId(id);
             return true;
         } catch (SQLException e) {
+            logger.error(e);
             throw new DaoException(e);
         } finally {
             close(keys);
@@ -209,6 +210,7 @@ public class CustomerDaoImpl extends CustomerDao {
             statement.setInt(2, customerId);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
+            logger.error(e);
             throw new DaoException(e);
         }
     }
@@ -220,6 +222,7 @@ public class CustomerDaoImpl extends CustomerDao {
             statement.setInt(2, customerId);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
+            logger.error(e);
             throw new DaoException(e);
         }
     }

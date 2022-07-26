@@ -17,5 +17,11 @@ public abstract class ItemDao extends AbstractDao<Integer, Item> {
 
     public abstract List<Item> findAllByCategoryByPageSort(Integer id, Item.ItemSortParameter sortParameter, SortOrder order, int count, int offset) throws DaoException;
 
+    public abstract boolean updateImagePath(Integer id, String path) throws DaoException;
+
     public abstract boolean updatePopularity(int id, long popularity) throws DaoException;
+
+    public abstract boolean checkItemNameUnique(String name) throws DaoException;
+
+    public abstract boolean checkItemNameUnique(String name, int itemId) throws DaoException;
 }

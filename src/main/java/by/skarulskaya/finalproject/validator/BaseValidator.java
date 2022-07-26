@@ -1,5 +1,7 @@
 package by.skarulskaya.finalproject.validator;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public interface BaseValidator {
@@ -28,4 +30,17 @@ public interface BaseValidator {
     boolean validateIntParameter(String parameter);
 
     boolean validateId(String parameter);
+
+    boolean validateItemName(String name);
+
+    boolean validatePrice(String name);
+
+    boolean validateItemDescription(String name);
+
+    boolean validateItemAmountInStock(List<String> amountsInStock);
+
+    boolean validateItemCategoriesId(List<Integer> categoriesId);
+
+    boolean validateUpdateItem(HashMap<String, String> map, List<Integer> sizesId,
+                               List<String> amountsInStock, List<Integer> categoriesId);
 }

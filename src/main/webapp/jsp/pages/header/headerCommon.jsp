@@ -56,8 +56,10 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         ${merch}</a>
                     <ul class="dropdown-menu">
-                        <c:forEach items="${sessionScope.category_list}" var="category">
-                            <li><a class="dropdown-item" href="${absolutePath}/controller?command=find_all_items&category_id=${category.id}"><fmt:message key="${category.categoryName}"/></a></li>
+                        <c:forEach items="${applicationScope.category_list}" var="category">
+                            <c:if test="${category.id != 1}">
+                                <li><a class="dropdown-item" href="${absolutePath}/controller?command=find_all_items&category_id=${category.id}"><fmt:message key="${category.categoryName}"/></a></li>
+                            </c:if>
                         </c:forEach>
                     </ul>
                 </li>
