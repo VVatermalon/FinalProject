@@ -50,9 +50,9 @@ public class CommonController extends HttpServlet {
             } else {
                 resp.sendRedirect(page);
             }
-        } catch (CommandException e) { //todo добавить описание ошибки, плюс еще какие ошибки могут быть
+        } catch (CommandException e) {
             logger.error(e);
-            resp.sendRedirect(req.getContextPath() + ERROR_500);
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 

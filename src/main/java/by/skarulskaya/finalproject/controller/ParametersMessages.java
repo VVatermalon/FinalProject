@@ -34,6 +34,12 @@ public final class ParametersMessages {
     public static final String INVALID_AMOUNTS_IN_STOCK_MESSAGE = "item.invalid_amounts";
     public static final String INVALID_CATEGORIES_CATEGORIES = "item.invalid_categories";
     public static final String NOT_UNIQUE_IMAGE_NAME_MESSAGE = "item.not_unique_image_name";
+    public static final String INVALID_CATEGORY_NAME_MESSAGE = "category.invalid_name";
+    public static final String NOT_UNIQUE_CATEGORY_NAME_MESSAGE = "category.not_unique_name";
+    public static final String CATEGORY_FOREIGN_KEY_FAILS = "foreign_key_fails";
+    public static final String SIZE_FOREIGN_KEY_FAILS = "foreign_key_fails";
+    public static final String INVALID_SIZE_NAME_MESSAGE = "size.invalid_name";
+    public static final String NOT_UNIQUE_SIZE_NAME_MESSAGE = "size.not_unique_name";
 
     private ParametersMessages(){}
 }

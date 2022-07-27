@@ -26,7 +26,13 @@ public enum CommandAccess {
             CommandType.FIND_USER_BY_ID.name(),
             CommandType.OPEN_UPDATE_ITEM_PAGE.name(),
             CommandType.UPDATE_ITEM.name(),
-            CommandType.DELETE_ITEM.name())),
+            CommandType.DELETE_ITEM.name(),
+            CommandType.CREATE_CATEGORY.name(),
+            CommandType.CHANGE_CATEGORY.name(),
+            CommandType.DELETE_CATEGORY.name(),
+            CommandType.CREATE_SIZE.name(),
+            CommandType.CHANGE_SIZE.name(),
+            CommandType.DELETE_SIZE.name())),
     GUEST(Set.of(CommandType.SIGN_OUT.name(),
             CommandType.ADD_ITEM_TO_CART.name(),
             CommandType.REMOVE_ITEM_FROM_CART.name(),
@@ -47,7 +53,13 @@ public enum CommandAccess {
             CommandType.FIND_USER_BY_ID.name(),
             CommandType.OPEN_UPDATE_ITEM_PAGE.name(),
             CommandType.UPDATE_ITEM.name(),
-            CommandType.DELETE_ITEM.name()));
+            CommandType.DELETE_ITEM.name(),
+            CommandType.CREATE_CATEGORY.name(),
+            CommandType.CHANGE_CATEGORY.name(),
+            CommandType.DELETE_CATEGORY.name(),
+            CommandType.CREATE_SIZE.name(),
+            CommandType.CHANGE_SIZE.name(),
+            CommandType.DELETE_SIZE.name()));
     private final Set<String> commands;
 
     CommandAccess(Set<String> commands){

@@ -54,7 +54,7 @@ public class ServletContextAttributesFilter implements Filter {
                 logger.info("ServletContextAttributesFilter added size list");
             }
         } catch (ServiceException e) {
-            ((HttpServletResponse)servletResponse).sendError(500);
+            ((HttpServletResponse)servletResponse).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
         if (context.getAttribute(ORDER_STATUS_LIST) == null) {

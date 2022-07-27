@@ -35,6 +35,16 @@ public class SizeDaoImpl extends SizeDao {
             UPDATE items_item_sizes SET amount_in_stock = ? WHERE item_size_id = ? AND item_id = ?""";
     private static final String SQL_DELETE_ITEM_SIZE = """
             DELETE FROM items_item_sizes WHERE item_size_id = ? AND item_id = ?""";
+    private static final String SQL_CREATE_SIZE = """
+            INSERT INTO item_sizes(item_size_name) VALUES(?)""";
+    private static final String SQL_IS_SIZE_NAME_UNIQUE = """
+            SELECT * from item_sizes WHERE item_size_name = ?""";
+    private static final String SQL_IS_SIZE_NAME_UNIQUE_EXCEPT_SIZE_WITH_ID = """
+            SELECT * from item_sizes WHERE item_size_name = ? AND item_size_id <> ?""";
+    private static final String SQL_UPDATE_SIZE = """
+            UPDATE item_sizes SET item_size_name = ? WHERE item_size_id = ?""";
+    private static final String SQL_DELETE_SIZE = """
+            DELETE FROM item_sizes WHERE item_size_id = ?""";
     @Override
     public List<ItemSize> findAllSizesForItem(int itemId) throws DaoException {
         List<ItemSize> sizeList = new ArrayList<>();
@@ -99,7 +109,13 @@ public class SizeDaoImpl extends SizeDao {
 
     @Override
     public boolean delete(Integer id) throws DaoException {
-        throw new UnsupportedOperationException();
+        try(PreparedStatement statement = connection.prepareStatement(SQL_DELETE_SIZE)) {
+            statement.setInt(1, id);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
     }
 
     @Override
@@ -116,7 +132,13 @@ public class SizeDaoImpl extends SizeDao {
 
     @Override
     public boolean create(ItemSize entity) throws DaoException {
-        throw new UnsupportedOperationException();
+        try(PreparedStatement statement = connection.prepareStatement(SQL_CREATE_SIZE)) {
+            statement.setString(1, entity.getSizeName());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
     }
 
     @Override
@@ -134,7 +156,14 @@ public class SizeDaoImpl extends SizeDao {
 
     @Override
     public boolean update(ItemSize entity) throws DaoException {
-        throw new UnsupportedOperationException();
+        try(PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_SIZE)) {
+            statement.setString(1, entity.getSizeName());
+            statement.setInt(2, entity.getId());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
     }
 
     @Override
@@ -201,6 +230,29 @@ public class SizeDaoImpl extends SizeDao {
                 }
                 return true;
             }
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean isSizeNameUnique(String name) throws DaoException {
+        try(PreparedStatement statement = connection.prepareStatement(SQL_IS_SIZE_NAME_UNIQUE)) {
+            statement.setString(1, name);
+            return !statement.executeQuery().next();
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean isSizeNameUnique(String name, int id) throws DaoException {
+        try(PreparedStatement statement = connection.prepareStatement(SQL_IS_SIZE_NAME_UNIQUE_EXCEPT_SIZE_WITH_ID)) {
+            statement.setString(1, name);
+            statement.setInt(2, id);
+            return !statement.executeQuery().next();
         } catch (SQLException e) {
             logger.error(e);
             throw new DaoException(e);

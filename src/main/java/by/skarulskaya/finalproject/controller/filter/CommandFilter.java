@@ -29,8 +29,7 @@ public class CommandFilter implements Filter {
         HttpSession session = request.getSession();
         String command = request.getParameter(COMMAND);
         if (command == null){
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            //request.getRequestDispatcher(ERROR_404).forward(request,response);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         User.Role role = User.Role.GUEST;
@@ -57,12 +56,11 @@ public class CommandFilter implements Filter {
         boolean isCorrect = Arrays.stream(CommandType.values())
                 .anyMatch(commandType -> command.equalsIgnoreCase(commandType.toString()));
         if(!isCorrect) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            //request.getRequestDispatcher(ERROR_404).forward(httpServletRequest,httpServletResponse);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         if(commands.contains(command.toUpperCase())){
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
         filterChain.doFilter(request, response);

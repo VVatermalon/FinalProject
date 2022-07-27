@@ -43,4 +43,8 @@ public interface BaseValidator {
 
     boolean validateUpdateItem(HashMap<String, String> map, List<Integer> sizesId,
                                List<String> amountsInStock, List<Integer> categoriesId);
+
+    boolean validateCategoryName(String categoryName);
+
+    boolean validateSizeName(String sizeName);
 }

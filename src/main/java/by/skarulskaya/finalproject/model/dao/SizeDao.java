@@ -17,4 +17,8 @@ public abstract class SizeDao extends AbstractDao<Integer, ItemSize> {
     public abstract boolean changeAmountInStockForAllOrderItems(int orderId) throws DaoException;
 
     public abstract boolean changeBackAmountInStockForAllOrderItems(int orderId) throws DaoException;
+
+    public abstract boolean isSizeNameUnique(String name) throws DaoException;
+
+    public abstract boolean isSizeNameUnique(String name, int id) throws DaoException;
 }

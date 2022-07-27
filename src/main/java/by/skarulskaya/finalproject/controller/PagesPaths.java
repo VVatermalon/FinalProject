@@ -20,6 +20,8 @@ public final class PagesPaths {
     public static final String ORDERS_PAGE = "jsp/pages/orders.jsp";
     public static final String USERS_PAGE = "jsp/pages/users.jsp";
     public static final String UPDATE_ITEM_PAGE = "jsp/pages/updateItem.jsp";
+    public static final String CATEGORIES_PAGE = "jsp/pages/categories.jsp";
+    public static final String SIZES_PAGE = "jsp/pages/sizes.jsp";
 
     private PagesPaths(){}
 }

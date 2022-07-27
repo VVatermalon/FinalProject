@@ -50,7 +50,7 @@ public class CheckOrderBeforePayment implements Filter {
             }
             filterChain.doFilter(servletRequest, servletResponse);
         } catch (ServiceException e) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 }

@@ -24,6 +24,8 @@ public enum BaseValidatorImpl implements BaseValidator {
     private static final String ADDRESS_POSTAL_CODE_PATTERN = "^[\\dA-Za-z]{3,10}$";
     private static final String ITEM_NAME_PATTERN = "^[\\s\\S]{1,40}$";
     private static final String ITEM_DESCRIPTION_PATTERN = "^[\\s\\S]{1,1000}$";
+    private static final String CATEGORY_NAME_PATTERN = "^header.[a-z_.]{1,50}$";
+    private static final String SIZE_NAME_PATTERN = "^[A-Z\\d]{1,5}$";
     private static final Double PRICE_MIN_VALUE = 0.01;
     private static final Double PRICE_MAX_VALUE = 999_999.99;
     private static final Double MONEY_MIN_VALUE = 0.01;
@@ -307,5 +309,15 @@ public enum BaseValidatorImpl implements BaseValidator {
             result = false;
         }
         return result;
+    }
+
+    @Override
+    public boolean validateCategoryName(String categoryName) {
+        return categoryName != null && !categoryName.isBlank() && categoryName.matches(CATEGORY_NAME_PATTERN);
+    }
+
+    @Override
+    public boolean validateSizeName(String sizeName) {
+        return sizeName != null && !sizeName.isBlank() && sizeName.matches(SIZE_NAME_PATTERN);
     }
 }

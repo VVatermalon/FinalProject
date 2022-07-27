@@ -408,7 +408,7 @@
                         <form action="${absolutePath}/controller" method="post">
                             <input type="hidden" name="command" value="add_item_to_cart">
                             <input type="hidden" name="item_id" value="${item.id}">
-                            <c:if test="${item.sizes.size() > 1}">
+                            <c:if test="${item.sizes.get(0).id != 1}">
                                 <label><fmt:message key="item.size"/></label>
                                 <div class="row">
                                     <c:forEach items="${item.sizes}" var="size">

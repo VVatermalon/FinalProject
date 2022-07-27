@@ -11,4 +11,8 @@ public abstract class CategoryDao extends AbstractDao<Integer, ItemCategory> {
     public abstract boolean delete(int categoryId, int itemId) throws DaoException;
 
     public abstract boolean createItemCategory(int categoryId, int itemId) throws DaoException;
+
+    public abstract boolean isCategoryNameUnique(String name) throws DaoException;
+
+    public abstract boolean isCategoryNameUnique(String name, int id) throws DaoException;
 }

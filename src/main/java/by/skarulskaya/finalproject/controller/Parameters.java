@@ -62,6 +62,10 @@ public final class Parameters {
     public static final String ITEM_SIZE_AMOUNT_IN_STOCK = "item_size_amount_in_stock";
     public static final String ITEM_DESCRIPTION = "item_description";
     public static final String IMAGE_PATH = "image_path";
+    public static final String CATEGORY_NAME = "category_name";
+    public static final String NEW_CATEGORY_NAME = "new_category_name";
+    public static final String SIZE_NAME = "size_name";
+    public static final String NEW_SIZE_NAME = "new_size_name";
     // request attributes
     public static final String IS_NEXT_PAGE = "is_next_page";
     public static final String UPLOADED_CART = "uploaded_cart";
@@ -104,6 +108,14 @@ public final class Parameters {
     public static final String INVALID_CATEGORIES = "invalid_categories";
     public static final String INVALID_IMAGE = "invalid_image";
     public static final String NOT_UNIQUE_IMAGE_NAME = "not_unique_image_name";
+    public static final String INVALID_CATEGORY_NAME = "invalid_category_name";
+    public static final String INVALID_CATEGORY = "invalid_category";
+    public static final String INVALID_DELETE_CATEGORY = "invalid_delete_category";
+    public static final String INVALID_NEW_CATEGORY_NAME = "invalid_new_category_name";
+    public static final String INVALID_DELETE_SIZE = "invalid_delete_size";
+    public static final String INVALID_SIZE_NAME = "invalid_size_name";
+    public static final String INVALID_SIZE = "invalid_size";
+    public static final String INVALID_NEW_SIZE_NAME = "invalid_new_size_name";
     // cookie max age constant
     public static final int COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
 

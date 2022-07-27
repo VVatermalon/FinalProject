@@ -15,7 +15,9 @@ public enum PageAccess {
     CUSTOMER(Set.of(SIGN_IN_PAGE,
             REGISTRATION_PAGE,
             ORDERS_PAGE,
-            USERS_PAGE)),
+            USERS_PAGE,
+            SIZES_PAGE,
+            CATEGORIES_PAGE)),
     GUEST(Set.of(CART_PAGE,
             BANK_ACCOUNT_PAGE,
             ADD_SHIPPING_ADDRESS_PAGE,
@@ -24,7 +26,9 @@ public enum PageAccess {
             SETTINGS_PAGE,
             ORDER_HISTORY_PAGE,
             ORDERS_PAGE,
-            USERS_PAGE));
+            USERS_PAGE,
+            SIZES_PAGE,
+            CATEGORIES_PAGE));
 
     Set<String> userPages;
 

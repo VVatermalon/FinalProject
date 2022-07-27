@@ -53,7 +53,7 @@ public class PageFilter implements Filter {
             }
         }
         if(isIncorrect) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
         filterChain.doFilter(request,response);

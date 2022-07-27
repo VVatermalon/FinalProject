@@ -32,7 +32,13 @@ public enum CommandType {
     CHANGE_USER_STATUS(new ChangeUserStatus()),
     OPEN_UPDATE_ITEM_PAGE(new OpenUpdateItemPage()),
     UPDATE_ITEM(new UpdateItem()),
-    DELETE_ITEM(new DeleteItem());
+    DELETE_ITEM(new DeleteItem()),
+    CREATE_CATEGORY(new CreateCategory()),
+    CHANGE_CATEGORY(new ChangeCategory()),
+    DELETE_CATEGORY(new DeleteCategory()),
+    CREATE_SIZE(new CreateSize()),
+    CHANGE_SIZE(new ChangeSize()),
+    DELETE_SIZE(new DeleteSize());
 
     private final Command command;
 

@@ -6,10 +6,7 @@ import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.entity.ItemCategory;
 import by.skarulskaya.finalproject.model.entity.ItemSize;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +22,16 @@ public class CategoryDaoImpl extends CategoryDao {
             INSERT INTO items_item_categories(item_category_id, item_id) VALUES(?,?)""";
     private static final String SQL_DELETE_ITEM_CATEGORY = """
             DELETE FROM items_item_categories WHERE item_category_id = ? AND item_id = ?""";
+    private static final String SQL_CREATE_CATEGORY = """
+            INSERT INTO item_categories(category_name) VALUES(?)""";
+    private static final String SQL_IS_CATEGORY_NAME_UNIQUE = """
+            SELECT * from item_categories WHERE category_name = ?""";
+    private static final String SQL_IS_CATEGORY_NAME_UNIQUE_EXCEPT_CATEGORY_WITH_ID = """
+            SELECT * from item_categories WHERE category_name = ? AND item_category_id <> ?""";
+    private static final String SQL_UPDATE_CATEGORY = """
+            UPDATE item_categories SET category_name = ? WHERE item_category_id = ?""";
+    private static final String SQL_DELETE_CATEGORY = """
+            DELETE FROM item_categories WHERE item_category_id = ?""";
     @Override
     public List<ItemCategory> findAll() throws DaoException {
         List<ItemCategory> categoryList = new ArrayList<>();
@@ -74,12 +81,18 @@ public class CategoryDaoImpl extends CategoryDao {
 
     @Override
     public boolean delete(Integer id) throws DaoException {
-        throw new UnsupportedOperationException();
+        try (PreparedStatement statement = connection.prepareStatement(SQL_DELETE_CATEGORY)) {
+            statement.setInt(1, id);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
     }
 
     @Override
     public boolean delete(int categoryId, int itemId) throws DaoException {
-        try(PreparedStatement statement = connection.prepareStatement(SQL_DELETE_ITEM_CATEGORY)) {
+        try (PreparedStatement statement = connection.prepareStatement(SQL_DELETE_ITEM_CATEGORY)) {
             statement.setInt(1, categoryId);
             statement.setInt(2, itemId);
             return statement.executeUpdate() > 0;
@@ -91,7 +104,13 @@ public class CategoryDaoImpl extends CategoryDao {
 
     @Override
     public boolean create(ItemCategory entity) throws DaoException {
-        throw new UnsupportedOperationException();
+        try(PreparedStatement statement = connection.prepareStatement(SQL_CREATE_CATEGORY)) {
+            statement.setString(1, entity.getCategoryName());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
     }
 
     @Override
@@ -108,6 +127,36 @@ public class CategoryDaoImpl extends CategoryDao {
 
     @Override
     public boolean update(ItemCategory entity) throws DaoException {
-        throw new UnsupportedOperationException();
+        try (PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_CATEGORY)) {
+            statement.setString(1, entity.getCategoryName());
+            statement.setInt(2, entity.getId());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean isCategoryNameUnique(String name) throws DaoException {
+        try(PreparedStatement statement = connection.prepareStatement(SQL_IS_CATEGORY_NAME_UNIQUE)) {
+            statement.setString(1, name);
+            return !statement.executeQuery().next();
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public boolean isCategoryNameUnique(String name, int id) throws DaoException {
+        try(PreparedStatement statement = connection.prepareStatement(SQL_IS_CATEGORY_NAME_UNIQUE_EXCEPT_CATEGORY_WITH_ID)) {
+            statement.setString(1, name);
+            statement.setInt(2, id);
+            return !statement.executeQuery().next();
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DaoException(e);
+        }
     }
 }

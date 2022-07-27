@@ -44,4 +44,60 @@ public class ItemSizeService {
             throw new ServiceException(e);
         }
     }
+
+    public boolean create(String sizeName) throws ServiceException {
+        SizeDao sizeDao = new SizeDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(sizeDao);
+            ItemSize size = new ItemSize(sizeName, 0);
+            return sizeDao.create(size);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    public boolean update(ItemSize size) throws ServiceException {
+        SizeDao sizeDao = new SizeDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(sizeDao);
+            return sizeDao.update(size);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    public boolean delete(int sizeId) throws ServiceException {
+        SizeDao sizeDao = new SizeDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(sizeDao);
+            return sizeDao.delete(sizeId);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    public boolean isSizeNameUnique(String sizeName) throws ServiceException {
+        SizeDao sizeDao = new SizeDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(sizeDao);
+            return sizeDao.isSizeNameUnique(sizeName);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
+
+    public boolean isSizeNameUnique(String sizeName, int sizeId) throws ServiceException {
+        SizeDao sizeDao = new SizeDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(sizeDao);
+            return sizeDao.isSizeNameUnique(sizeName, sizeId);
+        } catch (DaoException e) {
+            logger.error(e);
+            throw new ServiceException(e);
+        }
+    }
 }
