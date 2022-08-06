@@ -1,6 +1,5 @@
 package by.skarulskaya.finalproject.model.service.impl;
 
-import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.dao.CategoryDao;
@@ -11,30 +10,32 @@ import by.skarulskaya.finalproject.model.dao.impl.CategoryDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.ItemDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.SizeDaoImpl;
 import by.skarulskaya.finalproject.model.entity.*;
+import by.skarulskaya.finalproject.model.service.ItemService;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.*;
 
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 
-public class ItemService {
+public class ItemServiceImpl implements ItemService {
     private static final Logger logger = LogManager.getLogger();
     private static final String DEFAULT_IMAGE_PATH = "defaultItem.png";
-    private static final ItemService INSTANCE = new ItemService();
+    private static final ItemServiceImpl INSTANCE = new ItemServiceImpl();
 
-    private ItemService() {
+    private ItemServiceImpl() {
     }
 
-    public static ItemService getInstance() {
+    public static ItemServiceImpl getInstance() {
         return INSTANCE;
     }
 
+    @Override
     public List<Item> findAllByCategoryByPageSort(String categoryParameter, String sortParameter, String sortOrderParameter, int count, int offset) throws ServiceException {
         if ((sortParameter == null && sortOrderParameter != null) || (sortParameter != null && sortOrderParameter == null)) {
+            logger.error("Wrong item sort parameters");
             throw new ServiceException("Wrong item sort parameters: sort = " + sortParameter + ", sort order = " + sortOrderParameter);
         }
         ItemDao itemDao = new ItemDaoImpl();
@@ -70,10 +71,12 @@ public class ItemService {
             transaction.commit();
             return items;
         } catch (DaoException | IllegalArgumentException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public Optional<Item> findItemById(int id) throws ServiceException {
         ItemDao itemDao = new ItemDaoImpl();
         CategoryDao categoryDao = new CategoryDaoImpl();
@@ -91,13 +94,15 @@ public class ItemService {
             transaction.commit();
             return itemOptional;
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public boolean updateOrCreate(HashMap<String, String> map, List<Integer> sizesId,
                                   List<String> amountsInStock, List<Integer> categoriesId) throws ServiceException {
-        if (!BaseValidatorImpl.INSTANCE.validateUpdateItem(map, sizesId, amountsInStock, categoriesId)) {
+        if (!BaseValidatorImpl.getInstance().validateUpdateItem(map, sizesId, amountsInStock, categoriesId)) {
             return false;
         }
         String itemId = map.get(ITEM_ID);
@@ -123,16 +128,19 @@ public class ItemService {
         }
     }
 
+    @Override
     public boolean updateItemImagePath(int id, String path) throws ServiceException {
         ItemDao itemDao = new ItemDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(itemDao);
             return itemDao.updateImagePath(id, path);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public boolean updatePopularity(int id) throws ServiceException {
         ItemDao itemDao = new ItemDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
@@ -140,16 +148,19 @@ public class ItemService {
             long popularity = System.currentTimeMillis();
             return itemDao.updatePopularity(id, popularity);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public boolean delete(int id) throws ServiceException {
         ItemDao itemDao = new ItemDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(itemDao);
             return itemDao.delete(id);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
@@ -185,6 +196,7 @@ public class ItemService {
             transaction.commit();
             return true;
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
@@ -248,6 +260,7 @@ public class ItemService {
             transaction.commit();
             return true;
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }

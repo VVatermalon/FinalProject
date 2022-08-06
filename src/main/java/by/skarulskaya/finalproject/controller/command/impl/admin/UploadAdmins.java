@@ -4,10 +4,9 @@ import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
-import by.skarulskaya.finalproject.model.entity.Customer;
 import by.skarulskaya.finalproject.model.entity.User;
-import by.skarulskaya.finalproject.model.service.impl.CustomerService;
-import by.skarulskaya.finalproject.model.service.impl.UserService;
+import by.skarulskaya.finalproject.model.service.UserService;
+import by.skarulskaya.finalproject.model.service.impl.UserServiceImpl;
 import by.skarulskaya.finalproject.util.pagination.Pagination;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +24,7 @@ public class UploadAdmins implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final int FIRST_PAGINATION_PAGE = 1;
     private static final int USER_PER_PAGE = 8;
-    private static final UserService userService = UserService.getInstance();
+    private final UserService userService = UserServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -33,7 +32,8 @@ public class UploadAdmins implements Command {
         String pageParameter = request.getParameter(PAGE);
         int pagePagination = FIRST_PAGINATION_PAGE;
         if(pageParameter != null) {
-            if(!BaseValidatorImpl.INSTANCE.validatePage(pageParameter)) {
+            if(!BaseValidatorImpl.getInstance().validatePage(pageParameter)) {
+                logger.error("Invalid pagination page parameter");
                 throw new CommandException("Invalid pagination page parameter, page = " + pageParameter);
             }
             pagePagination = Integer.parseInt(pageParameter);
@@ -54,6 +54,7 @@ public class UploadAdmins implements Command {
             request.setAttribute(USER_LIST, users);
             request.setAttribute(PAGE, pagePagination);
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
         router.setCurrentPage(USERS_PAGE);

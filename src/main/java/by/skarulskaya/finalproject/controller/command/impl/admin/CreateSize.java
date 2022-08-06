@@ -5,10 +5,9 @@ import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.CustomEntity;
-import by.skarulskaya.finalproject.model.entity.ItemCategory;
 import by.skarulskaya.finalproject.model.entity.ItemSize;
-import by.skarulskaya.finalproject.model.service.impl.CategoryService;
-import by.skarulskaya.finalproject.model.service.impl.ItemSizeService;
+import by.skarulskaya.finalproject.model.service.ItemSizeService;
+import by.skarulskaya.finalproject.model.service.impl.ItemSizeServiceImpl;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +22,7 @@ import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
 
 public class CreateSize implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private static final ItemSizeService sizeService = ItemSizeService.getInstance();
+    private final ItemSizeService sizeService = ItemSizeServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -32,7 +31,7 @@ public class CreateSize implements Command {
         String sizeName = request.getParameter(SIZE_NAME);
         router.setCurrentPage(currentPage);
         try {
-            if (!BaseValidatorImpl.INSTANCE.validateSizeName(sizeName)) {
+            if (!BaseValidatorImpl.getInstance().validateSizeName(sizeName)) {
                 request.setAttribute(INVALID_SIZE_NAME, INVALID_SIZE_NAME_MESSAGE);
                 return router;
             }
@@ -53,6 +52,7 @@ public class CreateSize implements Command {
             router.setCurrentPage(request.getContextPath() + currentPage);
             return router;
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
     }

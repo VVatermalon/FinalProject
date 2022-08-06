@@ -1,43 +1,53 @@
 package by.skarulskaya.finalproject.model.service.impl;
 
-import by.skarulskaya.finalproject.model.dao.CustomerDao;
 import by.skarulskaya.finalproject.model.dao.EntityTransaction;
 import by.skarulskaya.finalproject.model.dao.UserDao;
-import by.skarulskaya.finalproject.model.dao.impl.CustomerDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.UserDaoImpl;
-import by.skarulskaya.finalproject.model.entity.Customer;
 import by.skarulskaya.finalproject.model.entity.User;
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.exception.ServiceException;
-import by.skarulskaya.finalproject.model.service.BaseService;
+import by.skarulskaya.finalproject.model.service.UserService;
 import by.skarulskaya.finalproject.util.encryptor.PasswordEncryptor;
 import by.skarulskaya.finalproject.util.mail.MailSender;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 
-public class UserService implements BaseService {
-    private static final UserService INSTANCE = new UserService();
-    private UserService() {}
-    public static UserService getInstance() {
+public class UserServiceImpl implements UserService {
+    private static final Logger logger = LogManager.getLogger();
+    private static final UserServiceImpl INSTANCE = new UserServiceImpl();
+    private static final String SETTING_CHANGED_SUBJECT = "Settings have changed";
+    private static final String SETTING_CHANGED_BODY = "Dear Customer! Your settings have changed. You can find more information in your profile :)";
+    private static final String REGISTRATION_SUBJECT = "Registration in system";
+    private static final String REGISTRATION_BODY_1 = "Welcome! Registration was successful. Your password: ";
+    private static final String REGISTRATION_BODY_2 = ". Change it as you log in.";
+    private static final String BLOCKED_SUBJECT = "You have been blocked";
+    private static final String BLOCKED_BODY = "Sorry, You have been blocked by the Administrator :(";
+    private static final String UNBLOCKED_SUBJECT = "You have been unblocked";
+    private static final String UNBLOCKED_BODY = "You have been unblocked by the Administrator :) Now you can continue to use of Blackpink Web Site!";
+    private UserServiceImpl() {}
+    public static UserServiceImpl getInstance() {
         return INSTANCE;
     }
+
     @Override
     public Optional<User> signIn(String email, String password) throws ServiceException {
-        if(!BaseValidatorImpl.INSTANCE.validateSignIn(email, password)) {
+        if(!BaseValidatorImpl.getInstance().validateSignIn(email, password)) {
             return Optional.empty();
         }
         String encryptedPassword = PasswordEncryptor.encrypt(password);
         return findUserByEmailAndPassword(email, encryptedPassword);
     }
 
+    @Override
     public boolean registerAdmin(Map<String, String> mapData) throws ServiceException {
-        if(!BaseValidatorImpl.INSTANCE.validateRegistrationAdmin(mapData)) {
+        if(!BaseValidatorImpl.getInstance().validateRegistrationAdmin(mapData)) {
             return false;
         }
         String email = mapData.get(USER_EMAIL);
@@ -53,30 +63,33 @@ public class UserService implements BaseService {
                 return false;
             }
             try {
-                sendMessageRegistration(email, "Welcome! Registration was successful. Your password: " + password + ". Change it as you log in.");
+                sendMessage(email, REGISTRATION_SUBJECT, REGISTRATION_BODY_1 + password + REGISTRATION_BODY_2);
             } catch(ServiceException e) {
-                mapData.put(USER_EMAIL, WRONG_EMAIL); //todo подтверждение почты через ввод сгенерированной последовательности, храним их в бд и периодически чистим
+                mapData.put(USER_EMAIL, WRONG_EMAIL);
                 return false;
             }
             User admin = new User(email, encryptedPassword, name, surname, User.Role.ADMIN, User.Status.IN_REGISTRATION_PROCESS);
-            //todo после отправки письма статус другой
             userDao.create(admin);
             return true;
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public List<User> findAllAdminsByPage(int count, int offset) throws ServiceException {
         UserDao userDao = new UserDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(userDao);
             return userDao.findAllAdminsByPage(count, offset);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public List<User> findAllAdminsByStatusByPage(String status, int count, int offset) throws ServiceException {
         UserDao userDao = new UserDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -91,16 +104,19 @@ public class UserService implements BaseService {
             }
             return users;
         } catch (DaoException | IllegalArgumentException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public Optional<User> findUserByEmailAndPassword(String email, String password) throws ServiceException {
         UserDaoImpl userDao = new UserDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(userDao);
             return userDao.findUserByEmailAndPassword(email, password);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
@@ -112,12 +128,14 @@ public class UserService implements BaseService {
             transaction.init(userDao);
             return userDao.findEntityById(id);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public boolean updateName(int userId, String newName) throws ServiceException {
-        if(!BaseValidatorImpl.INSTANCE.validateName(newName)) {
+        if(!BaseValidatorImpl.getInstance().validateName(newName)) {
             return false;
         }
         UserDao userDao = new UserDaoImpl();
@@ -125,17 +143,20 @@ public class UserService implements BaseService {
             transaction.init(userDao);
             if(userDao.updateName(userId, newName)) {
                 String email = userDao.findUserEmail(userId);
-                sendMessageSettingsChanged(email);
+                sendMessage(email, SETTING_CHANGED_SUBJECT, SETTING_CHANGED_BODY);
                 return true;
             }
+            logger.error("Can't update name");
             throw new ServiceException("Can't update name, user id = " + userId);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public boolean updateSurname(int userId, String newSurname) throws ServiceException {
-        if(!BaseValidatorImpl.INSTANCE.validateName(newSurname)) {
+        if(!BaseValidatorImpl.getInstance().validateName(newSurname)) {
             return false;
         }
         UserDao userDao = new UserDaoImpl();
@@ -143,17 +164,20 @@ public class UserService implements BaseService {
             transaction.init(userDao);
             if(userDao.updateSurname(userId, newSurname)) {
                 String email = userDao.findUserEmail(userId);
-                sendMessageSettingsChanged(email);
+                sendMessage(email, SETTING_CHANGED_SUBJECT, SETTING_CHANGED_BODY);
                 return true;
             }
+            logger.error("Can't update surname");
             throw new ServiceException("Can't update surname, user id = " + userId);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public boolean checkCorrectPassword(int userId, String oldPassword) throws ServiceException {
-        if(!BaseValidatorImpl.INSTANCE.validatePassword(oldPassword)) {
+        if(!BaseValidatorImpl.getInstance().validatePassword(oldPassword)) {
             return false;
         }
         UserDao userDao = new UserDaoImpl();
@@ -162,22 +186,26 @@ public class UserService implements BaseService {
             transaction.init(userDao);
             return userDao.checkCorrectPassword(userId, encryptedPassword);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public boolean deleteUser(int userId) throws ServiceException {
         UserDao userDao = new UserDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(userDao);
             return userDao.delete(userId);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public boolean updatePassword(int userId, String newPassword) throws ServiceException {
-        if(!BaseValidatorImpl.INSTANCE.validatePassword(newPassword)) {
+        if(!BaseValidatorImpl.getInstance().validatePassword(newPassword)) {
             return false;
         }
         UserDao userDao = new UserDaoImpl();
@@ -186,16 +214,19 @@ public class UserService implements BaseService {
             transaction.init(userDao);
             if(userDao.updatePassword(userId, encryptedPassword)) {
                 String email = userDao.findUserEmail(userId);
-                sendMessageSettingsChanged(email);
+                sendMessage(email, SETTING_CHANGED_SUBJECT, SETTING_CHANGED_BODY);
                 userDao.updateStatus(userId, User.Status.ACTIVE);
                 return true;
             }
+            logger.error("Can't update password");
             throw new ServiceException("Can't update password, user id = " + userId);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
+    @Override
     public boolean changeUserStatus(int userId, User.Status userStatus) throws ServiceException {
         UserDao userDao = new UserDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -203,39 +234,26 @@ public class UserService implements BaseService {
             if(userDao.updateStatus(userId, userStatus)) {
                 String email = userDao.findUserEmail(userId);
                 if(userStatus == User.Status.BLOCKED) {
-                    sendMessage(email, "You are blocked", "Sorry, You have been blocked by the Administrator :(");
+                    sendMessage(email, BLOCKED_SUBJECT, BLOCKED_BODY);
                 }
                 if(userStatus == User.Status.ACTIVE) {
-                    sendMessage(email, "You are unblocked", "You have been unblocked by the Administrator :) Now you can continue to use of our Web Site!");
+                    sendMessage(email, UNBLOCKED_SUBJECT, UNBLOCKED_BODY);
                 }
                 return true;
             }
+            logger.error("Can't update status");
             throw new ServiceException("Can't update status, user id = " + userId);
         } catch (DaoException e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }
 
-    private void sendMessageRegistration(String email, String mailText) throws ServiceException {
+    private void sendMessage(String email, String subject, String body) throws ServiceException {
         try {
-            MailSender.INSTANCE.send(email, "Registration in system", mailText); //todo сделать тут локализацию
+            MailSender.INSTANCE.send(email, subject, body);
         } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    private void sendMessageSettingsChanged(String email) throws ServiceException {
-        try {
-            MailSender.INSTANCE.send(email, "Settings have changed", "Dear Customer! Your settings have changed. You can find more information in your profile :)");//todo сделать тут локализацию
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    private void sendMessage(String email, String subject, String text) throws ServiceException {
-        try {
-            MailSender.INSTANCE.send(email, subject, text);//todo сделать тут локализацию
-        } catch (Exception e) {
+            logger.error(e);
             throw new ServiceException(e);
         }
     }

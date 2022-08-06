@@ -4,7 +4,8 @@ import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
-import by.skarulskaya.finalproject.model.service.impl.OrderService;
+import by.skarulskaya.finalproject.model.service.OrderService;
+import by.skarulskaya.finalproject.model.service.impl.OrderServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
@@ -16,7 +17,7 @@ import static by.skarulskaya.finalproject.controller.Parameters.ORDER_ID;
 
 public class CancelOrder implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private static final OrderService orderService = OrderService.getInstance();
+    private final OrderService orderService = OrderServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -30,9 +31,11 @@ public class CancelOrder implements Command {
             }
             int orderId = Integer.parseInt(orderIdParameter);
             if(!orderService.cancelOrder(orderId)) {
+                logger.error("Can't cancel order");
                 throw new CommandException("Can't cancel order, order id = " + orderId);
             }
         } catch (ServiceException | NumberFormatException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
         router.setCurrentType(Router.Type.REDIRECT);

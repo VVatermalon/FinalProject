@@ -6,7 +6,6 @@ import by.skarulskaya.finalproject.model.entity.Customer;
 import by.skarulskaya.finalproject.model.entity.User;
 import by.skarulskaya.finalproject.model.mapper.EntityMapper;
 import by.skarulskaya.finalproject.model.mapper.impl.CustomerMapper;
-import by.skarulskaya.finalproject.model.mapper.impl.UserMapper;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -72,7 +71,7 @@ public class CustomerDaoImpl extends CustomerDao {
             }
             return customers;
         } catch (SQLException e) {
-            logger.error(e);
+            logger.error("CustomerDao exception: " + e);
             throw new DaoException(e);
         }
     }
@@ -91,7 +90,7 @@ public class CustomerDaoImpl extends CustomerDao {
             }
             return customers;
         } catch (SQLException e) {
-            logger.error(e);
+            logger.error("CustomerDao exception: " + e);
             throw new DaoException(e);
         }
     }
@@ -111,7 +110,7 @@ public class CustomerDaoImpl extends CustomerDao {
             }
             return customers;
         } catch (SQLException e) {
-            logger.error(e);
+            logger.error("CustomerDao exception: " + e);
             throw new DaoException(e);
         }
     }
@@ -128,18 +127,20 @@ public class CustomerDaoImpl extends CustomerDao {
             }
             return Optional.empty();
         } catch (SQLException e) {
-            logger.error(e);
+            logger.error("CustomerDao exception: " + e);
             throw new DaoException(e);
         }
     }
 
     @Override
     public boolean delete(Customer entity) throws DaoException {
+        logger.error("CustomerDao exception: unsupported delete method");
         throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean delete(Integer id) throws DaoException {
+        logger.error("CustomerDao exception: unsupported delete method");
         throw new UnsupportedOperationException();
     }
 
@@ -160,13 +161,14 @@ public class CustomerDaoImpl extends CustomerDao {
             statement.executeUpdate();
             keys = statement.getGeneratedKeys();
             if (!keys.next()) {
-                throw new DaoException("Smth wrong with generated id");
+                logger.error("CustomerDao exception: no generated key in create statement");
+                throw new DaoException("No generated key in create statement");
             }
             int id = keys.getInt(1);
             entity.setId(id);
             return true;
         } catch (SQLException e) {
-            logger.error(e);
+            logger.error("CustomerDao exception: " + e);
             throw new DaoException(e);
         } finally {
             close(keys);
@@ -175,6 +177,7 @@ public class CustomerDaoImpl extends CustomerDao {
 
     @Override
     public boolean update(Customer entity) throws DaoException {
+        logger.error("CustomerDao exception: unsupported update method");
         throw new UnsupportedOperationException();
     }
 
@@ -185,7 +188,7 @@ public class CustomerDaoImpl extends CustomerDao {
             statement.setInt(2, id);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.error(e);
+            logger.error("CustomerDao exception: " + e);
             throw new DaoException(e);
         }
     }
@@ -198,7 +201,7 @@ public class CustomerDaoImpl extends CustomerDao {
                 return resultSet.next();
             }
         } catch (SQLException e) {
-            logger.error(e);
+            logger.error("CustomerDao exception: " + e);
             throw new DaoException(e);
         }
     }
@@ -210,7 +213,7 @@ public class CustomerDaoImpl extends CustomerDao {
             statement.setInt(2, customerId);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.error(e);
+            logger.error("CustomerDao exception: " + e);
             throw new DaoException(e);
         }
     }
@@ -222,7 +225,7 @@ public class CustomerDaoImpl extends CustomerDao {
             statement.setInt(2, customerId);
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.error(e);
+            logger.error("CustomerDao exception: " + e);
             throw new DaoException(e);
         }
     }

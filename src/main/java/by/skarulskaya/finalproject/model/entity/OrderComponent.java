@@ -50,7 +50,34 @@ public class OrderComponent extends CustomEntity implements Comparable<OrderComp
             this.itemSizeId = itemSizeId;
         }
 
-        //todo generate tostring, hash..
+        @Override
+        public String toString() {
+            return "OrderComponentKey{" +
+                    "orderId=" + orderId +
+                    ", itemId=" + itemId +
+                    ", itemSizeId=" + itemSizeId +
+                    '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o.getClass() != getClass()) return false;
+
+            OrderComponentKey that = (OrderComponentKey) o;
+
+            if (orderId != that.orderId) return false;
+            if (itemId != that.itemId) return false;
+            return itemSizeId == that.itemSizeId;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = orderId;
+            result = 31 * result + itemId;
+            result = 31 * result + itemSizeId;
+            return result;
+        }
     }
     private Item item;
     private int amount;
@@ -92,7 +119,34 @@ public class OrderComponent extends CustomEntity implements Comparable<OrderComp
     public void setItemSize(ItemSize itemSize) {
         this.itemSize = itemSize;
     }
-    //todo tosstring, equals...
 
+    @Override
+    public String toString() {
+        return "OrderComponent{" +
+                "id=" + id +
+                ", item=" + item +
+                ", amount=" + amount +
+                ", itemSize=" + itemSize +
+                '}';
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || o.getClass() != getClass()) return false;
+
+        OrderComponent component = (OrderComponent) o;
+
+        if (amount != component.amount) return false;
+        if (item != null ? !item.equals(component.item) : component.item != null) return false;
+        return itemSize != null ? itemSize.equals(component.itemSize) : component.itemSize == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = item != null ? item.hashCode() : 0;
+        result = 31 * result + amount;
+        result = 31 * result + (itemSize != null ? itemSize.hashCode() : 0);
+        return result;
+    }
 }

@@ -4,8 +4,8 @@ import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
-import by.skarulskaya.finalproject.model.entity.Item;
-import by.skarulskaya.finalproject.model.service.impl.ItemService;
+import by.skarulskaya.finalproject.model.service.ItemService;
+import by.skarulskaya.finalproject.model.service.impl.ItemServiceImpl;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -31,8 +30,8 @@ import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
 
 public class UpdateItem implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private static String ABSOLUTE_PATH = "D:\\MusicBandWebProject\\Project\\MusicBandProject\\src\\main\\webapp\\images\\";
-    private static final ItemService itemService = ItemService.getInstance();
+    private static final String ABSOLUTE_PATH = "D:\\MusicBandWebProject\\Project\\MusicBandProject\\src\\main\\webapp\\images\\";
+    private final ItemService itemService = ItemServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -52,7 +51,7 @@ public class UpdateItem implements Command {
                 String amountInStock = request.getParameter(ITEM_SIZE_AMOUNT_IN_STOCK + sizeId);
                 amountsInStock.add(amountInStock);
             }
-            if(itemIdParameter != null && !BaseValidatorImpl.INSTANCE.validateId(itemIdParameter)) {
+            if(itemIdParameter != null && !BaseValidatorImpl.getInstance().validateId(itemIdParameter)) {
                 router.setCurrentPage(ERROR_404);
                 return router;
             }
@@ -106,6 +105,7 @@ public class UpdateItem implements Command {
             router.setCurrentPage(currentPage);
             return router;
         } catch (NumberFormatException | ParseException | ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
     }
@@ -126,10 +126,12 @@ public class UpdateItem implements Command {
             Files.copy(inputStream, imagePath, StandardCopyOption.REPLACE_EXISTING);
             int id = Integer.parseInt(dataMap.get(ITEM_ID));
             if (!itemService.updateItemImagePath(id, fileName)) {
+                logger.error("Failed to update item picture path");
                 throw new CommandException("Failed to update item picture path");
             }
             return true;
         } catch (ServletException | ServiceException | IOException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
     }

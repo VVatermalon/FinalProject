@@ -4,25 +4,24 @@ import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.dao.EntityTransaction;
 import by.skarulskaya.finalproject.model.dao.SizeDao;
-import by.skarulskaya.finalproject.model.dao.impl.CategoryDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.SizeDaoImpl;
-import by.skarulskaya.finalproject.model.entity.ItemCategory;
 import by.skarulskaya.finalproject.model.entity.ItemSize;
-import by.skarulskaya.finalproject.model.service.BaseService;
+import by.skarulskaya.finalproject.model.service.ItemSizeService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Optional;
 
-public class ItemSizeService {
+public class ItemSizeServiceImpl implements ItemSizeService {
     private static final Logger logger = LogManager.getLogger();
-    private static final ItemSizeService INSTANCE = new ItemSizeService();
-    private ItemSizeService(){}
-    public static ItemSizeService getInstance() {
+    private static final ItemSizeServiceImpl INSTANCE = new ItemSizeServiceImpl();
+    private ItemSizeServiceImpl(){}
+    public static ItemSizeServiceImpl getInstance() {
         return INSTANCE;
     }
 
+    @Override
     public Optional<ItemSize> findSizeById(int id) throws ServiceException {
         SizeDao sizeDao = new SizeDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -34,6 +33,7 @@ public class ItemSizeService {
         }
     }
 
+    @Override
     public List<ItemSize> findAll() throws ServiceException {
         SizeDao sizeDao = new SizeDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -45,6 +45,7 @@ public class ItemSizeService {
         }
     }
 
+    @Override
     public boolean create(String sizeName) throws ServiceException {
         SizeDao sizeDao = new SizeDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -57,6 +58,7 @@ public class ItemSizeService {
         }
     }
 
+    @Override
     public boolean update(ItemSize size) throws ServiceException {
         SizeDao sizeDao = new SizeDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -68,6 +70,7 @@ public class ItemSizeService {
         }
     }
 
+    @Override
     public boolean delete(int sizeId) throws ServiceException {
         SizeDao sizeDao = new SizeDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -79,6 +82,7 @@ public class ItemSizeService {
         }
     }
 
+    @Override
     public boolean isSizeNameUnique(String sizeName) throws ServiceException {
         SizeDao sizeDao = new SizeDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -90,6 +94,7 @@ public class ItemSizeService {
         }
     }
 
+    @Override
     public boolean isSizeNameUnique(String sizeName, int sizeId) throws ServiceException {
         SizeDao sizeDao = new SizeDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {

@@ -15,5 +15,4 @@ public class CustomEntity {
     public void setId(int id) {
         this.id = id;
     }
-    //todo tostring
 }

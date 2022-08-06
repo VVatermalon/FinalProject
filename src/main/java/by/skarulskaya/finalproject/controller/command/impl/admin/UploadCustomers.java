@@ -5,9 +5,8 @@ import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.Customer;
-import by.skarulskaya.finalproject.model.entity.Order;
-import by.skarulskaya.finalproject.model.service.impl.CustomerService;
-import by.skarulskaya.finalproject.model.service.impl.OrderService;
+import by.skarulskaya.finalproject.model.service.CustomerService;
+import by.skarulskaya.finalproject.model.service.impl.CustomerServiceImpl;
 import by.skarulskaya.finalproject.util.pagination.Pagination;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
-import static by.skarulskaya.finalproject.controller.PagesPaths.ORDERS_PAGE;
 import static by.skarulskaya.finalproject.controller.PagesPaths.USERS_PAGE;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 import static by.skarulskaya.finalproject.controller.Parameters.PAGE;
@@ -26,7 +24,7 @@ public class UploadCustomers implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final int FIRST_PAGINATION_PAGE = 1;
     private static final int USER_PER_PAGE = 8;
-    private static final CustomerService customerService = CustomerService.getInstance();
+    private final CustomerService customerService = CustomerServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -34,7 +32,8 @@ public class UploadCustomers implements Command {
         String pageParameter = request.getParameter(PAGE);
         int pagePagination = FIRST_PAGINATION_PAGE;
         if(pageParameter != null) {
-            if(!BaseValidatorImpl.INSTANCE.validatePage(pageParameter)) {
+            if(!BaseValidatorImpl.getInstance().validatePage(pageParameter)) {
+                logger.error("Invalid pagination page parameter");
                 throw new CommandException("Invalid pagination page parameter, page = " + pageParameter);
             }
             pagePagination = Integer.parseInt(pageParameter);
@@ -55,6 +54,7 @@ public class UploadCustomers implements Command {
             request.setAttribute(USER_LIST, customers);
             request.setAttribute(PAGE, pagePagination);
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
         router.setCurrentPage(USERS_PAGE);

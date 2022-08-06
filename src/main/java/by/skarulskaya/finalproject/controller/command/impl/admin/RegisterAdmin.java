@@ -4,24 +4,23 @@ import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
-import by.skarulskaya.finalproject.model.entity.User;
-import by.skarulskaya.finalproject.model.service.impl.CustomerService;
-import by.skarulskaya.finalproject.model.service.impl.OrderService;
-import by.skarulskaya.finalproject.model.service.impl.UserService;
+import by.skarulskaya.finalproject.model.service.UserService;
+import by.skarulskaya.finalproject.model.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static by.skarulskaya.finalproject.controller.PagesPaths.REGISTRATION_PAGE;
-import static by.skarulskaya.finalproject.controller.PagesPaths.SIGN_IN_PAGE;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
-import static by.skarulskaya.finalproject.controller.ParametersMessages.NOT_UNIQUE_PHONE_MESSAGE;
 
 public class RegisterAdmin implements Command {
-    private final UserService userService = UserService.getInstance();
+    private static final Logger logger = LogManager.getLogger();
+    private final UserService userService = UserServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -71,6 +70,7 @@ public class RegisterAdmin implements Command {
             router.setCurrentPage(REGISTRATION_PAGE);
             return router;
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
     }

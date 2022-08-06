@@ -4,11 +4,13 @@ import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
-import by.skarulskaya.finalproject.model.entity.User;
-import by.skarulskaya.finalproject.model.service.impl.CustomerService;
-import by.skarulskaya.finalproject.model.service.impl.OrderService;
+import by.skarulskaya.finalproject.model.service.OrderService;
+import by.skarulskaya.finalproject.model.service.impl.CustomerServiceImpl;
+import by.skarulskaya.finalproject.model.service.impl.OrderServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +20,9 @@ import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
 import static by.skarulskaya.finalproject.controller.PagesPaths.*;
 
 public class Registration implements Command {
-    private final CustomerService customerService = CustomerService.getInstance();
-    private final OrderService orderService = OrderService.getInstance();
+    private static final Logger logger = LogManager.getLogger();
+    private final CustomerServiceImpl customerService = CustomerServiceImpl.getInstance();
+    private final OrderService orderService = OrderServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -79,6 +82,7 @@ public class Registration implements Command {
             router.setCurrentPage(REGISTRATION_PAGE);
             return router;
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
     }

@@ -3,13 +3,12 @@ package by.skarulskaya.finalproject.model.service.impl;
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.dao.*;
-import by.skarulskaya.finalproject.model.dao.impl.AddressDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.CustomerDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.OrderDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.SizeDaoImpl;
 import by.skarulskaya.finalproject.model.entity.*;
+import by.skarulskaya.finalproject.model.service.OrderService;
 import by.skarulskaya.finalproject.util.mail.MailSender;
-import by.skarulskaya.finalproject.util.pagination.Pagination;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,20 +19,26 @@ import java.util.*;
 
 import static by.skarulskaya.finalproject.controller.Parameters.ORDER_STATUS_ANY;
 
-public class OrderService {
+public class OrderServiceImpl implements OrderService {
     private static final Logger logger = LogManager.getLogger();
-    private static final OrderService INSTANCE = new OrderService();
+    private static final String ORDER_CONFIRMED = "Congratulations! Your order has been confirmed by the Administrator and now it is sent to you.";
+    private static final String ORDER_CANCELLED = "Your order has been cancelled by the Administrator.";
+    private static final String ORDER_NO = "Order No ";
+    private static final String ORDER_CONFIRMED_TOPIC = " has been confirmed";
+    private static final String ORDER_CANCELLED_TOPIC = " has been cancelled";
+    private static final OrderServiceImpl INSTANCE = new OrderServiceImpl();
 
-    private OrderService() {
+    private OrderServiceImpl() {
     }
 
-    public static OrderService getInstance() {
+    public static OrderServiceImpl getInstance() {
         return INSTANCE;
     }
 
+    @Override
     public List<Order> findAllCustomerRegisteredOrders(int customerId) throws ServiceException {
         OrderDao orderDao = new OrderDaoImpl();
-        OrderComponentService orderComponentService = OrderComponentService.getInstance();
+        OrderComponentServiceImpl orderComponentService = OrderComponentServiceImpl.getInstance();
         try(EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(orderDao);
             List<Order> orders = orderDao.findAllCustomerRegisteredOrders(customerId);
@@ -48,9 +53,10 @@ public class OrderService {
         }
     }
 
+    @Override
     public List<Order> findAllRegisteredOrders() throws ServiceException {
         OrderDao orderDao = new OrderDaoImpl();
-        OrderComponentService orderComponentService = OrderComponentService.getInstance();
+        OrderComponentServiceImpl orderComponentService = OrderComponentServiceImpl.getInstance();
         try(EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(orderDao);
             List<Order> orders = orderDao.findAll();
@@ -65,9 +71,10 @@ public class OrderService {
         }
     }
 
+    @Override
     public List<Order> findAllRegisteredOrdersByPage(int count, int offset) throws ServiceException {
         OrderDao orderDao = new OrderDaoImpl();
-        OrderComponentService orderComponentService = OrderComponentService.getInstance();
+        OrderComponentServiceImpl orderComponentService = OrderComponentServiceImpl.getInstance();
         try(EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(orderDao);
             List<Order> orders = orderDao.findAllByPage(count, offset);
@@ -82,9 +89,10 @@ public class OrderService {
         }
     }
 
+    @Override
     public List<Order> findAllRegisteredOrdersByDateByStatusByPage(String date, String status, int count, int offset) throws ServiceException {
         OrderDao orderDao = new OrderDaoImpl();
-        OrderComponentService orderComponentService = OrderComponentService.getInstance();
+        OrderComponentServiceImpl orderComponentService = OrderComponentServiceImpl.getInstance();
         try(EntityTransaction transaction = new EntityTransaction()) {
             transaction.init(orderDao);
             List<Order> orders;
@@ -118,6 +126,7 @@ public class OrderService {
         }
     }
 
+    @Override
     public int createCart(int customerId) throws ServiceException {
         OrderDao orderDao = new OrderDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -128,6 +137,7 @@ public class OrderService {
         }
     }
 
+    @Override
     public int findCartOrderId(int customerId) throws ServiceException {
         OrderDao orderDao = new OrderDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -138,6 +148,7 @@ public class OrderService {
         }
     }
 
+    @Override
     public boolean registerOrder(Customer customer, int cartOrderId, int addressId, BigDecimal cartTotalPrice) throws ServiceException {
         BigDecimal bankAccount = customer.getBankAccount();
         if(bankAccount.compareTo(cartTotalPrice) < 0) {
@@ -149,6 +160,50 @@ public class OrderService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean confirmOrder(int orderId) throws ServiceException {
+        OrderDao orderDao = new OrderDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.init(orderDao);
+            if(orderDao.changeOrderStatus(orderId, Order.OrderStatus.CONFIRMED)) {
+                String email = orderDao.findOrderCustomerEmail(orderId);
+                sendMessage(email, ORDER_NO + orderId + ORDER_CONFIRMED_TOPIC, ORDER_CONFIRMED);
+                return true;
+            }
+            return false;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public boolean cancelOrder(int orderId) throws ServiceException {
+        OrderDao orderDao = new OrderDaoImpl();
+        SizeDao sizeDao = new SizeDaoImpl();
+        CustomerDao customerDao = new CustomerDaoImpl();
+        try(EntityTransaction transaction = new EntityTransaction()) {
+            transaction.beginTransaction(customerDao, sizeDao, orderDao);
+            if(!orderDao.addMoneyToOrderCustomerAccount(orderId)) {
+                transaction.rollback();
+                return false;
+            }
+            if(!sizeDao.changeBackAmountInStockForAllOrderItems(orderId)) {
+                transaction.rollback();
+                return false;
+            }
+            if(!orderDao.changeOrderStatus(orderId, Order.OrderStatus.CANCELLED)) {
+                transaction.rollback();
+                return false;
+            }
+            transaction.commit();
+            String email = orderDao.findOrderCustomerEmail(orderId);
+            sendMessage(email, ORDER_NO + orderId + ORDER_CANCELLED_TOPIC, ORDER_CANCELLED);
+            return true;
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
     }
 
     private boolean registerOder(BigDecimal newBankAccount, int customerId, int orderId, int addressId, BigDecimal cartTotalPrice) throws ServiceException {
@@ -176,51 +231,9 @@ public class OrderService {
         }
     }
 
-    public boolean confirmOrder(int orderId) throws ServiceException {
-        OrderDao orderDao = new OrderDaoImpl();
-        try(EntityTransaction transaction = new EntityTransaction()) {
-            transaction.init(orderDao);
-            if(orderDao.changeOrderStatus(orderId, Order.OrderStatus.CONFIRMED)) {
-                String email = orderDao.findOrderCustomerEmail(orderId);
-                sendMessage(email, "Order No " + orderId + " has been confirmed", "Congratulations! Your order has been confirmed by the Administrator and now it is sent to you.");
-                return true;
-            }
-            return false;
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    public boolean cancelOrder(int orderId) throws ServiceException {
-        OrderDao orderDao = new OrderDaoImpl();
-        SizeDao sizeDao = new SizeDaoImpl();
-        CustomerDao customerDao = new CustomerDaoImpl();
-        try(EntityTransaction transaction = new EntityTransaction()) {
-            transaction.beginTransaction(customerDao, sizeDao, orderDao);
-            if(!orderDao.addMoneyToOrderCustomerAccount(orderId)) {
-                transaction.rollback();
-                return false;
-            }
-            if(!sizeDao.changeBackAmountInStockForAllOrderItems(orderId)) {
-                transaction.rollback();
-                return false;
-            }
-            if(!orderDao.changeOrderStatus(orderId, Order.OrderStatus.CANCELLED)) {
-                transaction.rollback();
-                return false;
-            }
-            transaction.commit();
-            String email = orderDao.findOrderCustomerEmail(orderId);
-            sendMessage(email, "Order No " + orderId + " has been cancelled", "Your order has been cancelled by the Administrator.");
-            return true;
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-    }
-
     private void sendMessage(String email, String mailSubject, String mailText) throws ServiceException {
         try {
-            MailSender.INSTANCE.send(email, mailSubject, mailText); //todo сделать тут локализацию
+            MailSender.INSTANCE.send(email, mailSubject, mailText);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

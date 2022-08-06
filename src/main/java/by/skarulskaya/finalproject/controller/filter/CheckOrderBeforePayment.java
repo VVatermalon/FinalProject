@@ -2,7 +2,8 @@ package by.skarulskaya.finalproject.controller.filter;
 
 import by.skarulskaya.finalproject.controller.command.CommandType;
 import by.skarulskaya.finalproject.exception.ServiceException;
-import by.skarulskaya.finalproject.model.service.impl.OrderComponentService;
+import by.skarulskaya.finalproject.model.service.OrderComponentService;
+import by.skarulskaya.finalproject.model.service.impl.OrderComponentServiceImpl;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +22,7 @@ import static by.skarulskaya.finalproject.controller.Parameters.CART_TOTAL_PRICE
 @WebFilter(filterName = "checkOrderBeforePayment", urlPatterns = "/*")
 public class CheckOrderBeforePayment implements Filter {
     private static final Logger logger = LogManager.getLogger();
-    private static final OrderComponentService orderComponentService = OrderComponentService.getInstance();
+    private final OrderComponentService orderComponentService = OrderComponentServiceImpl.getInstance();
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

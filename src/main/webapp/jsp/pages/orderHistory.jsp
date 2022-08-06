@@ -9,6 +9,7 @@
 <%@ taglib prefix="ctg" uri="customs" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="absolutePath">${pageContext.request.contextPath}</c:set>
 <c:choose>
     <c:when test="${not empty language}"> <fmt:setLocale value="${language}" scope="session"/></c:when>
@@ -20,15 +21,7 @@
 <head>
     <title><fmt:message key="title.order_history"/></title>
     <link rel="icon" href="${absolutePath}/images/icon.png" type="image/png">
-    <script>
-        function disableBack() {
-            window.history.forward();
-        }
-        setTimeout("disableBack()", 0);
-        window.onunload = function() {
-            null
-        };
-    </script>
+    <script type="text/javascript" src="${absolutePath}/js/disableBack.js"></script>
     <style>
         html,body{
             width:100%;
@@ -109,17 +102,17 @@
                                     <a href="${absolutePath}/controller?command=open_item_page&item_id=${component.item.id}" class="cart_image">
                                         <c:choose>
                                             <c:when test="${component.item.imagePath eq 'defaultItem.png'}">
-                                                <img src="${absolutePath}/images/${component.item.imagePath}" alt="${component.item.name}" class="product_img">
+                                                <img src="${absolutePath}/images/${component.item.imagePath}" alt="${fn:escapeXml(component.item.name)}" class="product_img">
                                             </c:when>
                                             <c:otherwise>
-                                                <img src="${absolutePath}/uploadImage?image_path=${component.item.imagePath}" alt="${component.item.name}" class="product_img">
+                                                <img src="${absolutePath}/uploadImage?image_path=${component.item.imagePath}" alt="${fn:escapeXml(component.item.name)}" class="product_img">
                                             </c:otherwise>
                                         </c:choose>
                                     </a>
                                 </div>
                                 <div class="col-md-2 text-center">
                                     <a href="${absolutePath}/controller?command=open_item_page&item_id=${component.item.id}" class="link">
-                                        <strong class="product_title row">${component.item.name}</strong>
+                                        <strong class="product_title row">${fn:escapeXml(component.item.name)}</strong>
                                     </a>
                                     <p class="row">
                                         <c:if test="${!empty component.itemSize && component.itemSize.id != 1}">

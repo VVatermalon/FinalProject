@@ -5,8 +5,8 @@ import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.User;
-import by.skarulskaya.finalproject.model.service.impl.OrderService;
-import by.skarulskaya.finalproject.model.service.impl.UserService;
+import by.skarulskaya.finalproject.model.service.UserService;
+import by.skarulskaya.finalproject.model.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +17,7 @@ import static by.skarulskaya.finalproject.controller.Parameters.*;
 
 public class ChangeUserStatus  implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private static final UserService userService = UserService.getInstance();
+    private final UserService userService = UserServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -33,9 +33,11 @@ public class ChangeUserStatus  implements Command {
             int userId = Integer.parseInt(userIdParameter);
             User.Status userStatus = User.Status.valueOf(userStatusParameter);
             if(!userService.changeUserStatus(userId, userStatus)) {
+                logger.error("Can't change user status");
                 throw new CommandException("Can't change user status, user id = " + userId);
             }
         } catch (ServiceException | IllegalArgumentException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
         router.setCurrentType(Router.Type.REDIRECT);

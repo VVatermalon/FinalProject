@@ -10,7 +10,7 @@ public class CustomFooterTag extends TagSupport {
     @Override
     public int doStartTag() throws JspTagException {
         JspWriter writer = pageContext.getOut();
-        String content = "<footer><p class='footer'>© 2022 BLACKPINK | SHOP. ALL RIGHTS RESERVED.</p></footer>";
+        String content = "<footer><p class=\"footer\">© 2022 BLACKPINK | SHOP. ALL RIGHTS RESERVED.</p></footer>";
         try {
             writer.write(content);
         } catch (IOException e) {
@@ -20,7 +20,7 @@ public class CustomFooterTag extends TagSupport {
     }
 
     @Override
-    public int doEndTag() throws JspTagException {
+    public int doEndTag() {
         return EVAL_PAGE;
     }
 }

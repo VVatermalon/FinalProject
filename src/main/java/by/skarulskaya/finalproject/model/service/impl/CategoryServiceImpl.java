@@ -4,23 +4,24 @@ import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.dao.EntityTransaction;
 import by.skarulskaya.finalproject.model.dao.impl.CategoryDaoImpl;
-import by.skarulskaya.finalproject.model.dao.impl.ItemDaoImpl;
-import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.entity.ItemCategory;
+import by.skarulskaya.finalproject.model.service.CategoryService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
-public class CategoryService {
+public class CategoryServiceImpl implements CategoryService {
     private static final Logger logger = LogManager.getLogger();
-    private static final CategoryService INSTANCE = new CategoryService();
-    private CategoryService(){}
-    public static CategoryService getInstance() {
+    private static final CategoryServiceImpl INSTANCE = new CategoryServiceImpl();
+
+    private CategoryServiceImpl(){}
+
+    public static CategoryServiceImpl getInstance() {
         return INSTANCE;
     }
 
+    @Override
     public List<ItemCategory> findAllCategories() throws ServiceException {
         CategoryDaoImpl categoryDao = new CategoryDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -32,6 +33,7 @@ public class CategoryService {
         }
     }
 
+    @Override
     public boolean create(String categoryName) throws ServiceException {
         CategoryDaoImpl categoryDao = new CategoryDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -44,6 +46,7 @@ public class CategoryService {
         }
     }
 
+    @Override
     public boolean update(ItemCategory category) throws ServiceException {
         CategoryDaoImpl categoryDao = new CategoryDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -55,6 +58,7 @@ public class CategoryService {
         }
     }
 
+    @Override
     public boolean delete(int categoryId) throws ServiceException {
         CategoryDaoImpl categoryDao = new CategoryDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -66,6 +70,7 @@ public class CategoryService {
         }
     }
 
+    @Override
     public boolean isCategoryNameUnique(String categoryName) throws ServiceException {
         CategoryDaoImpl categoryDao = new CategoryDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -77,6 +82,7 @@ public class CategoryService {
         }
     }
 
+    @Override
     public boolean isCategoryNameUnique(String categoryName, int categoryId) throws ServiceException {
         CategoryDaoImpl categoryDao = new CategoryDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {

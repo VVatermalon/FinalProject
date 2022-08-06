@@ -5,10 +5,9 @@ import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.CustomEntity;
-import by.skarulskaya.finalproject.model.entity.ItemCategory;
 import by.skarulskaya.finalproject.model.entity.ItemSize;
-import by.skarulskaya.finalproject.model.service.impl.CategoryService;
-import by.skarulskaya.finalproject.model.service.impl.ItemSizeService;
+import by.skarulskaya.finalproject.model.service.ItemSizeService;
+import by.skarulskaya.finalproject.model.service.impl.ItemSizeServiceImpl;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,12 +20,11 @@ import java.util.List;
 
 import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_404;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
-import static by.skarulskaya.finalproject.controller.Parameters.INVALID_CATEGORY;
 import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
 
 public class ChangeSize implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private static final ItemSizeService sizeService = ItemSizeService.getInstance();
+    private final ItemSizeService sizeService = ItemSizeServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -36,12 +34,12 @@ public class ChangeSize implements Command {
         String sizeName = request.getParameter(NEW_SIZE_NAME);
         router.setCurrentPage(currentPage);
         try {
-            if (!BaseValidatorImpl.INSTANCE.validateId(sizeIdParameter)) {
+            if (!BaseValidatorImpl.getInstance().validateId(sizeIdParameter)) {
                 router.setCurrentPage(ERROR_404);
                 return router;
             }
             int sizeId = Integer.parseInt(sizeIdParameter);
-            if (!BaseValidatorImpl.INSTANCE.validateSizeName(sizeName)) {
+            if (!BaseValidatorImpl.getInstance().validateSizeName(sizeName)) {
                 request.setAttribute(INVALID_NEW_SIZE_NAME, INVALID_SIZE_NAME_MESSAGE);
                 return router;
             }
@@ -67,6 +65,7 @@ public class ChangeSize implements Command {
                 request.setAttribute(INVALID_SIZE, SIZE_FOREIGN_KEY_FAILS);
                 return router;
             }
+            logger.error(e);
             throw new CommandException(e);
         }
     }

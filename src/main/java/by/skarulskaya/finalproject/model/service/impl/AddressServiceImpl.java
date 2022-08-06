@@ -8,25 +8,30 @@ import by.skarulskaya.finalproject.model.dao.EntityTransaction;
 import by.skarulskaya.finalproject.model.dao.impl.AddressDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.CustomerDaoImpl;
 import by.skarulskaya.finalproject.model.entity.Address;
+import by.skarulskaya.finalproject.model.service.AddressService;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 import java.util.Optional;
 
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 
-public class AddressService {
-    private static AddressService INSTANCE = new AddressService();
+public class AddressServiceImpl implements AddressService {
+    private static final Logger logger = LogManager.getLogger();
+    private static final AddressServiceImpl INSTANCE = new AddressServiceImpl();
 
-    private AddressService() {
+    private AddressServiceImpl() {
     }
 
-    public static AddressService getInstance() {
+    public static AddressServiceImpl getInstance() {
         return INSTANCE;
     }
 
+    @Override
     public Optional<Address> createAddress(Map<String, String> map, int customerId) throws ServiceException {
-        if (!BaseValidatorImpl.INSTANCE.validateAddress(map)) {
+        if (!BaseValidatorImpl.getInstance().validateAddress(map)) {
             return Optional.empty();
         }
         Address.AvailableCountries country = Address.AvailableCountries.valueOf(map.get(COUNTRY).toUpperCase());
@@ -54,6 +59,7 @@ public class AddressService {
                     transaction.commit();
                     return addressOpt;
                 }
+                logger.error("Can't update customer default address");
                 throw new ServiceException("Can't update customer default address, customerId = " +
                         customerId + ", addressId = " + addressOpt.get().getId());
             }
@@ -62,6 +68,7 @@ public class AddressService {
                 transaction.commit();
                 return Optional.of(address);
             }
+            logger.error("Can't update customer default address");
             throw new ServiceException("Can't update customer default address, customerId = " +
                     customerId + ", addressId = " + address.getId());
         } catch (DaoException e) {

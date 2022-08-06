@@ -8,28 +8,31 @@ import by.skarulskaya.finalproject.model.dao.UserDao;
 import by.skarulskaya.finalproject.model.dao.impl.CustomerDaoImpl;
 import by.skarulskaya.finalproject.model.dao.impl.UserDaoImpl;
 import by.skarulskaya.finalproject.model.entity.Customer;
-import by.skarulskaya.finalproject.model.entity.Order;
-import by.skarulskaya.finalproject.model.entity.OrderComponent;
 import by.skarulskaya.finalproject.model.entity.User;
+import by.skarulskaya.finalproject.model.service.CustomerService;
 import by.skarulskaya.finalproject.util.encryptor.PasswordEncryptor;
 import by.skarulskaya.finalproject.util.mail.MailSender;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 
-public class CustomerService {
-    private static CustomerService INSTANCE = new CustomerService();
-    private CustomerService() {}
-    public static CustomerService getInstance() {
+public class CustomerServiceImpl implements CustomerService {
+    private static final String REGISTRATION_SUBJECT = "Registration in system";
+    private static final String REGISTRATION_BODY = "Welcome! Registration was successful";
+    private static final String SETTING_CHANGED_SUBJECT = "Settings have changed";
+    private static final String SETTING_CHANGED_BODY = "Dear Customer! Your settings have changed. You can find more information in your profile :)";
+    private static final CustomerServiceImpl INSTANCE = new CustomerServiceImpl();
+    private CustomerServiceImpl() {}
+    public static CustomerServiceImpl getInstance() {
         return INSTANCE;
     }
 
+    @Override
     public List<Customer> findAll() throws ServiceException {
         CustomerDao customerDao = new CustomerDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -40,6 +43,7 @@ public class CustomerService {
         }
     }
 
+    @Override
     public List<Customer> findAllByPage(int count, int offset) throws ServiceException {
         CustomerDao customerDao = new CustomerDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -50,6 +54,7 @@ public class CustomerService {
         }
     }
 
+    @Override
     public List<Customer> findAllByStatusByPage(String status, int count, int offset) throws ServiceException {
         CustomerDao customerDao = new CustomerDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -68,6 +73,7 @@ public class CustomerService {
         }
     }
 
+    @Override
     public Optional<Customer> findCustomerById(int id) throws ServiceException {
         CustomerDao customerDao = new CustomerDaoImpl();
         try(EntityTransaction transaction = new EntityTransaction()) {
@@ -78,8 +84,9 @@ public class CustomerService {
         }
     }
 
+    @Override
     public boolean registerCustomer(Map<String, String> mapData) throws ServiceException {
-        if(!BaseValidatorImpl.INSTANCE.validateRegistration(mapData)) {
+        if(!BaseValidatorImpl.getInstance().validateRegistration(mapData)) {
             return false;
         }
         String email = mapData.get(USER_EMAIL);
@@ -101,13 +108,12 @@ public class CustomerService {
                 return false;
             }
             try {
-                sendMessageRegistration(email);
+                sendMessage(email, REGISTRATION_SUBJECT, REGISTRATION_BODY);
             } catch(ServiceException e) {
-                mapData.put(USER_EMAIL, WRONG_EMAIL); //todo подтверждение почты через ввод сгенерированной последовательности, храним их в бд и периодически чистим
+                mapData.put(USER_EMAIL, WRONG_EMAIL);
                 return false;
             }
-            Customer customer = new Customer(BigDecimal.ZERO, phoneNumber, Optional.empty(), email, encryptedPassword, name, surname, User.Role.CUSTOMER, User.Status.IN_REGISTRATION_PROCESS);
-            //todo после отправки письма статус другой
+            Customer customer = new Customer(BigDecimal.ZERO, phoneNumber, Optional.empty(), email, encryptedPassword, name, surname, User.Role.CUSTOMER, User.Status.ACTIVE);
             userDao.create(customer);
             customerDao.create(customer);
             transaction.commit();
@@ -118,6 +124,7 @@ public class CustomerService {
         }
     }
 
+    @Override
     public boolean addMoneyToAccount(double money, Customer customer) throws ServiceException {
         BigDecimal bankAccount = customer.getBankAccount();
         if(bankAccount.compareTo(BigDecimal.valueOf(1000)) >= 0) {
@@ -132,10 +139,11 @@ public class CustomerService {
         throw new ServiceException("Can't add money to account");
     }
 
+    @Override
     public boolean updatePhoneNumber(Map<String, String> mapData) throws ServiceException {
         String phoneNumber = mapData.get(USER_PHONE_NUMBER);
         int userId = Integer.parseInt(mapData.get(USER_ID));
-        if (!BaseValidatorImpl.INSTANCE.validatePhoneNumber(phoneNumber)) {
+        if (!BaseValidatorImpl.getInstance().validatePhoneNumber(phoneNumber)) {
             mapData.put(USER_PHONE_NUMBER, INVALID_PHONE_NUMBER);
             return false;
         }
@@ -149,7 +157,7 @@ public class CustomerService {
             }
             if (customerDao.updatePhoneNumber(userId, phoneNumber)) {
                 String email = userDao.findUserEmail(userId);
-                sendMessageSettingsChanged(email);
+                sendMessage(email, SETTING_CHANGED_SUBJECT, SETTING_CHANGED_BODY);
                 transaction.commit();
                 return true;
             }
@@ -160,17 +168,9 @@ public class CustomerService {
         }
     }
 
-    private void sendMessageRegistration(String email) throws ServiceException {
+    private void sendMessage(String email, String subject, String body) throws ServiceException {
         try {
-            MailSender.INSTANCE.send(email, "Registration in system", "Welcome! Registration was successful"); //todo сделать тут локализацию
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    private void sendMessageSettingsChanged(String email) throws ServiceException {
-        try {
-            MailSender.INSTANCE.send(email, "Settings have changed", "Dear Customer! Your settings have changed. You can find more information in your profile :)");//todo сделать тут локализацию
+            MailSender.INSTANCE.send(email, subject, body);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

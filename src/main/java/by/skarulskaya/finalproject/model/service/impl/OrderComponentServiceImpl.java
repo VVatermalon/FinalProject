@@ -1,6 +1,5 @@
 package by.skarulskaya.finalproject.model.service.impl;
 
-import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.dao.EntityTransaction;
@@ -9,7 +8,7 @@ import by.skarulskaya.finalproject.model.dao.impl.OrderComponentDaoImpl;
 import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.entity.ItemSize;
 import by.skarulskaya.finalproject.model.entity.OrderComponent;
-import by.skarulskaya.finalproject.model.service.BaseService;
+import by.skarulskaya.finalproject.model.service.OrderComponentService;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,25 +16,25 @@ import org.apache.logging.log4j.Logger;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_404;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 import static by.skarulskaya.finalproject.controller.ParametersMessages.ERROR_CANNOT_ADD_MORE_LIMIT;
 import static by.skarulskaya.finalproject.controller.ParametersMessages.ERROR_NOT_ENOUGH_ITEMS_IN_STOCK;
 
-public class OrderComponentService {
+public class OrderComponentServiceImpl implements OrderComponentService {
     private static final Logger logger = LogManager.getLogger();
     private static final int ITEM_IN_CART_AMOUNT_LIMIT = 50;
     private static final int DEFAULT_SIZE_ID = 1;
-    private static final OrderComponentService INSTANCE = new OrderComponentService();
-    private final ItemService itemService = ItemService.getInstance();
+    private static final OrderComponentServiceImpl INSTANCE = new OrderComponentServiceImpl();
+    private final ItemServiceImpl itemService = ItemServiceImpl.getInstance();
 
-    private OrderComponentService() {
+    private OrderComponentServiceImpl() {
     }
 
-    public static OrderComponentService getInstance() {
+    public static OrderComponentServiceImpl getInstance() {
         return INSTANCE;
     }
 
+    @Override
     public boolean uploadCart(int cartOrderId, List<OrderComponent> uploadedCart) throws ServiceException {
         OrderComponentDao orderComponentDao = new OrderComponentDaoImpl();
         boolean cartWasChanged = false;
@@ -71,6 +70,7 @@ public class OrderComponentService {
         }
     }
 
+    @Override
     public List<OrderComponent> findAllOrderComponents(int orderId) throws ServiceException {
         List<OrderComponent> components = new ArrayList<>();
         OrderComponentDao orderComponentDao = new OrderComponentDaoImpl();
@@ -94,8 +94,9 @@ public class OrderComponentService {
         }
     }
 
+    @Override
     public boolean addItemToCart(Map<String, String> mapData) throws ServiceException {
-        if (!BaseValidatorImpl.INSTANCE.validateAddItemToCart(mapData)) {
+        if (!BaseValidatorImpl.getInstance().validateAddItemToCart(mapData)) {
             throw new ServiceException("Invalid parameter");
         }
         int cartOrderId = Integer.parseInt(mapData.get(CART_ORDER_ID));
@@ -150,11 +151,12 @@ public class OrderComponentService {
         return errorFlag;
     }
 
+    @Override
     public boolean removeItemFromCart(Map<String, String> mapData) throws ServiceException {
         try {
             int cartOrderId = Integer.parseInt(mapData.get(CART_ORDER_ID));
             String itemIdParameter = mapData.get(ITEM_ID);
-            if (!BaseValidatorImpl.INSTANCE.validateId(itemIdParameter)) {
+            if (!BaseValidatorImpl.getInstance().validateId(itemIdParameter)) {
                 throw new ServiceException("Invalid item id " + itemIdParameter);
             }
             int itemId = Integer.parseInt(mapData.get(ITEM_ID));
@@ -167,6 +169,7 @@ public class OrderComponentService {
         }
     }
 
+    @Override
     public int countItemsInCart(int cartOrderId) throws ServiceException {
         OrderComponentDao orderComponentDao = new OrderComponentDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {
@@ -178,6 +181,7 @@ public class OrderComponentService {
         }
     }
 
+    @Override
     public BigDecimal findCartTotalPrice(int cartOrderId) throws ServiceException {
         OrderComponentDao orderComponentDao = new OrderComponentDaoImpl();
         try (EntityTransaction transaction = new EntityTransaction()) {

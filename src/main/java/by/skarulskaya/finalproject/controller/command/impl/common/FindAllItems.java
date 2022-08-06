@@ -2,13 +2,12 @@ package by.skarulskaya.finalproject.controller.command.impl.common;
 
 import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
-import by.skarulskaya.finalproject.controller.command.CommandType;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.entity.User;
-import by.skarulskaya.finalproject.model.service.impl.CategoryService;
-import by.skarulskaya.finalproject.model.service.impl.ItemService;
+import by.skarulskaya.finalproject.model.service.ItemService;
+import by.skarulskaya.finalproject.model.service.impl.ItemServiceImpl;
 import by.skarulskaya.finalproject.util.pagination.Pagination;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +25,7 @@ public class FindAllItems implements Command {
     private static final int FIRST_PAGINATION_PAGE = 1;
     private static final int ITEM_PER_PAGE = 6;
     private static final int ITEM_PER_PAGE_ADMIN = 5;
-    private static final ItemService itemService = ItemService.getInstance();
+    private final ItemService itemService = ItemServiceImpl.getInstance();
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
         Router router = new Router();
@@ -35,7 +34,8 @@ public class FindAllItems implements Command {
         String pageParameter = request.getParameter(PAGE);
         int pagePagination = FIRST_PAGINATION_PAGE;
         if(pageParameter != null) {
-            if(!BaseValidatorImpl.INSTANCE.validatePage(pageParameter)) {
+            if(!BaseValidatorImpl.getInstance().validatePage(pageParameter)) {
+                logger.error("Invalid pagination page parameter");
                 throw new CommandException("Invalid pagination page parameter, page = " + pageParameter);
             }
             pagePagination = Integer.parseInt(pageParameter);
@@ -58,6 +58,7 @@ public class FindAllItems implements Command {
             request.setAttribute(PAGE, pagePagination);
             router.setCurrentPage(CATALOG_PAGE);
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
         return router;

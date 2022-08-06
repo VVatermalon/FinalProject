@@ -5,12 +5,15 @@ import by.skarulskaya.finalproject.model.entity.Item;
 import by.skarulskaya.finalproject.model.entity.ItemCategory;
 import by.skarulskaya.finalproject.model.entity.User;
 import by.skarulskaya.finalproject.model.mapper.EntityMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ItemMapper implements EntityMapper<Item> {
+    private static final Logger logger = LogManager.getLogger();
     private static final String ID_LABEL = "item_id";
     private static final String NAME_LABEL = "item_name";
     private static final String PRICE_LABEL = "price";
@@ -31,6 +34,7 @@ public class ItemMapper implements EntityMapper<Item> {
             String description = resultSet.getString(DESCRIPTION_LABEL);
             item = new Item(id, name, price, amount, popularity, description, image);
         } catch (SQLException e) {
+            logger.error("ItemMapper exception: " + e);
             throw new DaoException(e);
         }
         return item;

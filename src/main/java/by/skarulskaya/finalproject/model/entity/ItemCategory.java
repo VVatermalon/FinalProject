@@ -35,16 +35,15 @@ public class ItemCategory extends CustomEntity{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(o == null) return false;
-        if (o.getClass() != getClass()) return false;
+        if (o == null || o.getClass() != getClass()) return false;
 
         ItemCategory that = (ItemCategory) o;
 
-        return categoryName.equals(that.categoryName);
+        return categoryName != null ? categoryName.equals(that.categoryName) : that.categoryName == null;
     }
 
     @Override
     public int hashCode() {
-        return categoryName.hashCode();
+        return categoryName != null ? categoryName.hashCode() : 0;
     }
 }

@@ -5,6 +5,8 @@ import by.skarulskaya.finalproject.controller.command.impl.admin.*;
 import by.skarulskaya.finalproject.controller.command.impl.common.*;
 import by.skarulskaya.finalproject.controller.command.impl.customer.*;
 import by.skarulskaya.finalproject.exception.CommandException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public enum CommandType {
     SIGN_IN(new SignIn()),
@@ -40,6 +42,7 @@ public enum CommandType {
     CHANGE_SIZE(new ChangeSize()),
     DELETE_SIZE(new DeleteSize());
 
+    private static final Logger logger = LogManager.getLogger();
     private final Command command;
 
     CommandType(Command command) {
@@ -52,6 +55,7 @@ public enum CommandType {
 
     public static Command provideCommand(String command) throws CommandException {
         if(command == null || command.isBlank()) {
+            logger.error("Command Type was provided with empty command");
             throw new CommandException("null pointer");
         }
         try {
@@ -59,6 +63,7 @@ public enum CommandType {
             return commandType.getCommand();
         }
         catch (IllegalArgumentException e) {
+            logger.error("Command Type was provided with nonexistent command");
             throw new CommandException("Can't find such command: " + command);
         }
     }

@@ -5,7 +5,8 @@ import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.Customer;
-import by.skarulskaya.finalproject.model.service.impl.OrderService;
+import by.skarulskaya.finalproject.model.service.OrderService;
+import by.skarulskaya.finalproject.model.service.impl.OrderServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -22,7 +23,7 @@ public class PayOrder implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final String UPLOAD_CART_COMMAND = "/controller?command=upload_cart";
     private static final int ZERO_ITEMS_IN_CART = 0;
-    private static final OrderService orderService = OrderService.getInstance();
+    private final OrderService orderService = OrderServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -49,6 +50,7 @@ public class PayOrder implements Command {
             session.setAttribute(CART_ORDER_ID, newCartOrderId);
             session.setAttribute(ITEMS_IN_CART_COUNT, ZERO_ITEMS_IN_CART);
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
         router.setCurrentType(Router.Type.REDIRECT);

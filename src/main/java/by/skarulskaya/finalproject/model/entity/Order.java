@@ -118,5 +118,45 @@ public class Order extends CustomEntity implements Comparable<Order> {
         this.components = components;
     }
 
-    //todo tostring, hashcode, equals
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", status=" + status +
+                ", customer=" + customer +
+                ", dateOrdered=" + dateOrdered +
+                ", address=" + address +
+                ", giftCard='" + giftCard + '\'' +
+                ", totalPrice=" + totalPrice +
+                ", components=" + components +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || o.getClass() != getClass()) return false;
+
+        Order order = (Order) o;
+
+        if (status != order.status) return false;
+        if (customer != null ? !customer.equals(order.customer) : order.customer != null) return false;
+        if (dateOrdered != null ? !dateOrdered.equals(order.dateOrdered) : order.dateOrdered != null) return false;
+        if (address != null ? !address.equals(order.address) : order.address != null) return false;
+        if (giftCard != null ? !giftCard.equals(order.giftCard) : order.giftCard != null) return false;
+        if (totalPrice != null ? !totalPrice.equals(order.totalPrice) : order.totalPrice != null) return false;
+        return components != null ? components.equals(order.components) : order.components == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = status != null ? status.hashCode() : 0;
+        result = 31 * result + (customer != null ? customer.hashCode() : 0);
+        result = 31 * result + (dateOrdered != null ? dateOrdered.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + (giftCard != null ? giftCard.hashCode() : 0);
+        result = 31 * result + (totalPrice != null ? totalPrice.hashCode() : 0);
+        result = 31 * result + (components != null ? components.hashCode() : 0);
+        return result;
+    }
 }

@@ -5,33 +5,25 @@ import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.Order;
-import by.skarulskaya.finalproject.model.service.impl.CustomerService;
-import by.skarulskaya.finalproject.model.service.impl.OrderService;
+import by.skarulskaya.finalproject.model.service.OrderService;
+import by.skarulskaya.finalproject.model.service.impl.OrderServiceImpl;
 import by.skarulskaya.finalproject.util.pagination.Pagination;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.Date;
 import java.util.List;
 
 import static by.skarulskaya.finalproject.controller.PagesPaths.ORDERS_PAGE;
-import static by.skarulskaya.finalproject.controller.PagesPaths.ORDER_HISTORY_PAGE;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 
 public class UploadOrders implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final int FIRST_PAGINATION_PAGE = 1;
     private static final int ORDER_PER_PAGE = 8;
-    private static final OrderService orderService = OrderService.getInstance();
+    private final OrderService orderService = OrderServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -39,7 +31,8 @@ public class UploadOrders implements Command {
         String pageParameter = request.getParameter(PAGE);
         int pagePagination = FIRST_PAGINATION_PAGE;
         if(pageParameter != null) {
-            if(!BaseValidatorImpl.INSTANCE.validatePage(pageParameter)) {
+            if(!BaseValidatorImpl.getInstance().validatePage(pageParameter)) {
+                logger.error("Invalid pagination page parameter");
                 throw new CommandException("Invalid pagination page parameter, page = " + pageParameter);
             }
             pagePagination = Integer.parseInt(pageParameter);
@@ -61,6 +54,7 @@ public class UploadOrders implements Command {
             request.setAttribute(ORDERS, orders);
             request.setAttribute(PAGE, pagePagination);
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
         router.setCurrentPage(ORDERS_PAGE);

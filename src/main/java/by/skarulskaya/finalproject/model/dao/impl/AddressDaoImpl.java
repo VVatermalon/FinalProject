@@ -3,8 +3,6 @@ package by.skarulskaya.finalproject.model.dao.impl;
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.model.dao.AddressDao;
 import by.skarulskaya.finalproject.model.entity.Address;
-import by.skarulskaya.finalproject.model.entity.Customer;
-import by.skarulskaya.finalproject.model.entity.User;
 import by.skarulskaya.finalproject.model.mapper.EntityMapper;
 import by.skarulskaya.finalproject.model.mapper.impl.AddressMapper;
 
@@ -16,9 +14,6 @@ public class AddressDaoImpl extends AddressDao {
     private static final String SQL_FIND_ADDRESS_BY_ID = """
         SELECT address_id, country, city, address, apartment, postal_code
         FROM addresses where address_id = ?""";
-    private static final String SQL_FIND_ADDRESS_BY_ORDER_ID = """
-        SELECT A.address_id, A.country, A.city, A.address, A.apartment, A.postal_code 
-        FROM addresses A JOIN orders O ON A.address_id = O.shipping_address WHERE O.order_id = ?""";
     private static final String SQL_FIND_ADDRESS = """
         SELECT address_id FROM addresses where country = ? AND city = ? AND
         address = ? AND postal_code = ? AND apartment = ?""";
@@ -104,7 +99,7 @@ public class AddressDaoImpl extends AddressDao {
             statement.executeUpdate();
             try(ResultSet keys = statement.getGeneratedKeys()) {
                 if (!keys.next()) {
-                    throw new DaoException("Smth wrong with generated id"); //todo is that possible?
+                    throw new DaoException("AddressDao exception: no generated key in create method");
                 }
                 int id = keys.getInt(1);
                 entity.setId(id);

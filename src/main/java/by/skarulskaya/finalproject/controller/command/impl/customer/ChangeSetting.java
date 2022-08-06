@@ -4,11 +4,12 @@ import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
-import by.skarulskaya.finalproject.model.entity.Address;
 import by.skarulskaya.finalproject.model.entity.Customer;
 import by.skarulskaya.finalproject.model.entity.User;
-import by.skarulskaya.finalproject.model.service.impl.CustomerService;
-import by.skarulskaya.finalproject.model.service.impl.UserService;
+import by.skarulskaya.finalproject.model.service.CustomerService;
+import by.skarulskaya.finalproject.model.service.UserService;
+import by.skarulskaya.finalproject.model.service.impl.CustomerServiceImpl;
+import by.skarulskaya.finalproject.model.service.impl.UserServiceImpl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,18 +18,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 import static by.skarulskaya.finalproject.controller.PagesPaths.*;
-import static by.skarulskaya.finalproject.controller.PagesPaths.ADD_SHIPPING_ADDRESS_PAGE;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
 
 public class ChangeSetting implements Command {
     private static final Logger logger = LogManager.getLogger();
     private static final String EMPTY_STRING = "";
-    private final CustomerService customerService = CustomerService.getInstance();
-    private final UserService userService = UserService.getInstance();
+    private final CustomerService customerService = CustomerServiceImpl.getInstance();
+    private final UserService userService = UserServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -61,6 +60,7 @@ public class ChangeSetting implements Command {
                 default -> throw new CommandException("Wrong setting parameter " + settingName);
             }
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
     }

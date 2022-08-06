@@ -76,5 +76,39 @@ public class Address extends CustomEntity {
         this.postalCode = postalCode;
     }
 
-    //todo tostring
+    @Override
+    public String toString() {
+        return "Address{" +
+                "country=" + country +
+                ", city='" + city + '\'' +
+                ", address='" + address + '\'' +
+                ", apartment=" + apartment +
+                ", postalCode='" + postalCode + '\'' +
+                ", id=" + id +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || o.getClass() != getClass()) return false;
+
+        Address that = (Address) o;
+
+        if (country != that.country) return false;
+        if (city != null ? !city.equals(that.city) : that.city != null) return false;
+        if (address != null ? !address.equals(that.address) : that.address != null) return false;
+        if (!apartment.equals(that.apartment)) return false;
+        return postalCode != null ? postalCode.equals(that.postalCode) : that.postalCode == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = country != null ? country.hashCode() : 0;
+        result = 31 * result + (city != null ? city.hashCode() : 0);
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        result = 31 * result + apartment.hashCode();
+        result = 31 * result + (postalCode != null ? postalCode.hashCode() : 0);
+        return result;
+    }
 }

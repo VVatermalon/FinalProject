@@ -4,30 +4,24 @@ import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
-import by.skarulskaya.finalproject.model.entity.OrderComponent;
-import by.skarulskaya.finalproject.model.service.impl.ItemService;
-import by.skarulskaya.finalproject.model.service.impl.OrderComponentService;
-import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
+import by.skarulskaya.finalproject.model.service.OrderComponentService;
+import by.skarulskaya.finalproject.model.service.impl.OrderComponentServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_500;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
-import static by.skarulskaya.finalproject.controller.ParametersMessages.NOT_UNIQUE_PHONE_MESSAGE;
 
 public class AddItemToCart implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private static final int MIN_AMOUNT = 1;
-    private static final OrderComponentService orderComponentService = OrderComponentService.getInstance();
+    private final OrderComponentService orderComponentService = OrderComponentServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -68,9 +62,11 @@ public class AddItemToCart implements Command {
             int itemsInCartCount = orderComponentService.countItemsInCart((int) session.getAttribute(CART_ORDER_ID));
             session.setAttribute(ITEMS_IN_CART_COUNT, itemsInCartCount);
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
-        router.setCurrentPage(currentPage);
+        router.setCurrentType(Router.Type.REDIRECT);
+        router.setCurrentPage(request.getContextPath() + currentPage);
         return router;
     }
 }

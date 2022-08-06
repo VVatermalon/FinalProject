@@ -6,7 +6,8 @@ import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.Customer;
 import by.skarulskaya.finalproject.model.entity.Order;
-import by.skarulskaya.finalproject.model.service.impl.OrderService;
+import by.skarulskaya.finalproject.model.service.OrderService;
+import by.skarulskaya.finalproject.model.service.impl.OrderServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -20,7 +21,7 @@ import static by.skarulskaya.finalproject.controller.Parameters.*;
 
 public class UploadOrderHistory implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private static final OrderService orderService = OrderService.getInstance();
+    private final OrderService orderService = OrderServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -32,6 +33,7 @@ public class UploadOrderHistory implements Command {
             orders.sort(null);
             request.setAttribute(ORDERS, orders);
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
         router.setCurrentPage(ORDER_HISTORY_PAGE);

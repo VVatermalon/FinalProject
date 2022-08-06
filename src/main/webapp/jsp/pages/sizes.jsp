@@ -23,15 +23,7 @@
 <head>
     <title><fmt:message key="title.sizes"/></title>
     <link rel="icon" href="${absolutePath}/images/icon.png" type="image/png">
-    <script>
-        function disableBack() {
-            window.history.forward();
-        }
-        setTimeout("disableBack()", 0);
-        window.onunload = function() {
-            null
-        };
-    </script>
+    <script type="text/javascript" src="${absolutePath}/js/disableBack.js"></script>
     <style>
         html, body, .page {
             min-height: 100%;

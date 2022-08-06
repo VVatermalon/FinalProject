@@ -146,34 +146,30 @@ public class Item extends CustomEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(o == null) return false;
-        if (o.getClass() != getClass()) return false;
+        if (o == null || o.getClass() != getClass()) return false;
 
         Item item = (Item) o;
 
         if (amountInStock != item.amountInStock) return false;
-        if (Double.compare(item.popularity, popularity) != 0) return false;
-        if (!name.equals(item.name)) return false;
-        if (!categories.equals(item.categories)) return false;
-        if (!sizes.equals(item.sizes)) return false;
-        if (!price.equals(item.price)) return false;
-        if (!description.equals(item.description)) return false;
-        return imagePath.equals(item.imagePath);
+        if (popularity != item.popularity) return false;
+        if (name != null ? !name.equals(item.name) : item.name != null) return false;
+        if (categories != null ? !categories.equals(item.categories) : item.categories != null) return false;
+        if (sizes != null ? !sizes.equals(item.sizes) : item.sizes != null) return false;
+        if (price != null ? !price.equals(item.price) : item.price != null) return false;
+        if (description != null ? !description.equals(item.description) : item.description != null) return false;
+        return imagePath != null ? imagePath.equals(item.imagePath) : item.imagePath == null;
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = name.hashCode();
-        result = 31 * result + categories.hashCode();
-        result = 31 * result + sizes.hashCode();
-        result = 31 * result + price.hashCode();
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (categories != null ? categories.hashCode() : 0);
+        result = 31 * result + (sizes != null ? sizes.hashCode() : 0);
+        result = 31 * result + (price != null ? price.hashCode() : 0);
         result = 31 * result + amountInStock;
-        temp = Double.doubleToLongBits(popularity);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + description.hashCode();
-        result = 31 * result + imagePath.hashCode();
+        result = 31 * result + (int) (popularity ^ (popularity >>> 32));
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (imagePath != null ? imagePath.hashCode() : 0);
         return result;
     }
 }

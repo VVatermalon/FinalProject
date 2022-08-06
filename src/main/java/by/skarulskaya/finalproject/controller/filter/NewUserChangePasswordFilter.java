@@ -1,16 +1,9 @@
 package by.skarulskaya.finalproject.controller.filter;
 
 import by.skarulskaya.finalproject.controller.command.CommandType;
-import by.skarulskaya.finalproject.exception.ServiceException;
-import by.skarulskaya.finalproject.model.entity.Customer;
 import by.skarulskaya.finalproject.model.entity.User;
-import by.skarulskaya.finalproject.model.service.impl.CustomerService;
-import by.skarulskaya.finalproject.model.service.impl.OrderComponentService;
-import by.skarulskaya.finalproject.model.service.impl.OrderService;
-import by.skarulskaya.finalproject.model.service.impl.UserService;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -18,8 +11,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Optional;
 
 import static by.skarulskaya.finalproject.controller.PagesPaths.*;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
@@ -27,11 +18,6 @@ import static by.skarulskaya.finalproject.controller.Parameters.*;
 @WebFilter(filterName = "newUserChangePasswordFilter", urlPatterns = "/*")
 public class NewUserChangePasswordFilter implements Filter {
     private static final Logger logger = LogManager.getLogger();
-    private static final String EMPTY_STRING = "";
-    private final UserService userService = UserService.getInstance();
-    private final CustomerService customerService = CustomerService.getInstance();
-    private final OrderService orderService = OrderService.getInstance();
-    private final OrderComponentService orderComponentService = OrderComponentService.getInstance();
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

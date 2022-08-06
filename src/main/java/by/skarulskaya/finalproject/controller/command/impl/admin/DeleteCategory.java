@@ -6,7 +6,8 @@ import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.CustomEntity;
 import by.skarulskaya.finalproject.model.entity.ItemCategory;
-import by.skarulskaya.finalproject.model.service.impl.CategoryService;
+import by.skarulskaya.finalproject.model.service.CategoryService;
+import by.skarulskaya.finalproject.model.service.impl.CategoryServiceImpl;
 import by.skarulskaya.finalproject.validator.impl.BaseValidatorImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +24,7 @@ import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
 
 public class DeleteCategory implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private static final CategoryService categoryService = CategoryService.getInstance();
+    private final CategoryService categoryService = CategoryServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -32,7 +33,7 @@ public class DeleteCategory implements Command {
         String categoryIdParameter = request.getParameter(CATEGORY_ID);
         router.setCurrentPage(currentPage);
         try {
-            if (!BaseValidatorImpl.INSTANCE.validateId(categoryIdParameter)) {
+            if (!BaseValidatorImpl.getInstance().validateId(categoryIdParameter)) {
                 router.setCurrentPage(ERROR_404);
                 return router;
             }
@@ -54,6 +55,7 @@ public class DeleteCategory implements Command {
                 request.setAttribute(INVALID_DELETE_CATEGORY, CATEGORY_FOREIGN_KEY_FAILS);
                 return router;
             }
+            logger.error(e);
             throw new CommandException(e);
         }
     }

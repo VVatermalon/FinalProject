@@ -59,21 +59,26 @@ public class Customer extends User {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
-        if (o.getClass() != getClass()) return false;
+        if (o == null || o.getClass() != getClass()) return false;
+        if (!super.equals(o)) return false;
 
         Customer customer = (Customer) o;
 
-        if (bankAccount.compareTo(customer.bankAccount) != 0) return false;
-        if (!phoneNumber.equals(customer.phoneNumber)) return false;
+        if (bankAccount != null ? !bankAccount.equals(customer.bankAccount) : customer.bankAccount != null)
+            return false;
+        if (phoneNumber != null ? !phoneNumber.equals(customer.phoneNumber) : customer.phoneNumber != null)
+            return false;
         return defaultAddress.equals(customer.defaultAddress);
     }
 
     @Override
     public int hashCode() {
-        int result = bankAccount.hashCode();
-        result = 31 * result + phoneNumber.hashCode();
+        int result = super.hashCode();
+        result = 31 * result + (bankAccount != null ? bankAccount.hashCode() : 0);
+        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
         result = 31 * result + defaultAddress.hashCode();
         return result;
     }
 }
+
+

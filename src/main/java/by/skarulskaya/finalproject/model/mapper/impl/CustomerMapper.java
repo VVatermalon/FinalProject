@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 public class CustomerMapper implements EntityMapper<Customer> {
+    private static final Logger logger = LogManager.getLogger();
     private static final String ID_LABEL = "customer_id";
     private static final String BANK_ACCOUNT_LABEL = "bank_account";
     private static final String PHONE_LABEL = "phone_number";
@@ -48,6 +49,7 @@ public class CustomerMapper implements EntityMapper<Customer> {
             }
             return new Customer(id, bankAccount, phone, addressResult, email, password, name, surname, role, status);
         } catch (SQLException e) {
+            logger.error("CustomerMapper exception: " + e);
             throw new DaoException(e);
         }
     }

@@ -3,8 +3,6 @@ package by.skarulskaya.finalproject.model.dao.impl;
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.model.dao.ItemDao;
 import by.skarulskaya.finalproject.model.entity.Item;
-import by.skarulskaya.finalproject.model.entity.ItemCategory;
-import by.skarulskaya.finalproject.model.entity.ItemSize;
 import by.skarulskaya.finalproject.model.entity.SortOrder;
 import by.skarulskaya.finalproject.model.mapper.EntityMapper;
 import by.skarulskaya.finalproject.model.mapper.impl.ItemMapper;
@@ -324,7 +322,7 @@ public class ItemDaoImpl extends ItemDao {
             try (ResultSet keys = statement.getGeneratedKeys()) {
                 if (!keys.next()) {
                     connection.rollback();
-                    throw new DaoException("Smth wrong with generated id");
+                    throw new DaoException("ItemDao exception: no generated key in create method");
                 }
                 generatedId = keys.getInt(1);
                 entity.setId(generatedId);
@@ -351,7 +349,7 @@ public class ItemDaoImpl extends ItemDao {
     }
 
     @Override
-    public List<Item> findAllByName(String name) throws DaoException {
+    public List<Item> findAllByName(String name) {
         throw new UnsupportedOperationException();
     }
 

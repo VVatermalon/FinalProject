@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserMapper implements EntityMapper<User> {
+    private static final Logger logger = LogManager.getLogger();
     private static final String ID_LABEL = "user_id";
     private static final String EMAIL_LABEL = "email";
     private static final String PASSWORD_LABEL = "password";
@@ -32,6 +33,7 @@ public class UserMapper implements EntityMapper<User> {
             User.Status status = User.Status.valueOf(statusStr);
             user = new User(id, email, password, name, surname, role, status);
         } catch (SQLException e) {
+            logger.error("UserMapper exception: " + e);
             throw new DaoException(e);
         }
         return user;

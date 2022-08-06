@@ -6,7 +6,8 @@ import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.Address;
 import by.skarulskaya.finalproject.model.entity.Customer;
-import by.skarulskaya.finalproject.model.service.impl.AddressService;
+import by.skarulskaya.finalproject.model.service.AddressService;
+import by.skarulskaya.finalproject.model.service.impl.AddressServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -23,7 +24,7 @@ import static by.skarulskaya.finalproject.controller.ParametersMessages.*;
 
 public class AddShippingAddress implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private static final AddressService addressService = AddressService.getInstance();
+    private final AddressService addressService = AddressServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -94,6 +95,7 @@ public class AddShippingAddress implements Command {
             }
             return router;
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
     }

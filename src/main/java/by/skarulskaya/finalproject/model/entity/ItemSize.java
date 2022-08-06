@@ -53,18 +53,17 @@ public class ItemSize extends CustomEntity{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if(o == null) return false;
-        if (o.getClass() != getClass()) return false;
+        if (o == null || o.getClass() != getClass()) return false;
 
         ItemSize itemSize = (ItemSize) o;
 
         if (amountInStock != itemSize.amountInStock) return false;
-        return sizeName.equals(itemSize.sizeName);
+        return sizeName != null ? sizeName.equals(itemSize.sizeName) : itemSize.sizeName == null;
     }
 
     @Override
     public int hashCode() {
-        int result = sizeName.hashCode();
+        int result = sizeName != null ? sizeName.hashCode() : 0;
         result = 31 * result + amountInStock;
         return result;
     }

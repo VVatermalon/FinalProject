@@ -1,15 +1,17 @@
 package by.skarulskaya.finalproject.controller.filter;
 
-import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.*;
-import by.skarulskaya.finalproject.model.service.impl.CustomerService;
-import by.skarulskaya.finalproject.model.service.impl.OrderComponentService;
-import by.skarulskaya.finalproject.model.service.impl.OrderService;
-import by.skarulskaya.finalproject.model.service.impl.UserService;
+import by.skarulskaya.finalproject.model.service.CustomerService;
+import by.skarulskaya.finalproject.model.service.OrderComponentService;
+import by.skarulskaya.finalproject.model.service.OrderService;
+import by.skarulskaya.finalproject.model.service.UserService;
+import by.skarulskaya.finalproject.model.service.impl.CustomerServiceImpl;
+import by.skarulskaya.finalproject.model.service.impl.OrderComponentServiceImpl;
+import by.skarulskaya.finalproject.model.service.impl.OrderServiceImpl;
+import by.skarulskaya.finalproject.model.service.impl.UserServiceImpl;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
-import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,10 +28,10 @@ import static by.skarulskaya.finalproject.controller.Parameters.*;
 public class GuestFilter implements Filter {
     private static final Logger logger = LogManager.getLogger();
     private static final String EMPTY_STRING = "";
-    private final UserService userService = UserService.getInstance();
-    private final CustomerService customerService = CustomerService.getInstance();
-    private final OrderService orderService = OrderService.getInstance();
-    private final OrderComponentService orderComponentService = OrderComponentService.getInstance();
+    private final UserService userService = UserServiceImpl.getInstance();
+    private final CustomerService customerService = CustomerServiceImpl.getInstance();
+    private final OrderService orderService = OrderServiceImpl.getInstance();
+    private final OrderComponentService orderComponentService = OrderComponentServiceImpl.getInstance();
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

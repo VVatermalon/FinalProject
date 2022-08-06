@@ -11,8 +11,7 @@ import java.util.Map;
 
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 
-public enum BaseValidatorImpl implements BaseValidator {
-    INSTANCE;
+public class BaseValidatorImpl implements BaseValidator {
     private static final Logger logger = LogManager.getLogger();
     private static final String USER_NAME_PATTERN = "^[A-Za-zА-Яа-я]{3,50}$";
     private static final String USER_PASSWORD_PATTERN = "^[A-Za-zА-Яа-я0-9._*]{5,40}$";
@@ -33,6 +32,14 @@ public enum BaseValidatorImpl implements BaseValidator {
     private static final int ITEM_AMOUNT_MIN_VALUE = 0;
     private static final int ITEM_AMOUNT_MAX_VALUE = 100_000_000;
     private static final int ID_MIN_VALUE = 1;
+
+    private static final BaseValidatorImpl instance = new BaseValidatorImpl();
+
+    private BaseValidatorImpl(){}
+
+    public static BaseValidatorImpl getInstance(){
+        return instance;
+    }
 
     @Override
     public boolean validateEmail(String email) {

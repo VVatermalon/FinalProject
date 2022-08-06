@@ -2,8 +2,10 @@ package by.skarulskaya.finalproject.controller.filter;
 
 import by.skarulskaya.finalproject.exception.ServiceException;
 import by.skarulskaya.finalproject.model.entity.*;
-import by.skarulskaya.finalproject.model.service.impl.CategoryService;
-import by.skarulskaya.finalproject.model.service.impl.ItemSizeService;
+import by.skarulskaya.finalproject.model.service.CategoryService;
+import by.skarulskaya.finalproject.model.service.ItemSizeService;
+import by.skarulskaya.finalproject.model.service.impl.CategoryServiceImpl;
+import by.skarulskaya.finalproject.model.service.impl.ItemSizeServiceImpl;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,14 +18,13 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import static by.skarulskaya.finalproject.controller.PagesPaths.ERROR_404;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
 
 @WebFilter(filterName = "servletContextAttributesFilter", urlPatterns = "/*")
 public class ServletContextAttributesFilter implements Filter {
     private static final Logger logger = LogManager.getLogger();
-    private static final CategoryService categoryService = CategoryService.getInstance();
-    private static final ItemSizeService sizeService = ItemSizeService.getInstance();
+    private final CategoryService categoryService = CategoryServiceImpl.getInstance();
+    private final ItemSizeService sizeService = ItemSizeServiceImpl.getInstance();
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;

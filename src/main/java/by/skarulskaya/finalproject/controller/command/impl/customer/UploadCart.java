@@ -4,10 +4,9 @@ import by.skarulskaya.finalproject.controller.Router;
 import by.skarulskaya.finalproject.controller.command.Command;
 import by.skarulskaya.finalproject.exception.CommandException;
 import by.skarulskaya.finalproject.exception.ServiceException;
-import by.skarulskaya.finalproject.model.entity.Customer;
 import by.skarulskaya.finalproject.model.entity.OrderComponent;
-import by.skarulskaya.finalproject.model.service.impl.ItemService;
-import by.skarulskaya.finalproject.model.service.impl.OrderComponentService;
+import by.skarulskaya.finalproject.model.service.OrderComponentService;
+import by.skarulskaya.finalproject.model.service.impl.OrderComponentServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -16,9 +15,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
 import static by.skarulskaya.finalproject.controller.PagesPaths.CART_PAGE;
 import static by.skarulskaya.finalproject.controller.Parameters.*;
@@ -26,7 +22,7 @@ import static by.skarulskaya.finalproject.controller.ParametersMessages.ERROR_CA
 
 public class UploadCart implements Command {
     private static final Logger logger = LogManager.getLogger();
-    private static final OrderComponentService orderComponentService = OrderComponentService.getInstance();
+    private final OrderComponentService orderComponentService = OrderComponentServiceImpl.getInstance();
 
     @Override
     public Router execute(HttpServletRequest request, HttpServletResponse response) throws CommandException {
@@ -48,6 +44,7 @@ public class UploadCart implements Command {
                     .orElse(BigDecimal.ZERO);
             session.setAttribute(CART_TOTAL_PRICE, totalPrice);
         } catch (ServiceException e) {
+            logger.error(e);
             throw new CommandException(e);
         }
         router.setCurrentPage(CART_PAGE);

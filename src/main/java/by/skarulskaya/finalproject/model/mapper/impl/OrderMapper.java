@@ -3,6 +3,8 @@ package by.skarulskaya.finalproject.model.mapper.impl;
 import by.skarulskaya.finalproject.exception.DaoException;
 import by.skarulskaya.finalproject.model.entity.*;
 import by.skarulskaya.finalproject.model.mapper.EntityMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -13,6 +15,7 @@ import java.util.Date;
 import java.util.Optional;
 
 public class OrderMapper implements EntityMapper<Order> {
+    private static final Logger logger = LogManager.getLogger();
     private static final String ID_LABEL = "order_id";
     private static final String CUSTOMER_ID_LABEL = "customer_id";
     private static final String STATUS_LABEL = "order_status";
@@ -44,6 +47,7 @@ public class OrderMapper implements EntityMapper<Order> {
                 order.setAddress(address);
             }
         } catch (SQLException e) {
+            logger.error("OrderMapper exception: " + e);
             throw new DaoException(e);
         }
         return order;

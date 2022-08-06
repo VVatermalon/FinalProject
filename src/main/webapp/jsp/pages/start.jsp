@@ -25,16 +25,7 @@
 <fmt:message key="start.continue_guest" var="continue_guest"/>
 <html>
 <head>
-    <script>
-        function disableBack() {
-            window.history.forward();
-        }
-        setTimeout("disableBack()", 0);
-        window.onunload = function() {
-            null
-        };
-    </script>
-
+    <script type="text/javascript" src="${absolutePath}/js/disableBack.js"></script>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

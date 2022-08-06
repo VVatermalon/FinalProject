@@ -9,6 +9,7 @@
 <%@ taglib prefix="ctg" uri="customs" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="absolutePath">${pageContext.request.contextPath}</c:set>
 <c:choose>
     <c:when test="${not empty language}"> <fmt:setLocale value="${language}" scope="session"/></c:when>
@@ -18,20 +19,12 @@
 <fmt:message key="currency" var="currency"/>
 <html>
 <head>
-    <title><fmt:message key="title"/>${item.name}</title>
+    <title><fmt:message key="title"/>${fn:escapeXml(item.name)}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type="text/javascript">
-        function disableBack() {
-            window.history.forward();
-        }
-        setTimeout("disableBack()", 0);
-        window.onunload = function() {
-            null
-        };
-    </script>
+    <script type="text/javascript" src="${absolutePath}/js/disableBack.js"></script>
     <script>
         $(document).ready(function() {
             $('.counter_btn_minus').click(function () {
@@ -391,17 +384,17 @@
             <div class="col">
                 <c:choose>
                     <c:when test="${item.imagePath eq 'defaultItem.png'}">
-                        <img src="${absolutePath}/images/${item.imagePath}" alt="${item.name}" class="product_img">
+                        <img src="${absolutePath}/images/${item.imagePath}" alt="${fn:escapeXml(item.name)}" class="product_img">
                     </c:when>
                     <c:otherwise>
-                        <img src="${absolutePath}/uploadImage?image_path=${item.imagePath}" alt="${item.name}" class="product_img">
+                        <img src="${absolutePath}/uploadImage?image_path=${item.imagePath}" alt="${fn:escapeXml(item.name)}" class="product_img">
                     </c:otherwise>
                 </c:choose>
             </div>
             <div class="col">
                 <div class="product">
                     <div class="product_header">
-                        <div class="product_title">${item.name}</div>
+                        <div class="product_title">${fn:escapeXml(item.name)}</div>
                     </div>
                     <div class="product_price"><strong id="price">${currency}${item.price}</strong> </div>
                     <c:if test="${user.role ne 'ADMIN'}">
@@ -460,7 +453,7 @@
                             </div>
                         </form>
                     </c:if>
-                    <div class="item_description text-start" style="white-space: pre-line">${item.description}</div>
+                    <div class="item_description text-start" style="white-space: pre-line">${fn:escapeXml(item.description)}</div>
                 </div>
             </div>
         </div>
